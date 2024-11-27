@@ -80,6 +80,8 @@ export const SavedEstimates = () => {
         });
         throw error;
       }
+
+      return id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
@@ -142,8 +144,7 @@ export const SavedEstimates = () => {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction 
-                        onClick={(e) => {
-                          e.preventDefault();
+                        onClick={() => {
                           deleteMutation.mutate(calc.id);
                         }}
                       >
