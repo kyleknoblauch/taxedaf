@@ -66,4 +66,4 @@ Simply open [Lovable](https://lovable.dev/projects/54a78554-65f7-4430-bdf2-6eb62
 
 ## Custom Domains
 
-Custom domain support is a Pro feature. To use a custom domain with your project, please upgrade to Lovable Pro.
+Present a branded experience to your users with custom domains. Custom domains are available as a Pro Plan add-on. To configure a custom domain for your project, please upgrade to the Pro Plan with the custom domains add-on selected.
