@@ -144,7 +144,7 @@ export const TaxSummary = () => {
       <Separator />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-700">Expense Deductions</h3>
+        <h3 className="text-lg font-medium text-gray-700 dark:text-white">Deductions</h3>
         <ExpensesList
           expenses={expenses || []}
           editingId={editingId}

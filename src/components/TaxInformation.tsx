@@ -38,24 +38,24 @@ export const TaxInformation = () => {
         </p>
       </div>
 
-      <div className="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+      <div className="mt-8 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
         <div className="flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
           <div className="space-y-4">
-            <p className="text-gray-700">
+            <p className="text-gray-700 dark:text-gray-200">
               Consider paying quarterly estimated taxes to avoid penalties. This ensures you're covering your share of federal, state, and local taxes throughout the year.
             </p>
             
             <div>
-              <h4 className="font-medium text-gray-800 mb-2">Where to Pay Quarterly Taxes:</h4>
-              <ul className="space-y-2 text-gray-600">
+              <h4 className="font-medium text-gray-800 dark:text-gray-100 mb-2">Where to Pay Quarterly Taxes:</h4>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li><span className="font-medium">Federal Taxes:</span> Pay through the IRS Direct Pay system or set up an account with the Electronic Federal Tax Payment System (EFTPS).</li>
                 <li><span className="font-medium">State Taxes:</span> Visit your state's Department of Revenue website for instructions and payment options. Most states offer online portals for easy access.</li>
                 <li><span className="font-medium">County/Local Taxes (where applicable):</span> Check with your local tax office for payment methods and deadlines.</li>
               </ul>
             </div>
             
-            <p className="text-gray-700">
+            <p className="text-gray-700 dark:text-gray-200">
               Staying on top of quarterly payments helps you avoid surprises at tax time and keeps you in good standing with the government.
             </p>
           </div>
