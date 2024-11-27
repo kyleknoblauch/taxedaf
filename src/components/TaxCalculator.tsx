@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { TaxBreakdown } from "./TaxBreakdown";
 import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } from "../utils/taxCalculations";
 import { stateTaxData } from "../data/stateTaxRates";
 import { federalTaxBrackets2024 } from "../data/taxBrackets";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
+import { SaveEstimateButton } from "./tax-calculator/SaveEstimateButton";
 
 export const TaxCalculator = () => {
   const [income, setIncome] = useState<number>(0);
@@ -20,8 +19,6 @@ export const TaxCalculator = () => {
   const [filingStatus, setFilingStatus] = useState<"single" | "joint">("single");
   const [annualIncome, setAnnualIncome] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
-  const [savedCalculations, setSavedCalculations] = useLocalStorage<Array<any>>("tax-calculations", []);
-  const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,35 +47,6 @@ export const TaxCalculator = () => {
     : calculateFederalTax(income, filingStatus);
   const stateTax = calculateStateTax(income, selectedState, filingStatus, annualIncome);
   const selfEmploymentTax = calculateSelfEmploymentTax(income);
-
-  const handleSaveCalculation = () => {
-    if (income === 0) {
-      toast({
-        title: "Error",
-        description: "Please enter an income amount first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const newCalculation = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      income,
-      federalTax,
-      stateTax,
-      selfEmploymentTax,
-      state: selectedState,
-      notes,
-    };
-
-    setSavedCalculations([...savedCalculations, newCalculation]);
-    toast({
-      title: "Success",
-      description: "Calculation saved successfully",
-    });
-    setNotes("");
-  };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -194,9 +162,14 @@ export const TaxCalculator = () => {
               * This is an approximate estimate for what you may owe in tax based on 2024 data. Please consult with a tax professional for precise calculations.
             </p>
             <div className="flex justify-end">
-              <Button onClick={handleSaveCalculation}>
-                Save Estimate
-              </Button>
+              <SaveEstimateButton
+                income={income}
+                federalTax={federalTax}
+                stateTax={stateTax}
+                selfEmploymentTax={selfEmploymentTax}
+                notes={notes}
+                disabled={income === 0}
+              />
             </div>
           </div>
         </>
