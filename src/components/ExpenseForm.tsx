@@ -79,7 +79,7 @@ export const ExpenseForm = () => {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter expense description"
+            placeholder="Enter deduction description"
           />
         </div>
 

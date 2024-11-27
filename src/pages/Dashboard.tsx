@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [items, setItems] = useState([
     { id: "saved-estimates", title: "Saved Estimates" },
     { id: "tax-summary", title: "Tax Summary" },
-    { id: "add-expense", title: "Add Expense" },
+    { id: "add-expense", title: "Add Deduction" },
     { id: "tax-information", title: "General Tax Information" },
   ]);
 
