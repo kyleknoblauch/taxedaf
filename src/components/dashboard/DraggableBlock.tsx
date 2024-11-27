@@ -34,13 +34,13 @@ export const DraggableBlock = ({ id, title, children }: DraggableBlockProps) => 
             <div className="cursor-move" {...listeners}>
               <GripVertical className="h-4 w-4 text-gray-400 mr-2" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-800 flex-1">{title}</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white flex-1">{title}</h2>
             <CollapsibleTrigger asChild>
-              <button className="p-1 hover:bg-gray-100 rounded-full">
+              <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
                 {isOpen ? (
-                  <Minus className="h-4 w-4 text-gray-600" />
+                  <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                 ) : (
-                  <Plus className="h-4 w-4 text-gray-600" />
+                  <Plus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                 )}
               </button>
             </CollapsibleTrigger>
