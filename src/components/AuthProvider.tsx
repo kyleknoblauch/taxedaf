@@ -35,9 +35,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
     });
   };
 
@@ -45,18 +42,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signUp({
       email,
       password,
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
     });
   };
 
   const signInWithTwitter = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'twitter',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
     });
   };
 
