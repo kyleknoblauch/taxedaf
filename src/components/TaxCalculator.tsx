@@ -52,7 +52,7 @@ export const TaxCalculator = () => {
     <div className="max-w-2xl mx-auto space-y-6">
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
             Income Reality Check
           </h2>
           <Button
