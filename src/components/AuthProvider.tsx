@@ -10,7 +10,7 @@ type AuthContextType = {
   user: any;
   signInWithEmail: (email: string, password: string) => Promise<any>;
   signUpWithEmail: (email: string, password: string) => Promise<any>;
-  signInWithTwitter: () => Promise<void>;
+  signInWithTwitter: () => Promise<any>;
   signOut: () => Promise<void>;
 };
 
@@ -50,9 +50,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signInWithTwitter = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'twitter',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
     });
+    if (error) throw error;
+    return { data, error: null };
   };
 
   const signOut = async () => {
