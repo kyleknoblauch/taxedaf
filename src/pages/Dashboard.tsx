@@ -10,10 +10,8 @@ import { SavedEstimates } from "@/components/SavedEstimates";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [items, setItems] = useState([
-    { id: "saved-estimates", title: "Saved Estimates" },
+  const [items] = useState([
     { id: "tax-summary", title: "Tax Summary" },
-    { id: "add-expense", title: "Add Expense" },
   ]);
 
   const sensors = useSensors(
@@ -35,19 +33,6 @@ const Dashboard = () => {
     }
   };
 
-  const renderBlockContent = (id: string) => {
-    switch (id) {
-      case "saved-estimates":
-        return <SavedEstimates />;
-      case "tax-summary":
-        return <TaxSummary />;
-      case "add-expense":
-        return <ExpenseForm />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -62,6 +47,16 @@ const Dashboard = () => {
           </Button>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Saved Estimates</h2>
+            <SavedEstimates />
+          </div>
+          <div>
+            <ExpenseForm />
+          </div>
+        </div>
+
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -74,7 +69,7 @@ const Dashboard = () => {
                 id={item.id}
                 title={item.title}
               >
-                {renderBlockContent(item.id)}
+                <TaxSummary />
               </DraggableBlock>
             ))}
           </SortableContext>
