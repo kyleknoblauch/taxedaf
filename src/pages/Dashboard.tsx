@@ -17,7 +17,11 @@ const Dashboard = () => {
   ]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // Reduce the drag activation distance for better mobile experience
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -26,7 +30,7 @@ const Dashboard = () => {
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (active.id !== over?.id) {
       setItems((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
@@ -62,14 +66,14 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-              {items.slice(0, 2).map((item) => (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {items.map((item) => (
                 <DraggableBlock
                   key={item.id}
                   id={item.id}
@@ -78,25 +82,7 @@ const Dashboard = () => {
                   {renderBlockContent(item.id)}
                 </DraggableBlock>
               ))}
-            </SortableContext>
-          </DndContext>
-        </div>
-
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={items.slice(2).map(item => item.id)} strategy={verticalListSortingStrategy}>
-            {items.slice(2).map((item) => (
-              <DraggableBlock
-                key={item.id}
-                id={item.id}
-                title={item.title}
-              >
-                {renderBlockContent(item.id)}
-              </DraggableBlock>
-            ))}
+            </div>
           </SortableContext>
         </DndContext>
       </div>
