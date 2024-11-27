@@ -5,10 +5,28 @@ import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { Footer } from "@/components/Footer";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("first_name")
+        .eq("id", user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const handleSignOut = async () => {
     try {
@@ -53,7 +71,9 @@ const Index = () => {
               TaxedAF
             </h1>
             <p className="text-lg text-muted-foreground">
-              Estimate your federal and state tax obligations as a freelancer
+              {user && profile?.first_name 
+                ? `Estimate your federal and state tax obligations as a freelancer, ${profile.first_name}.`
+                : "Estimate your federal and state tax obligations as a freelancer"}
             </p>
           </div>
           

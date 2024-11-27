@@ -55,12 +55,6 @@ export const TaxCalculator = () => {
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
             Income Reality Check
           </h2>
-          <Button
-            variant="outline"
-            onClick={() => navigate("/dashboard")}
-          >
-            Saved Invoices
-          </Button>
         </div>
         
         <div className="space-y-6">
