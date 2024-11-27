@@ -10,6 +10,7 @@ import { Pencil, Trash2, X, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { QuarterlyEstimates } from "@/components/QuarterlyEstimates";
+import { TaxSummary } from "@/components/TaxSummary";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,9 +90,15 @@ const Dashboard = () => {
           </Button>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <ExpenseForm />
-          <QuarterlyEstimates />
+          <div className="lg:col-span-2">
+            <QuarterlyEstimates />
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <TaxSummary />
         </div>
 
         <div className="space-y-6">

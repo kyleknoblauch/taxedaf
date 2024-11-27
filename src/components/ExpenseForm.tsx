@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
+import { useQueryClient } from "@tanstack/react-query";
 
 const EXPENSE_CATEGORIES = [
   "Office Supplies",
@@ -23,6 +24,7 @@ export const ExpenseForm = () => {
   const [category, setCategory] = useState<string>("");
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +53,12 @@ export const ExpenseForm = () => {
         description: "Expense added successfully",
       });
 
+      // Reset form and refresh queries
       setDescription("");
       setAmount("");
       setCategory("");
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
     } catch (error) {
       toast({
         title: "Error",
