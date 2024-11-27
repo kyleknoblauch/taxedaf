@@ -46,7 +46,7 @@ const Index = () => {
           </div>
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Freelancer Tax Calculator
+              TaxedAF
             </h1>
             <p className="text-lg text-gray-600">
               Estimate your federal and state tax obligations as a freelancer
