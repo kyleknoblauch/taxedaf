@@ -48,7 +48,7 @@ export const SavedEstimates = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
@@ -62,6 +62,10 @@ export const SavedEstimates = () => {
       });
     },
   });
+
+  const handleDelete = async (id: string) => {
+    await deleteMutation.mutateAsync(id);
+  };
 
   if (!calculations?.length) {
     return (
@@ -114,7 +118,7 @@ export const SavedEstimates = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => deleteMutation.mutate(calc.id)}>
+                      <AlertDialogAction onClick={() => handleDelete(calc.id)}>
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
