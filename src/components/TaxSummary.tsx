@@ -2,13 +2,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
-import { formatCurrency } from "@/utils/taxCalculations";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, X, Check } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { TaxBreakdownSection } from "./tax-summary/TaxBreakdownSection";
+import { ExpensesList } from "./tax-summary/ExpensesList";
+import { FinalCalculations } from "./tax-summary/FinalCalculations";
 
 export const TaxSummary = () => {
   const { user } = useAuth();
@@ -104,8 +103,9 @@ export const TaxSummary = () => {
   const totalSelfEmploymentTax = taxCalculations?.reduce((sum, calc) => sum + (calc.self_employment_tax || 0), 0) || 0;
   const totalTax = totalFederalTax + totalStateTax + totalSelfEmploymentTax;
   
+  // Calculate adjusted values based on deductions
   const adjustedTaxableIncome = Math.max(0, totalIncome - totalExpenses);
-  const taxReductionFactor = adjustedTaxableIncome / (totalIncome || 1);
+  const taxReductionFactor = totalIncome > 0 ? adjustedTaxableIncome / totalIncome : 0;
   const adjustedTotalTax = totalTax * taxReductionFactor;
 
   const startEditing = (expense: any) => {
@@ -126,100 +126,37 @@ export const TaxSummary = () => {
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Tax Summary</h2>
       
       <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total Income (All Estimates)</span>
-            <span className="font-medium">{formatCurrency(totalIncome)}</span>
-          </div>
-          
-          <div className="pl-4 space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Federal Tax</span>
-              <span className="font-medium text-red-600">{formatCurrency(totalFederalTax)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">State Tax</span>
-              <span className="font-medium text-red-600">{formatCurrency(totalStateTax)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Self-Employment Tax</span>
-              <span className="font-medium text-red-600">{formatCurrency(totalSelfEmploymentTax)}</span>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center pt-2 border-t">
-            <span className="font-medium text-gray-700">Total Tax Before Deductions</span>
-            <span className="font-medium text-red-600">{formatCurrency(totalTax)}</span>
-          </div>
-        </div>
+        <TaxBreakdownSection
+          totalIncome={totalIncome}
+          totalFederalTax={totalFederalTax}
+          totalStateTax={totalStateTax}
+          totalSelfEmploymentTax={totalSelfEmploymentTax}
+          totalTax={totalTax}
+        />
 
         <Separator />
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-gray-700">Expense Deductions</h3>
-          {expenses?.map((expense) => (
-            <div key={expense.id} className="flex items-center justify-between pl-4 py-2 hover:bg-gray-50 rounded-lg">
-              <div className="flex-grow">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-600">{expense.description}</span>
-                  <span className="text-sm text-gray-500">({expense.category})</span>
-                </div>
-                {editingId === expense.id ? (
-                  <div className="flex gap-2 mt-1">
-                    <Input
-                      value={editedNote}
-                      onChange={(e) => setEditedNote(e.target.value)}
-                      placeholder="Add a note..."
-                      className="flex-grow"
-                    />
-                    <Button size="icon" variant="ghost" onClick={() => handleSaveNote(expense.id)}>
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => setEditingId(null)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-gray-500">{expense.notes || "No notes"}</span>
-                    <Button size="icon" variant="ghost" onClick={() => startEditing(expense)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="font-medium text-green-600">-{formatCurrency(expense.amount)}</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => handleDelete(expense.id)}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-          
-          <div className="flex justify-between items-center pt-2 border-t">
-            <span className="font-medium text-gray-700">Total Deductions</span>
-            <span className="font-medium text-green-600">-{formatCurrency(totalExpenses)}</span>
-          </div>
+          <ExpensesList
+            expenses={expenses || []}
+            editingId={editingId}
+            editedNote={editedNote}
+            onStartEditing={startEditing}
+            onSaveNote={handleSaveNote}
+            onCancelEdit={() => setEditingId(null)}
+            onDelete={handleDelete}
+            onEditNoteChange={(note) => setEditedNote(note)}
+          />
         </div>
 
         <Separator />
 
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Adjusted Taxable Income</span>
-            <span className="font-medium">{formatCurrency(adjustedTaxableIncome)}</span>
-          </div>
-          <div className="flex justify-between items-center pt-2 border-t">
-            <span className="font-semibold text-gray-700">Final Estimated Tax Due</span>
-            <span className="font-semibold text-red-600">{formatCurrency(adjustedTotalTax)}</span>
-          </div>
-        </div>
+        <FinalCalculations
+          adjustedTaxableIncome={adjustedTaxableIncome}
+          adjustedTotalTax={adjustedTotalTax}
+          totalExpenses={totalExpenses}
+        />
       </div>
     </Card>
   );
