@@ -141,7 +141,12 @@ export const SavedEstimates = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => deleteMutation.mutate(calc.id)}>
+                      <AlertDialogAction 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          deleteMutation.mutate(calc.id);
+                        }}
+                      >
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
