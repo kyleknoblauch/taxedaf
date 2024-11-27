@@ -71,7 +71,7 @@ const Dashboard = () => {
             </div>
 
             <p className="text-lg text-muted-foreground">
-              Track earnings, log deductions, get reminders. TaxedAF makes filing easy for freelancers - less pain, more gain!
+              It's nuts how much we're taxed, but owing the state with penalties is worse. Estimate your tax bill and be less TaxedAF.
             </p>
 
             <div className="sm:hidden">
