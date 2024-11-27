@@ -11,6 +11,8 @@ const LoginPage = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
@@ -23,7 +25,12 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       if (isSignUp) {
-        const { error } = await signUpWithEmail(email, password);
+        const { error } = await signUpWithEmail(email, password, { 
+          data: { 
+            first_name: firstName,
+            last_name: lastName
+          }
+        });
         if (error?.message.includes("User already registered")) {
           toast({
             variant: "destructive",
@@ -75,6 +82,36 @@ const LoginPage = () => {
 
         <form onSubmit={handleEmailAuth} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm space-y-4">
+            {isSignUp && (
+              <>
+                <div>
+                  <label htmlFor="firstName" className="sr-only">
+                    First Name
+                  </label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="First Name"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="sr-only">
+                    Last Name
+                  </label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Last Name"
+                  />
+                </div>
+              </>
+            )}
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address

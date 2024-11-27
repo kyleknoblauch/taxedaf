@@ -9,7 +9,7 @@ const supabase = createClient(
 type AuthContextType = {
   user: any;
   signInWithEmail: (email: string, password: string) => Promise<any>;
-  signUpWithEmail: (email: string, password: string) => Promise<any>;
+  signUpWithEmail: (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => Promise<any>;
   signInWithTwitter: () => Promise<any>;
   signOut: () => Promise<void>;
 };
@@ -40,10 +40,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { data, error: null };
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
+  const signUpWithEmail = async (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: options?.data,
+      },
     });
     if (error) return { data: null, error };
     return { data, error: null };
