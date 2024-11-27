@@ -38,44 +38,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const updateProfileFromProvider = async (user: any) => {
+    console.log('Full user object:', user);
+    console.log('User metadata:', user.user_metadata);
+    console.log('App metadata:', user.app_metadata);
+
     let firstName = '';
     let lastName = '';
 
     if (user.app_metadata?.provider === 'twitter') {
-      // Get name from user_metadata, trying different possible fields
-      const fullName = user.user_metadata?.full_name || 
-                      user.user_metadata?.name ||
-                      '';
+      // Log all available fields for debugging
+      console.log('Twitter metadata fields:', Object.keys(user.user_metadata));
       
-      if (fullName) {
-        // Split the full name into first and last name
-        const names = fullName.split(' ');
+      // Try to get the name from various Twitter metadata fields
+      if (user.user_metadata?.full_name) {
+        const names = user.user_metadata.full_name.split(' ');
         firstName = names[0];
         lastName = names.slice(1).join(' ');
+      } else if (user.user_metadata?.name) {
+        const names = user.user_metadata.name.split(' ');
+        firstName = names[0];
+        lastName = names.slice(1).join(' ');
+      } else if (user.user_metadata?.preferred_username) {
+        firstName = user.user_metadata.preferred_username;
       }
 
-      // If we couldn't get a name from full_name or name, try preferred_username
-      if (!firstName) {
-        firstName = user.user_metadata?.preferred_username || '';
-      }
+      console.log('Extracted names:', { firstName, lastName });
     }
 
-    if (firstName) {
-      try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            first_name: firstName,
-            last_name: lastName || null
-          })
-          .eq('id', user.id);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: firstName || null,
+          last_name: lastName || null
+        })
+        .eq('id', user.id);
 
-        if (error) {
-          console.error('Error updating profile:', error);
-        }
-      } catch (error) {
+      if (error) {
         console.error('Error updating profile:', error);
+      } else {
+        console.log('Profile updated successfully:', data);
       }
+    } catch (error) {
+      console.error('Error in profile update:', error);
     }
   };
 
