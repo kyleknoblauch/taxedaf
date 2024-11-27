@@ -23,7 +23,16 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       if (isSignUp) {
-        await signUpWithEmail(email, password);
+        const { error } = await signUpWithEmail(email, password);
+        if (error?.message.includes("User already registered")) {
+          toast({
+            variant: "destructive",
+            title: "Account already exists",
+            description: "Please sign in instead or use a different email.",
+          });
+          setIsSignUp(false); // Switch to sign in mode
+          return;
+        }
         toast({
           title: "Check your email",
           description: "We sent you a confirmation link.",
