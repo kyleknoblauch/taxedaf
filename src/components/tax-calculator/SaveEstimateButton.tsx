@@ -64,7 +64,9 @@ export const SaveEstimateButton = ({
         description: "Calculation saved successfully",
       });
       
+      // Navigate to dashboard and scroll to top
       navigate("/dashboard");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       toast({
         title: "Error",
