@@ -25,7 +25,9 @@ export function ThemeProvider({
   children,
   defaultTheme = "system",
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [theme, setTheme] = useState<Theme>(
+    () => (localStorage.getItem("theme") as Theme) || defaultTheme
+  );
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -42,10 +44,18 @@ export function ThemeProvider({
     }
 
     root.classList.add(theme);
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
+  const value = {
+    theme,
+    setTheme: (theme: Theme) => {
+      setTheme(theme);
+    },
+  };
+
   return (
-    <ThemeProviderContext.Provider value={{ theme, setTheme }}>
+    <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
   );
