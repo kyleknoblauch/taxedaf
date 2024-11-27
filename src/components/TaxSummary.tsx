@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { TaxBreakdownSection } from "./tax-summary/TaxBreakdownSection";
 import { ExpensesList } from "./tax-summary/ExpensesList";
@@ -45,6 +45,32 @@ export const TaxSummary = () => {
     },
     enabled: !!user,
   });
+
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('tax-calculations-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tax_calculations',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Invalidate and refetch the tax calculations query
+          queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
 
   const deleteExpenseMutation = useMutation({
     mutationFn: async (expenseId: string) => {
