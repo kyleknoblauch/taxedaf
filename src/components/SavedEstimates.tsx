@@ -44,18 +44,19 @@ export const SavedEstimates = () => {
       const { error } = await supabase
         .from("tax_calculations")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user?.id); // Add user_id check for extra security
       if (error) throw error;
     },
     onSuccess: () => {
-      // Invalidate both queries to update both components
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Delete error:", error);
       toast({
         title: "Error",
         description: "Failed to delete estimate",
@@ -63,14 +64,6 @@ export const SavedEstimates = () => {
       });
     },
   });
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteMutation.mutateAsync(id);
-    } catch (error) {
-      console.error("Error deleting estimate:", error);
-    }
-  };
 
   if (!calculations?.length) {
     return (
@@ -123,7 +116,7 @@ export const SavedEstimates = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(calc.id)}>
+                      <AlertDialogAction onClick={() => deleteMutation.mutate(calc.id)}>
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
