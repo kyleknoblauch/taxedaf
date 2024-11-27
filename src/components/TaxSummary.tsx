@@ -41,7 +41,7 @@ export const TaxSummary = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: !!user,
   });
@@ -62,7 +62,6 @@ export const TaxSummary = () => {
         },
         async (payload) => {
           console.log('Received real-time update:', payload);
-          // Immediately refetch the data
           await refetchTaxCalculations();
         }
       )
@@ -135,19 +134,6 @@ export const TaxSummary = () => {
   const taxReductionFactor = totalIncome > 0 ? adjustedTaxableIncome / totalIncome : 0;
   const adjustedTotalTax = totalTax * taxReductionFactor;
 
-  const startEditing = (expense: any) => {
-    setEditingId(expense.id);
-    setEditedNote(expense.notes || "");
-  };
-
-  const handleSaveNote = (id: string) => {
-    updateNoteMutation.mutate({ id, note: editedNote });
-  };
-
-  const handleDelete = (id: string) => {
-    deleteExpenseMutation.mutate(id);
-  };
-
   return (
     <Card className="p-6">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Tax Summary</h2>
@@ -169,10 +155,15 @@ export const TaxSummary = () => {
             expenses={expenses || []}
             editingId={editingId}
             editedNote={editedNote}
-            onStartEditing={startEditing}
-            onSaveNote={handleSaveNote}
+            onStartEditing={(expense) => {
+              setEditingId(expense.id);
+              setEditedNote(expense.notes || "");
+            }}
+            onSaveNote={(id) => {
+              updateNoteMutation.mutate({ id, note: editedNote });
+            }}
             onCancelEdit={() => setEditingId(null)}
-            onDelete={handleDelete}
+            onDelete={deleteExpenseMutation.mutate}
             onEditNoteChange={(note) => setEditedNote(note)}
           />
         </div>
