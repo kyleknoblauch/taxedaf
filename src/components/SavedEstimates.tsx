@@ -24,7 +24,7 @@ export const SavedEstimates = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: calculations } = useQuery({
+  const { data: calculations, refetch } = useQuery({
     queryKey: ["tax-calculations", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -45,10 +45,12 @@ export const SavedEstimates = () => {
         .from("tax_calculations")
         .delete()
         .eq("id", id)
-        .eq("user_id", user?.id); // Add user_id check for extra security
+        .eq("user_id", user?.id);
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await refetch(); // Immediately refetch the data
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
