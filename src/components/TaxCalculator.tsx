@@ -30,7 +30,15 @@ export const TaxCalculator = () => {
     return `$${min.toLocaleString()} - $${max.toLocaleString()} (${(bracket.rate * 100).toFixed(1)}%)`;
   };
 
-  const federalTax = calculateFederalTax(income, filingStatus);
+  const getEffectiveRate = (selectedAnnualIncome: string) => {
+    const annualMax = Number(selectedAnnualIncome);
+    const bracket = brackets.find(b => b.max >= annualMax) || brackets[brackets.length - 1];
+    return bracket.rate;
+  };
+
+  const federalTax = annualIncome 
+    ? income * getEffectiveRate(annualIncome)
+    : calculateFederalTax(income, filingStatus);
   const stateTax = calculateStateTax(income, selectedState);
   const selfEmploymentTax = calculateSelfEmploymentTax(income);
 
