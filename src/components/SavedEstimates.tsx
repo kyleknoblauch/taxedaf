@@ -53,10 +53,8 @@ export const SavedEstimates = () => {
           table: 'tax_calculations',
           filter: `user_id=eq.${user.id}`,
         },
-        (payload) => {
-          if (payload.eventType !== 'DELETE') {
-            queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
-          }
+        () => {
+          // Removed realtime updates for now to prevent conflicts with optimistic updates
         }
       )
       .subscribe();
@@ -68,37 +66,49 @@ export const SavedEstimates = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Optimistically update the cache first
-      queryClient.setQueryData(
-        ["tax-calculations", user?.id],
-        (old: any) => old?.filter((calc: any) => calc.id !== id) || []
-      );
-
       const { error } = await supabase
         .from("tax_calculations")
         .delete()
         .eq("id", id)
         .eq("user_id", user?.id);
 
-      if (error) {
-        // Revert the optimistic update on error
-        queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
-        toast({
-          title: "Error",
-          description: "Failed to delete estimate. Please try again.",
-          variant: "destructive",
-        });
-        throw error;
-      }
-
+      if (error) throw error;
       return id;
     },
+    onMutate: async (deletedId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["tax-calculations", user?.id] });
+
+      // Snapshot the previous value
+      const previousCalculations = queryClient.getQueryData(["tax-calculations", user?.id]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(
+        ["tax-calculations", user?.id],
+        (old: any) => old?.filter((calc: any) => calc.id !== deletedId) || []
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousCalculations };
+    },
+    onError: (err, deletedId, context) => {
+      // Rollback to the previous value if there's an error
+      queryClient.setQueryData(["tax-calculations", user?.id], context?.previousCalculations);
+      toast({
+        title: "Error",
+        description: "Failed to delete estimate. Please try again.",
+        variant: "destructive",
+      });
+    },
     onSuccess: (deletedId) => {
-      queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
       });
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure cache consistency
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
     },
   });
 
