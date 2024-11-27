@@ -22,28 +22,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user?.app_metadata?.provider === 'twitter') {
-        updateProfileFromTwitter(session.user);
+      if (session?.user) {
+        updateProfileFromProvider(session.user);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user?.app_metadata?.provider === 'twitter') {
-        await updateProfileFromTwitter(session.user);
+      if (session?.user) {
+        await updateProfileFromProvider(session.user);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const updateProfileFromTwitter = async (user: any) => {
-    const twitterName = user.user_metadata?.full_name || user.user_metadata?.name;
-    if (twitterName) {
-      const names = twitterName.split(' ');
-      const firstName = names[0];
-      const lastName = names.slice(1).join(' ');
+  const updateProfileFromProvider = async (user: any) => {
+    let firstName = '';
+    let lastName = '';
+
+    if (user.app_metadata?.provider === 'twitter') {
+      // Try different possible locations for the name
+      const fullName = user.user_metadata?.full_name || 
+                      user.user_metadata?.name ||
+                      user.user_metadata?.preferred_username || '';
       
+      if (fullName) {
+        const names = fullName.split(' ');
+        firstName = names[0];
+        lastName = names.slice(1).join(' ');
+      }
+    }
+
+    if (firstName) {
       await supabase
         .from('profiles')
         .update({
