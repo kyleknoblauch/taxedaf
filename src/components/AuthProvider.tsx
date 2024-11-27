@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'twitter',
       options: {
-        redirectTo: 'https://taxedaf.lovable.app/auth/callback',
+        redirectTo: 'https://taxedaf.com/auth/callback',
       },
     });
     if (error) throw error;
