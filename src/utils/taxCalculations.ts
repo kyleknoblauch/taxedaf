@@ -1,12 +1,13 @@
 import { federalTaxBrackets2024, selfEmploymentTaxRate } from "../data/taxBrackets";
 import { stateTaxData } from "../data/stateTaxRates";
 
-export const calculateFederalTax = (income: number): number => {
+export const calculateFederalTax = (income: number, filingStatus: "single" | "joint"): number => {
+  const brackets = filingStatus === "single" ? federalTaxBrackets2024.single : federalTaxBrackets2024.joint;
   let tax = 0;
   let remainingIncome = income;
   let previousMax = 0;
 
-  for (const bracket of federalTaxBrackets2024) {
+  for (const bracket of brackets) {
     const taxableInThisBracket = Math.min(remainingIncome, bracket.max - previousMax);
     tax += taxableInThisBracket * bracket.rate;
     remainingIncome -= taxableInThisBracket;
@@ -18,13 +19,16 @@ export const calculateFederalTax = (income: number): number => {
 };
 
 export const calculateSelfEmploymentTax = (income: number): number => {
-  return income * selfEmploymentTaxRate;
+  const socialSecurityLimit = 168600; // 2024 limit
+  const socialSecurityTax = Math.min(income, socialSecurityLimit) * 0.124;
+  const medicareTax = income * 0.029;
+  
+  return socialSecurityTax + medicareTax;
 };
 
 export const calculateStateTax = (income: number, stateCode: string): number => {
   const state = stateTaxData[stateCode];
   if (!state || !state.hasIncomeTax) return 0;
-  // This is a simplified calculation. In reality, states have their own brackets
   return income * state.maxRate;
 };
 
