@@ -12,7 +12,7 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -20,14 +20,12 @@ const Index = () => {
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .maybeSingle();
+        .single();
       
       if (error) {
         console.error("Error fetching profile:", error);
         return null;
       }
-      console.log("Raw user metadata:", user.user_metadata);
-      console.log("Profile data:", data);
       return data;
     },
     enabled: !!user,
@@ -47,6 +45,8 @@ const Index = () => {
       });
     }
   };
+
+  const displayName = profile?.first_name || user?.user_metadata?.name || user?.user_metadata?.full_name || '';
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,16 +76,9 @@ const Index = () => {
               TaxedAF
             </h1>
             <p className="text-lg text-muted-foreground">
-              {user && profile?.first_name 
-                ? `${profile.first_name}, self-employed? Estimate your federal and state tax obligations accuratley AF.`
-                : "Self-employed? Estimate your federal and state tax obligations accuratley AF."}
+              {displayName ? `${displayName}, self-employed? ` : 'Self-employed? '}
+              Estimate your federal and state tax obligations accuratley AF.
             </p>
-            {isLoading && <p>Loading profile...</p>}
-            {user && !profile?.first_name && (
-              <p className="text-sm text-red-500 mt-2">
-                Debug info - User metadata: {JSON.stringify(user.user_metadata)}
-              </p>
-            )}
           </div>
           
           <TaxCalculator />
