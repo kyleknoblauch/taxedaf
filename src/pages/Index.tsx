@@ -26,33 +26,35 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="flex justify-end mb-4">
-          {user ? (
-            <>
-              <Link to="/dashboard">
-                <Button>Dashboard</Button>
+      <div className="max-w-4xl mx-auto">
+        <div className="px-4 py-12">
+          <div className="flex justify-end mb-4">
+            {user ? (
+              <>
+                <Link to="/dashboard">
+                  <Button>Dashboard</Button>
+                </Link>
+                <Button variant="outline" onClick={handleSignOut} className="ml-4">
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Link to="/login">
+                <Button>Login / Sign Up</Button>
               </Link>
-              <Button variant="outline" onClick={handleSignOut} className="ml-4">
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <Link to="/login">
-              <Button>Login / Sign Up</Button>
-            </Link>
-          )}
+            )}
+          </div>
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Freelancer Tax Calculator
+            </h1>
+            <p className="text-lg text-gray-600">
+              Estimate your federal and state tax obligations as a freelancer
+            </p>
+          </div>
+          
+          <TaxCalculator />
         </div>
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Freelancer Tax Calculator
-          </h1>
-          <p className="text-lg text-gray-600">
-            Estimate your federal and state tax obligations as a freelancer
-          </p>
-        </div>
-        
-        <TaxCalculator />
       </div>
       <Footer />
     </div>
