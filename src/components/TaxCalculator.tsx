@@ -159,7 +159,7 @@ export const TaxCalculator = () => {
           />
           <div className="space-y-2">
             <p className="text-sm text-gray-500 text-center">
-              * This is an approximate estimate for what you may owe in tax based on 2024 data. Please consult with a tax professional for precise calculations.
+              * This is an approximate estimate for what you may owe in tax based on 2024 data. Consider setting aside this amount now to ensure you have funds available when taxes are due. Please consult with a tax professional for precise calculations.
             </p>
             <div className="flex justify-end">
               <SaveEstimateButton
