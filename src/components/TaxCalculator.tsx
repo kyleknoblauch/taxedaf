@@ -78,24 +78,6 @@ export const TaxCalculator = () => {
             />
           </div>
 
-          <div>
-            <label htmlFor="annualIncome" className="block text-sm font-medium text-gray-700 mb-1">
-              Expected Annual Income Range
-            </label>
-            <Select value={annualIncome} onValueChange={setAnnualIncome}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select your expected annual income range" />
-              </SelectTrigger>
-              <SelectContent>
-                {brackets.map((bracket, index) => (
-                  <SelectItem key={index} value={bracket.max.toString()}>
-                    {getBracketLabel(bracket, index, brackets)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-700">
               Filing Status
@@ -114,6 +96,24 @@ export const TaxCalculator = () => {
                 <Label htmlFor="joint">Married Filing Jointly</Label>
               </div>
             </RadioGroup>
+          </div>
+
+          <div>
+            <label htmlFor="annualIncome" className="block text-sm font-medium text-gray-700 mb-1">
+              Expected Annual Income Range
+            </label>
+            <Select value={annualIncome} onValueChange={setAnnualIncome}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select your expected annual income range" />
+              </SelectTrigger>
+              <SelectContent>
+                {brackets.map((bracket, index) => (
+                  <SelectItem key={index} value={bracket.max.toString()}>
+                    {getBracketLabel(bracket, index, brackets)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

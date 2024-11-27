@@ -11,10 +11,11 @@ import { TaxInformation } from "@/components/TaxInformation";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  // Move saved-estimates to the first position in the initial state
   const [items, setItems] = useState([
     { id: "saved-estimates", title: "Saved Estimates" },
-    { id: "add-expense", title: "Add Expense" },
     { id: "tax-summary", title: "Tax Summary" },
+    { id: "add-expense", title: "Add Expense" },
     { id: "tax-information", title: "General Tax Information" },
   ]);
 
