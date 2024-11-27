@@ -60,45 +60,63 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold text-foreground">TaxedAF Dashboard</h1>
+        <div className="relative">
+          <div className="absolute right-0 top-0">
             <DarkModeToggle />
           </div>
-          <Button 
-            variant="outline"
-            onClick={() => navigate("/")}
-            className="text-primary hover:text-primary/90"
-          >
-            Back to Calculator
-          </Button>
-        </div>
-
-        <div className="mb-8">
-          <p className="text-lg text-muted-foreground">
-            Track earnings, log deductions, get reminders. TaxedAF makes filing easy for freelancers - less pain, more gain!
-          </p>
-        </div>
-
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {items.map((item) => (
-                <DraggableBlock
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                >
-                  {renderBlockContent(item.id)}
-                </DraggableBlock>
-              ))}
+          
+          <div className="space-y-4 pt-10 sm:pt-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h1 className="text-3xl font-bold text-foreground">TaxedAF Dashboard</h1>
             </div>
-          </SortableContext>
-        </DndContext>
+
+            <p className="text-lg text-muted-foreground">
+              Track earnings, log deductions, get reminders. TaxedAF makes filing easy for freelancers - less pain, more gain!
+            </p>
+
+            <div className="sm:hidden">
+              <Button 
+                variant="outline"
+                onClick={() => navigate("/")}
+                className="w-full text-primary hover:text-primary/90"
+              >
+                Back to Calculator
+              </Button>
+            </div>
+
+            <div className="hidden sm:block">
+              <Button 
+                variant="outline"
+                onClick={() => navigate("/")}
+                className="text-primary hover:text-primary/90"
+              >
+                Back to Calculator
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {items.map((item) => (
+                  <DraggableBlock
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                  >
+                    {renderBlockContent(item.id)}
+                  </DraggableBlock>
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
       </div>
     </div>
   );
