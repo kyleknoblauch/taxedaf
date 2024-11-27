@@ -7,15 +7,27 @@ import { Label } from "@/components/ui/label";
 import { TaxBreakdown } from "./TaxBreakdown";
 import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } from "../utils/taxCalculations";
 import { stateTaxData } from "../data/stateTaxRates";
+import { federalTaxBrackets2024 } from "../data/taxBrackets";
 
 export const TaxCalculator = () => {
   const [income, setIncome] = useState<number>(0);
   const [selectedState, setSelectedState] = useState<string>("CA");
   const [filingStatus, setFilingStatus] = useState<"single" | "joint">("single");
+  const [annualIncome, setAnnualIncome] = useState<string>("");
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     setIncome(Number(value));
+  };
+
+  const brackets = filingStatus === "single" 
+    ? federalTaxBrackets2024.single 
+    : federalTaxBrackets2024.joint;
+
+  const getBracketLabel = (bracket: { max: number; rate: number }, index: number, brackets: Array<{ max: number; rate: number }>) => {
+    const min = index === 0 ? 0 : brackets[index - 1].max + 1;
+    const max = bracket.max === Infinity ? "+" : bracket.max;
+    return `$${min.toLocaleString()} - $${max.toLocaleString()} (${(bracket.rate * 100).toFixed(1)}%)`;
   };
 
   const federalTax = calculateFederalTax(income, filingStatus);
@@ -42,6 +54,24 @@ export const TaxCalculator = () => {
               placeholder="Enter your invoice amount"
               className="w-full"
             />
+          </div>
+
+          <div>
+            <label htmlFor="annualIncome" className="block text-sm font-medium text-gray-700 mb-1">
+              Expected Annual Income Range
+            </label>
+            <Select value={annualIncome} onValueChange={setAnnualIncome}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select your expected annual income range" />
+              </SelectTrigger>
+              <SelectContent>
+                {brackets.map((bracket, index) => (
+                  <SelectItem key={index} value={bracket.max.toString()}>
+                    {getBracketLabel(bracket, index, brackets)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-3">

@@ -25,3 +25,4 @@ export const federalTaxBrackets2024 = {
 };
 
 export const selfEmploymentTaxRate = 0.153; // 15.3% (12.4% Social Security + 2.9% Medicare)
+export const socialSecurityWageBase2024 = 168600; // Social Security wage base for 2024
