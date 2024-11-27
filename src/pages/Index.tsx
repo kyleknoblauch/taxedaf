@@ -20,9 +20,12 @@ const Index = () => {
         .from("profiles")
         .select("first_name")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return null;
+      }
       return data;
     },
     enabled: !!user,
