@@ -2,6 +2,7 @@ export interface StateTaxInfo {
   name: string;
   maxRate: number;
   hasIncomeTax: boolean;
+  brackets?: Array<{ max: number; rate: number }>;
 }
 
 export const stateTaxData: { [key: string]: StateTaxInfo } = {
@@ -9,7 +10,22 @@ export const stateTaxData: { [key: string]: StateTaxInfo } = {
   AK: { name: "Alaska", maxRate: 0, hasIncomeTax: false },
   AZ: { name: "Arizona", maxRate: 0.0459, hasIncomeTax: true },
   AR: { name: "Arkansas", maxRate: 0.069, hasIncomeTax: true },
-  CA: { name: "California", maxRate: 0.133, hasIncomeTax: true },
+  CA: {
+    name: "California",
+    maxRate: 0.133,
+    hasIncomeTax: true,
+    brackets: [
+      { max: 10099, rate: 0.01 },
+      { max: 23942, rate: 0.02 },
+      { max: 37788, rate: 0.04 },
+      { max: 52455, rate: 0.06 },
+      { max: 66295, rate: 0.08 },
+      { max: 338639, rate: 0.093 },
+      { max: 406364, rate: 0.103 },
+      { max: 677275, rate: 0.113 },
+      { max: Infinity, rate: 0.123 }
+    ]
+  },
   CO: { name: "Colorado", maxRate: 0.0463, hasIncomeTax: true },
   CT: { name: "Connecticut", maxRate: 0.069, hasIncomeTax: true },
   DE: { name: "Delaware", maxRate: 0.066, hasIncomeTax: true },

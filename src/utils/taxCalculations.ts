@@ -1,4 +1,4 @@
-import { federalTaxBrackets2024, selfEmploymentTaxRate } from "../data/taxBrackets";
+import { federalTaxBrackets2024, selfEmploymentTaxRate, socialSecurityWageBase2024 } from "../data/taxBrackets";
 import { stateTaxData } from "../data/stateTaxRates";
 
 export const calculateFederalTax = (income: number, filingStatus: "single" | "joint"): number => {
@@ -29,6 +29,24 @@ export const calculateSelfEmploymentTax = (income: number): number => {
 export const calculateStateTax = (income: number, stateCode: string): number => {
   const state = stateTaxData[stateCode];
   if (!state || !state.hasIncomeTax) return 0;
+  
+  // If state has brackets, use progressive calculation
+  if (state.brackets) {
+    let tax = 0;
+    let remainingIncome = income;
+    let previousMax = 0;
+
+    for (const bracket of state.brackets) {
+      const taxableInThisBracket = Math.min(remainingIncome, bracket.max - previousMax);
+      tax += taxableInThisBracket * bracket.rate;
+      remainingIncome -= taxableInThisBracket;
+      previousMax = bracket.max;
+      if (remainingIncome <= 0) break;
+    }
+    return tax;
+  }
+  
+  // Fallback to flat rate for states without defined brackets
   return income * state.maxRate;
 };
 
