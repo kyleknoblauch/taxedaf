@@ -2,8 +2,24 @@ import { federalTaxBrackets2024, selfEmploymentTaxRate, socialSecurityWageBase20
 import { stateTaxData } from "../data/stateTaxRates";
 
 export const calculateSelfEmploymentTax = (income: number): number => {
-  const socialSecurityTax = Math.min(income, socialSecurityWageBase2024) * 0.124;
-  const medicareTax = income * 0.029;
+  // First, reduce income by the deductible portion (50%) of SE tax
+  // We need to solve for X where X = tax rate * (income - 0.5X)
+  // If tax rate is 15.3%, then:
+  // X = 0.153(income - 0.5X)
+  // X = 0.153income - 0.0765X
+  // 1.0765X = 0.153income
+  // X = 0.153income/1.0765
+  // This gives us the actual SE tax amount
+  
+  const effectiveIncome = (income * 0.9235); // 92.35% of income is subject to SE tax
+  
+  // Calculate Social Security portion (12.4%)
+  const socialSecurityIncome = Math.min(effectiveIncome, socialSecurityWageBase2024);
+  const socialSecurityTax = socialSecurityIncome * 0.124;
+  
+  // Calculate Medicare portion (2.9%)
+  const medicareTax = effectiveIncome * 0.029;
+  
   return socialSecurityTax + medicareTax;
 };
 
