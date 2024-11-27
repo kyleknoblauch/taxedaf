@@ -48,7 +48,8 @@ export const SavedEstimates = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+      // Invalidate both queries to update both components
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
@@ -64,7 +65,11 @@ export const SavedEstimates = () => {
   });
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync(id);
+    try {
+      await deleteMutation.mutateAsync(id);
+    } catch (error) {
+      console.error("Error deleting estimate:", error);
+    }
   };
 
   if (!calculations?.length) {
