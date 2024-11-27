@@ -22,14 +22,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user?.app_metadata?.provider === 'twitter') {
+        updateProfileFromTwitter(session.user);
+      }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user?.app_metadata?.provider === 'twitter') {
+        await updateProfileFromTwitter(session.user);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const updateProfileFromTwitter = async (user: any) => {
+    const twitterName = user.user_metadata?.full_name || user.user_metadata?.name;
+    if (twitterName) {
+      const names = twitterName.split(' ');
+      const firstName = names[0];
+      const lastName = names.slice(1).join(' ');
+      
+      await supabase
+        .from('profiles')
+        .update({
+          first_name: firstName,
+          last_name: lastName || null
+        })
+        .eq('id', user.id);
+    }
+  };
 
   const signInWithEmail = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
