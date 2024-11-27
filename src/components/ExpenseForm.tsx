@@ -70,7 +70,6 @@ export const ExpenseForm = () => {
 
   return (
     <Card className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Add Expense</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
