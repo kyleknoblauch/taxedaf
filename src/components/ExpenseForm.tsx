@@ -115,7 +115,7 @@ export const ExpenseForm = () => {
         </div>
 
         <Button type="submit" className="w-full">
-          Add Expense
+          Add Deduction
         </Button>
       </form>
     </Card>
