@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { Footer } from "@/components/Footer";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -25,30 +26,33 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto">
         <div className="px-4 py-12">
-          <div className="flex justify-end mb-4">
-            {user ? (
-              <>
-                <Link to="/dashboard">
-                  <Button>Dashboard</Button>
+          <div className="flex justify-between items-center mb-4">
+            <DarkModeToggle />
+            <div className="flex gap-4">
+              {user ? (
+                <>
+                  <Link to="/dashboard">
+                    <Button>Dashboard</Button>
+                  </Link>
+                  <Button variant="outline" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Link to="/login">
+                  <Button>Login / Sign Up</Button>
                 </Link>
-                <Button variant="outline" onClick={handleSignOut} className="ml-4">
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Link to="/login">
-                <Button>Login / Sign Up</Button>
-              </Link>
-            )}
+              )}
+            </div>
           </div>
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               TaxedAF
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Estimate your federal and state tax obligations as a freelancer
             </p>
           </div>

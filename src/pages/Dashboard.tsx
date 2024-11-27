@@ -8,10 +8,10 @@ import { TaxSummary } from "@/components/TaxSummary";
 import { DraggableBlock } from "@/components/dashboard/DraggableBlock";
 import { SavedEstimates } from "@/components/SavedEstimates";
 import { TaxInformation } from "@/components/TaxInformation";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  // Move saved-estimates to the first position in the initial state
   const [items, setItems] = useState([
     { id: "saved-estimates", title: "Saved Estimates" },
     { id: "tax-summary", title: "Tax Summary" },
@@ -58,10 +58,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">TaxedAF Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold text-foreground">TaxedAF Dashboard</h1>
+            <DarkModeToggle />
+          </div>
           <Button 
             variant="outline"
             onClick={() => navigate("/")}
@@ -72,7 +75,7 @@ const Dashboard = () => {
         </div>
 
         <div className="mb-8">
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground">
             Track earnings, log deductions, get reminders. TaxedAF makes filing easy for freelancers - less pain, more gain!
           </p>
         </div>
