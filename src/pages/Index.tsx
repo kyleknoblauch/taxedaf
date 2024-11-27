@@ -75,8 +75,8 @@ const Index = () => {
             </h1>
             <p className="text-lg text-muted-foreground">
               {user && profile?.first_name 
-                ? `Estimate your federal and state tax obligations as a freelancer, ${profile.first_name}.`
-                : "Estimate your federal and state tax obligations as a freelancer"}
+                ? `${profile.first_name}, self-employed? Estimate your federal and state tax obligations accuratley AF.`
+                : "Self-employed? Estimate your federal and state tax obligations accuratley AF."}
             </p>
           </div>
           
