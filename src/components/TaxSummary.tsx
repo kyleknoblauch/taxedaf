@@ -60,9 +60,11 @@ export const TaxSummary = () => {
           table: 'tax_calculations',
           filter: `user_id=eq.${user.id}`,
         },
-        () => {
-          // Invalidate and refetch the tax calculations query
-          queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+        (payload) => {
+          // Immediately update the cache with the new data
+          queryClient.invalidateQueries({ 
+            queryKey: ["tax-calculations", user.id] 
+          });
         }
       )
       .subscribe();
