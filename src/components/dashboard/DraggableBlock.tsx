@@ -29,21 +29,18 @@ export const DraggableBlock = ({ id, title, children }: DraggableBlockProps) => 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <Card className="mb-6">
-        <div className="flex items-center p-4 cursor-move" {...listeners}>
-          <GripVertical className="h-4 w-4 text-gray-400 mr-2" />
-          <h2 className="text-lg font-semibold text-gray-800 flex-1">{title}</h2>
-          <CollapsibleTrigger
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-1 hover:bg-gray-100 rounded-full"
-          >
-            {isOpen ? (
-              <Minus className="h-4 w-4 text-gray-600" />
-            ) : (
-              <Plus className="h-4 w-4 text-gray-600" />
-            )}
-          </CollapsibleTrigger>
-        </div>
-        <Collapsible open={isOpen}>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <div className="flex items-center p-4 cursor-move" {...listeners}>
+            <GripVertical className="h-4 w-4 text-gray-400 mr-2" />
+            <h2 className="text-lg font-semibold text-gray-800 flex-1">{title}</h2>
+            <CollapsibleTrigger className="p-1 hover:bg-gray-100 rounded-full">
+              {isOpen ? (
+                <Minus className="h-4 w-4 text-gray-600" />
+              ) : (
+                <Plus className="h-4 w-4 text-gray-600" />
+              )}
+            </CollapsibleTrigger>
+          </div>
           <CollapsibleContent className="p-4 pt-0">
             {children}
           </CollapsibleContent>
