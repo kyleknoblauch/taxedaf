@@ -7,10 +7,12 @@ import { Footer } from "@/components/Footer";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -37,6 +39,7 @@ const Index = () => {
       toast({
         title: "Signed out successfully",
       });
+      navigate("/login");
     } catch (error: any) {
       toast({
         variant: "destructive",
