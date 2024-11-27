@@ -64,6 +64,21 @@ This project is built with .
 
 Simply open [Lovable](https://lovable.dev/projects/54a78554-65f7-4430-bdf2-6eb6262e4610) and click on Share -> Publish.
 
-## I want to use a custom domain - is that possible?
+## Custom Domain Setup
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+To use a custom domain with this project:
+
+1. Purchase your domain from your preferred domain registrar
+2. Deploy your site to Netlify
+3. In your Netlify DNS settings, add these records:
+   - Type: A, Name: @ (or empty), Value: 75.2.60.5
+   - Type: CNAME, Name: www, Value: yourdomain.com
+
+4. Update Supabase Site URL and OAuth settings:
+   - Go to Supabase Dashboard > Authentication > URL Configuration
+   - Update Site URL to: https://yourdomain.com
+   - Add redirect URLs:
+     - https://yourdomain.com/auth/callback
+     - https://yourdomain.com
+
+Note: DNS changes can take up to 48 hours to propagate globally.
