@@ -18,7 +18,7 @@ const AuthCallback = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/'); // Changed from '/dashboard' to '/'
     }
   }, [user, navigate]);
 
