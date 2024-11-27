@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'twitter',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: 'https://taxy-venture-calculator.lovable.app/auth/callback',
       },
     });
     if (error) throw error;
