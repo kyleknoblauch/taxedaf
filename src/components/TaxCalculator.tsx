@@ -85,7 +85,7 @@ export const TaxCalculator = () => {
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">
-            Freelancer Tax Calculator
+            Freelancer Tax Estimator
           </h2>
           <Button
             variant="outline"
@@ -189,10 +189,15 @@ export const TaxCalculator = () => {
             stateTax={stateTax}
             selfEmploymentTax={selfEmploymentTax}
           />
-          <div className="flex justify-end">
-            <Button onClick={handleSaveCalculation}>
-              Save Calculation
-            </Button>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500 text-center">
+              * This is an approximate estimate for what you may owe in tax based on 2024 data. Please consult with a tax professional for precise calculations.
+            </p>
+            <div className="flex justify-end">
+              <Button onClick={handleSaveCalculation}>
+                Save Estimate
+              </Button>
+            </div>
           </div>
         </>
       )}
