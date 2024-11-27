@@ -54,7 +54,9 @@ export const SavedEstimates = () => {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
+          if (payload.eventType !== 'DELETE') {
+            queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
+          }
         }
       )
       .subscribe();
