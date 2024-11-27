@@ -53,14 +53,15 @@ export const SavedEstimates = () => {
           table: 'tax_calculations',
           filter: `user_id=eq.${user.id}`,
         },
-        () => {
+        (payload) => {
+          // Immediately update the cache when we receive a realtime update
           queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      channel.unsubscribe();
     };
   }, [user, queryClient]);
 
@@ -70,7 +71,8 @@ export const SavedEstimates = () => {
         .from("tax_calculations")
         .delete()
         .eq("id", id)
-        .eq("user_id", user?.id);
+        .eq("user_id", user?.id)
+        .single();
 
       if (error) {
         toast({
@@ -81,9 +83,15 @@ export const SavedEstimates = () => {
         throw error;
       }
 
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        ["tax-calculations", user?.id],
+        (old: any) => old?.filter((calc: any) => calc.id !== id) || []
+      );
+
       return id;
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
