@@ -8,8 +8,9 @@ const supabase = createClient(
 
 type AuthContextType = {
   user: any;
-  signInWithGoogle: () => Promise<void>;
-  signInWithApple: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signInWithTwitter: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -19,12 +20,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
 
-    // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -32,18 +31,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
+  const signInWithEmail = async (email: string, password: string) => {
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
       options: {
         redirectTo: `${window.location.origin}/dashboard`,
       },
     });
   };
 
-  const signInWithApple = async () => {
+  const signUpWithEmail = async (email: string, password: string) => {
+    await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+  };
+
+  const signInWithTwitter = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: 'apple',
+      provider: 'twitter',
       options: {
         redirectTo: `${window.location.origin}/dashboard`,
       },
@@ -55,7 +65,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle, signInWithApple, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      signInWithEmail, 
+      signUpWithEmail, 
+      signInWithTwitter, 
+      signOut 
+    }}>
       {children}
     </AuthContext.Provider>
   );
