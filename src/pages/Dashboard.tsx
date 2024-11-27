@@ -11,6 +11,8 @@ import { SavedEstimates } from "@/components/SavedEstimates";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState([
+    { id: "saved-estimates", title: "Saved Estimates" },
+    { id: "add-expense", title: "Add Expense" },
     { id: "tax-summary", title: "Tax Summary" },
   ]);
 
@@ -33,6 +35,19 @@ const Dashboard = () => {
     }
   };
 
+  const renderBlockContent = (id: string) => {
+    switch (id) {
+      case "saved-estimates":
+        return <SavedEstimates />;
+      case "add-expense":
+        return <ExpenseForm />;
+      case "tax-summary":
+        return <TaxSummary />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -48,13 +63,23 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Saved Estimates</h2>
-            <SavedEstimates />
-          </div>
-          <div>
-            <ExpenseForm />
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+              {items.slice(0, 2).map((item) => (
+                <DraggableBlock
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                >
+                  {renderBlockContent(item.id)}
+                </DraggableBlock>
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
 
         <DndContext
@@ -62,14 +87,14 @@ const Dashboard = () => {
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-            {items.map((item) => (
+          <SortableContext items={items.slice(2).map(item => item.id)} strategy={verticalListSortingStrategy}>
+            {items.slice(2).map((item) => (
               <DraggableBlock
                 key={item.id}
                 id={item.id}
                 title={item.title}
               >
-                <TaxSummary />
+                {renderBlockContent(item.id)}
               </DraggableBlock>
             ))}
           </SortableContext>
