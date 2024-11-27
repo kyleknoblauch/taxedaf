@@ -19,24 +19,22 @@ export const calculateFederalTax = (income: number, filingStatus: "single" | "jo
 };
 
 export const calculateSelfEmploymentTax = (income: number): number => {
-  const socialSecurityLimit = 168600; // 2024 limit
-  const socialSecurityTax = Math.min(income, socialSecurityLimit) * 0.124;
+  const socialSecurityTax = Math.min(income, socialSecurityWageBase2024) * 0.124;
   const medicareTax = income * 0.029;
-  
   return socialSecurityTax + medicareTax;
 };
 
-export const calculateStateTax = (income: number, stateCode: string): number => {
+export const calculateStateTax = (income: number, stateCode: string, filingStatus: "single" | "joint" | "hoh" = "single"): number => {
   const state = stateTaxData[stateCode];
   if (!state || !state.hasIncomeTax) return 0;
   
-  // If state has brackets, use progressive calculation
   if (state.brackets) {
+    const brackets = state.brackets[filingStatus];
     let tax = 0;
     let remainingIncome = income;
     let previousMax = 0;
 
-    for (const bracket of state.brackets) {
+    for (const bracket of brackets) {
       const taxableInThisBracket = Math.min(remainingIncome, bracket.max - previousMax);
       tax += taxableInThisBracket * bracket.rate;
       remainingIncome -= taxableInThisBracket;
