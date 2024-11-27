@@ -59,15 +59,21 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Tax Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
           <Button 
             variant="outline"
             onClick={() => navigate("/")}
-            className="self-start"
+            className="text-primary hover:text-primary/90"
           >
             Back to Calculator
           </Button>
+        </div>
+
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">TaxedAF Dashboard</h1>
+          <p className="text-lg text-gray-600">
+            Track earnings, log deductions, get reminders. TaxedAF makes filing easy for freelancers - less pain, more gain!
+          </p>
         </div>
 
         <DndContext
