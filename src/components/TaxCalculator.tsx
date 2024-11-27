@@ -29,14 +29,14 @@ export const TaxCalculator = () => {
         <div className="space-y-4">
           <div>
             <label htmlFor="income" className="block text-sm font-medium text-gray-700 mb-1">
-              Annual Income
+              Income by Invoice
             </label>
             <Input
               id="income"
               type="text"
               value={income === 0 ? "" : income.toString()}
               onChange={handleIncomeChange}
-              placeholder="Enter your annual income"
+              placeholder="Enter your invoice amount"
               className="w-full"
             />
           </div>
