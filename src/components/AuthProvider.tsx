@@ -42,26 +42,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let lastName = '';
 
     if (user.app_metadata?.provider === 'twitter') {
-      // Try different possible locations for the name
+      // Get name from user_metadata, trying different possible fields
       const fullName = user.user_metadata?.full_name || 
                       user.user_metadata?.name ||
-                      user.user_metadata?.preferred_username || '';
+                      '';
       
       if (fullName) {
+        // Split the full name into first and last name
         const names = fullName.split(' ');
         firstName = names[0];
         lastName = names.slice(1).join(' ');
       }
+
+      // If we couldn't get a name from full_name or name, try preferred_username
+      if (!firstName) {
+        firstName = user.user_metadata?.preferred_username || '';
+      }
     }
 
     if (firstName) {
-      await supabase
-        .from('profiles')
-        .update({
-          first_name: firstName,
-          last_name: lastName || null
-        })
-        .eq('id', user.id);
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            first_name: firstName,
+            last_name: lastName || null
+          })
+          .eq('id', user.id);
+
+        if (error) {
+          console.error('Error updating profile:', error);
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+      }
     }
   };
 
