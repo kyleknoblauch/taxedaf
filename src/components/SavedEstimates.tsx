@@ -71,22 +71,21 @@ export const SavedEstimates = () => {
         .delete()
         .eq("id", id)
         .eq("user_id", user?.id);
-      if (error) throw error;
-      return id;
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete estimate. Please try again.",
+          variant: "destructive",
+        });
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
-      });
-    },
-    onError: (error) => {
-      console.error("Delete error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete estimate",
-        variant: "destructive",
       });
     },
   });
