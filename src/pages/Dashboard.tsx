@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { TaxSummary } from "@/components/TaxSummary";
 import { DraggableBlock } from "@/components/dashboard/DraggableBlock";
+import { SavedEstimates } from "@/components/SavedEstimates";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Dashboard = () => {
   const renderBlockContent = (id: string) => {
     switch (id) {
       case "saved-estimates":
-        return <div>Saved Estimates content here</div>;
+        return <SavedEstimates />;
       case "tax-summary":
         return <TaxSummary />;
       case "add-expense":
