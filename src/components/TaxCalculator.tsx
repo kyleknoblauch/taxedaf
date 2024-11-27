@@ -1,19 +1,26 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 import { TaxBreakdown } from "./TaxBreakdown";
 import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } from "../utils/taxCalculations";
 import { stateTaxData } from "../data/stateTaxRates";
 import { federalTaxBrackets2024 } from "../data/taxBrackets";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useNavigate } from "react-router-dom";
 
 export const TaxCalculator = () => {
   const [income, setIncome] = useState<number>(0);
   const [selectedState, setSelectedState] = useState<string>("CA");
   const [filingStatus, setFilingStatus] = useState<"single" | "joint">("single");
   const [annualIncome, setAnnualIncome] = useState<string>("");
+  const [savedCalculations, setSavedCalculations] = useLocalStorage<Array<any>>("tax-calculations", []);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
@@ -42,12 +49,47 @@ export const TaxCalculator = () => {
   const stateTax = calculateStateTax(income, selectedState);
   const selfEmploymentTax = calculateSelfEmploymentTax(income);
 
+  const handleSaveCalculation = () => {
+    if (income === 0) {
+      toast({
+        title: "Error",
+        description: "Please enter an income amount first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCalculation = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      income,
+      federalTax,
+      stateTax,
+      selfEmploymentTax,
+      state: selectedState,
+    };
+
+    setSavedCalculations([...savedCalculations, newCalculation]);
+    toast({
+      title: "Success",
+      description: "Calculation saved successfully",
+    });
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Card className="p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-          Freelancer Tax Calculator
-        </h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Freelancer Tax Calculator
+          </h2>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/dashboard")}
+          >
+            View Dashboard
+          </Button>
+        </div>
         
         <div className="space-y-6">
           <div>
@@ -123,12 +165,19 @@ export const TaxCalculator = () => {
       </Card>
 
       {income > 0 && (
-        <TaxBreakdown
-          income={income}
-          federalTax={federalTax}
-          stateTax={stateTax}
-          selfEmploymentTax={selfEmploymentTax}
-        />
+        <>
+          <TaxBreakdown
+            income={income}
+            federalTax={federalTax}
+            stateTax={stateTax}
+            selfEmploymentTax={selfEmploymentTax}
+          />
+          <div className="flex justify-end">
+            <Button onClick={handleSaveCalculation}>
+              Save Calculation
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
