@@ -5,7 +5,7 @@ export const TaxInformation = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-2 text-gray-800">Federal Taxes</h3>
+        <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">Federal Taxes</h3>
         <ul className="list-disc pl-6 mt-2 space-y-2 text-gray-600">
           <li><span className="font-medium">Social Security & Medicare:</span> A portion of your paycheck goes to these programs to support retirement benefits and healthcare for seniors and individuals with disabilities.</li>
           <li><span className="font-medium">Defense:</span> Funds are allocated for national security, including military operations and preparedness.</li>
@@ -17,7 +17,7 @@ export const TaxInformation = () => {
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-2 text-gray-800">State Taxes</h3>
+        <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">State Taxes</h3>
         <ul className="list-disc pl-6 mt-2 space-y-2 text-gray-600">
           <li><span className="font-medium">Education:</span> Significant funding for K-12 schools and public universities comes from state budgets.</li>
           <li><span className="font-medium">Transportation:</span> Maintaining highways, public transit, and local road infrastructure.</li>
@@ -29,7 +29,7 @@ export const TaxInformation = () => {
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-2 text-gray-800">County Taxes (specific states)</h3>
+        <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">County Taxes (specific states)</h3>
         <p className="text-gray-600 mb-2">
           In <span className="font-medium">Maryland, Indiana, Ohio, and Pennsylvania,</span> counties add an additional income tax ranging from 1% to 3%, depending on the jurisdiction. These funds typically support local infrastructure, schools, and community services.
         </p>
