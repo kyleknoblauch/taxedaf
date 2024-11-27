@@ -10,7 +10,7 @@ import { SavedEstimates } from "@/components/SavedEstimates";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [items] = useState([
+  const [items, setItems] = useState([
     { id: "tax-summary", title: "Tax Summary" },
   ]);
 
