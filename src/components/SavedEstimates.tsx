@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
-import { useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,59 +39,28 @@ export const SavedEstimates = () => {
     enabled: !!user,
   });
 
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('tax-calculations-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tax_calculations',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          // Removed realtime updates for now to prevent conflicts with optimistic updates
-        }
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
-  }, [user, queryClient]);
-
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("tax_calculations")
         .delete()
         .eq("id", id)
-        .eq("user_id", user?.id);
+        .eq("user_id", user?.id)
+        .single();
 
       if (error) throw error;
       return id;
     },
     onMutate: async (deletedId) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["tax-calculations", user?.id] });
-
-      // Snapshot the previous value
       const previousCalculations = queryClient.getQueryData(["tax-calculations", user?.id]);
-
-      // Optimistically update to the new value
       queryClient.setQueryData(
         ["tax-calculations", user?.id],
         (old: any) => old?.filter((calc: any) => calc.id !== deletedId) || []
       );
-
-      // Return a context object with the snapshotted value
       return { previousCalculations };
     },
     onError: (err, deletedId, context) => {
-      // Rollback to the previous value if there's an error
       queryClient.setQueryData(["tax-calculations", user?.id], context?.previousCalculations);
       toast({
         title: "Error",
@@ -100,14 +68,13 @@ export const SavedEstimates = () => {
         variant: "destructive",
       });
     },
-    onSuccess: (deletedId) => {
+    onSuccess: () => {
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
       });
     },
     onSettled: () => {
-      // Always refetch after error or success to ensure cache consistency
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
     },
   });
@@ -164,9 +131,7 @@ export const SavedEstimates = () => {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction 
-                        onClick={() => {
-                          deleteMutation.mutate(calc.id);
-                        }}
+                        onClick={() => deleteMutation.mutate(calc.id)}
                       >
                         Delete
                       </AlertDialogAction>
