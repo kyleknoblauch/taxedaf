@@ -24,12 +24,26 @@ export const calculateSelfEmploymentTax = (income: number): number => {
   return socialSecurityTax + medicareTax;
 };
 
-export const calculateStateTax = (income: number, stateCode: string, filingStatus: "single" | "joint" | "hoh" = "single"): number => {
+export const calculateStateTax = (
+  income: number, 
+  stateCode: string, 
+  filingStatus: "single" | "joint" | "hoh" = "single",
+  annualIncome?: string
+): number => {
   const state = stateTaxData[stateCode];
   if (!state || !state.hasIncomeTax) return 0;
   
   if (state.brackets) {
     const brackets = state.brackets[filingStatus];
+    
+    // If annual income is provided, use it to determine the effective rate
+    if (annualIncome) {
+      const annualMax = Number(annualIncome);
+      const bracket = brackets.find(b => b.max >= annualMax) || brackets[brackets.length - 1];
+      return income * bracket.rate;
+    }
+    
+    // Otherwise use progressive calculation
     let tax = 0;
     let remainingIncome = income;
     let previousMax = 0;

@@ -48,7 +48,7 @@ export const TaxCalculator = () => {
   const federalTax = annualIncome 
     ? income * getEffectiveRate(annualIncome)
     : calculateFederalTax(income, filingStatus);
-  const stateTax = calculateStateTax(income, selectedState, filingStatus);
+  const stateTax = calculateStateTax(income, selectedState, filingStatus, annualIncome);
   const selfEmploymentTax = calculateSelfEmploymentTax(income);
 
   const handleSaveCalculation = () => {
