@@ -118,6 +118,10 @@ export const SavedEstimates = () => {
                       <span className="text-sm text-gray-500">Self-Employment Tax</span>
                       <span className="font-medium text-red-600">{formatCurrency(calc.self_employment_tax || 0)}</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Total Tax</span>
+                      <span className="font-medium text-red-600">{formatCurrency(totalTax)}</span>
+                    </div>
                     <div className="flex justify-between pt-2 border-t">
                       <span className="text-sm font-medium text-gray-500">Take Home</span>
                       <span className="font-medium text-green-600">{formatCurrency(takeHome)}</span>
