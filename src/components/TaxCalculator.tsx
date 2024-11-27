@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 import { TaxBreakdown } from "./TaxBreakdown";
 import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } from "../utils/taxCalculations";
 import { stateTaxData } from "../data/stateTaxRates";
@@ -18,6 +19,7 @@ export const TaxCalculator = () => {
   const [selectedState, setSelectedState] = useState<string>("CA");
   const [filingStatus, setFilingStatus] = useState<"single" | "joint">("single");
   const [annualIncome, setAnnualIncome] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
   const [savedCalculations, setSavedCalculations] = useLocalStorage<Array<any>>("tax-calculations", []);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -67,6 +69,7 @@ export const TaxCalculator = () => {
       stateTax,
       selfEmploymentTax,
       state: selectedState,
+      notes,
     };
 
     setSavedCalculations([...savedCalculations, newCalculation]);
@@ -74,12 +77,13 @@ export const TaxCalculator = () => {
       title: "Success",
       description: "Calculation saved successfully",
     });
+    setNotes("");
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Card className="p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">
             Freelancer Tax Calculator
           </h2>
@@ -87,7 +91,7 @@ export const TaxCalculator = () => {
             variant="outline"
             onClick={() => navigate("/dashboard")}
           >
-            View Dashboard
+            Saved Invoices
           </Button>
         </div>
         
@@ -160,6 +164,19 @@ export const TaxCalculator = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+              Notes
+            </label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any notes about this invoice..."
+              className="w-full"
+            />
           </div>
         </div>
       </Card>

@@ -11,6 +11,7 @@ interface SavedCalculation {
   stateTax: number;
   selfEmploymentTax: number;
   state: string;
+  notes?: string;
 }
 
 const Dashboard = () => {
@@ -24,7 +25,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Tax Calculations Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Saved Invoices</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card className="p-6">
@@ -55,6 +56,7 @@ const Dashboard = () => {
                 <TableHead>State Tax</TableHead>
                 <TableHead>Self-Employment Tax</TableHead>
                 <TableHead>State</TableHead>
+                <TableHead>Notes</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,6 +68,7 @@ const Dashboard = () => {
                   <TableCell>{formatCurrency(calc.stateTax)}</TableCell>
                   <TableCell>{formatCurrency(calc.selfEmploymentTax)}</TableCell>
                   <TableCell>{calc.state}</TableCell>
+                  <TableCell className="max-w-xs truncate">{calc.notes}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
