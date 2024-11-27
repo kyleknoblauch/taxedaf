@@ -15,7 +15,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/'); // Changed from '/dashboard' to '/'
+      navigate('/');
     }
   }, [user, navigate]);
 
@@ -30,15 +30,30 @@ const LoginPage = () => {
             title: "Account already exists",
             description: "Please sign in instead or use a different email.",
           });
-          setIsSignUp(false); // Switch to sign in mode
+          setIsSignUp(false);
           return;
         }
         toast({
-          title: "Check your email",
-          description: "We sent you a confirmation link.",
+          title: "Verification email sent",
+          description: "Please check your email and click the confirmation link to complete your registration.",
         });
       } else {
-        await signInWithEmail(email, password);
+        const { error } = await signInWithEmail(email, password);
+        if (error) {
+          if (error.message.includes("Email not confirmed")) {
+            toast({
+              variant: "destructive",
+              title: "Email not confirmed",
+              description: "Please check your email and click the confirmation link before signing in.",
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Sign in failed",
+              description: error.message,
+            });
+          }
+        }
       }
     } catch (error: any) {
       toast({
