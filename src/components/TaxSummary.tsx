@@ -26,12 +26,12 @@ export const TaxSummary = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: !!user,
   });
 
-  const { data: taxCalculations, refetch: refetchTaxCalculations } = useQuery({
+  const { data: taxCalculations } = useQuery({
     queryKey: ["tax-calculations", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -46,7 +46,6 @@ export const TaxSummary = () => {
     enabled: !!user,
   });
 
-  // Set up real-time subscription
   useEffect(() => {
     if (!user) return;
 
@@ -60,9 +59,8 @@ export const TaxSummary = () => {
           table: 'tax_calculations',
           filter: `user_id=eq.${user.id}`,
         },
-        async (payload) => {
-          console.log('Received real-time update:', payload);
-          await refetchTaxCalculations();
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
         }
       )
       .subscribe();
@@ -70,7 +68,7 @@ export const TaxSummary = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, refetchTaxCalculations]);
+  }, [user, queryClient]);
 
   const deleteExpenseMutation = useMutation({
     mutationFn: async (expenseId: string) => {
@@ -129,53 +127,48 @@ export const TaxSummary = () => {
   const totalSelfEmploymentTax = taxCalculations?.reduce((sum, calc) => sum + (calc.self_employment_tax || 0), 0) || 0;
   const totalTax = totalFederalTax + totalStateTax + totalSelfEmploymentTax;
   
-  // Calculate adjusted values based on deductions
   const adjustedTaxableIncome = Math.max(0, totalIncome - totalExpenses);
   const taxReductionFactor = totalIncome > 0 ? adjustedTaxableIncome / totalIncome : 0;
   const adjustedTotalTax = totalTax * taxReductionFactor;
 
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Tax Summary</h2>
-      
-      <div className="space-y-6">
-        <TaxBreakdownSection
-          totalIncome={totalIncome}
-          totalFederalTax={totalFederalTax}
-          totalStateTax={totalStateTax}
-          totalSelfEmploymentTax={totalSelfEmploymentTax}
-          totalTax={totalTax}
-        />
+    <div className="space-y-6">
+      <TaxBreakdownSection
+        totalIncome={totalIncome}
+        totalFederalTax={totalFederalTax}
+        totalStateTax={totalStateTax}
+        totalSelfEmploymentTax={totalSelfEmploymentTax}
+        totalTax={totalTax}
+      />
 
-        <Separator />
+      <Separator />
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-700">Expense Deductions</h3>
-          <ExpensesList
-            expenses={expenses || []}
-            editingId={editingId}
-            editedNote={editedNote}
-            onStartEditing={(expense) => {
-              setEditingId(expense.id);
-              setEditedNote(expense.notes || "");
-            }}
-            onSaveNote={(id) => {
-              updateNoteMutation.mutate({ id, note: editedNote });
-            }}
-            onCancelEdit={() => setEditingId(null)}
-            onDelete={deleteExpenseMutation.mutate}
-            onEditNoteChange={(note) => setEditedNote(note)}
-          />
-        </div>
-
-        <Separator />
-
-        <FinalCalculations
-          adjustedTaxableIncome={adjustedTaxableIncome}
-          adjustedTotalTax={adjustedTotalTax}
-          totalExpenses={totalExpenses}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-gray-700">Expense Deductions</h3>
+        <ExpensesList
+          expenses={expenses || []}
+          editingId={editingId}
+          editedNote={editedNote}
+          onStartEditing={(expense) => {
+            setEditingId(expense.id);
+            setEditedNote(expense.notes || "");
+          }}
+          onSaveNote={(id) => {
+            updateNoteMutation.mutate({ id, note: editedNote });
+          }}
+          onCancelEdit={() => setEditingId(null)}
+          onDelete={deleteExpenseMutation.mutate}
+          onEditNoteChange={(note) => setEditedNote(note)}
         />
       </div>
-    </Card>
+
+      <Separator />
+
+      <FinalCalculations
+        adjustedTaxableIncome={adjustedTaxableIncome}
+        adjustedTotalTax={adjustedTotalTax}
+        totalExpenses={totalExpenses}
+      />
+    </div>
   );
 };
