@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string | null
+          description: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string | null
+          description: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tax_calculations: {
         Row: {
           created_at: string | null
@@ -44,7 +71,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      quarterly_estimates: {
+        Row: {
+          quarter: string | null
+          total_expenses: number | null
+          total_federal_tax: number | null
+          total_income: number | null
+          total_self_employment_tax: number | null
+          total_state_tax: number | null
+          total_tax: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
