@@ -31,7 +31,7 @@ export const TaxSummary = () => {
     enabled: !!user,
   });
 
-  const { data: taxCalculations } = useQuery({
+  const { data: taxCalculations, refetch: refetchTaxCalculations } = useQuery({
     queryKey: ["tax-calculations", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -60,11 +60,10 @@ export const TaxSummary = () => {
           table: 'tax_calculations',
           filter: `user_id=eq.${user.id}`,
         },
-        (payload) => {
-          // Immediately update the cache with the new data
-          queryClient.invalidateQueries({ 
-            queryKey: ["tax-calculations", user.id] 
-          });
+        async (payload) => {
+          console.log('Received real-time update:', payload);
+          // Immediately refetch the data
+          await refetchTaxCalculations();
         }
       )
       .subscribe();
@@ -72,7 +71,7 @@ export const TaxSummary = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, queryClient]);
+  }, [user, refetchTaxCalculations]);
 
   const deleteExpenseMutation = useMutation({
     mutationFn: async (expenseId: string) => {
@@ -83,7 +82,7 @@ export const TaxSummary = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
       toast({
         title: "Success",
         description: "Expense deleted successfully",
@@ -107,7 +106,7 @@ export const TaxSummary = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
       toast({
         title: "Success",
         description: "Note updated successfully",
