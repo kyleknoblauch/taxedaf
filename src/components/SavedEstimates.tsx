@@ -54,7 +54,6 @@ export const SavedEstimates = () => {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          // Immediately update the cache when we receive a realtime update
           queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
         }
       )
@@ -67,14 +66,21 @@ export const SavedEstimates = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Optimistically update the cache first
+      queryClient.setQueryData(
+        ["tax-calculations", user?.id],
+        (old: any) => old?.filter((calc: any) => calc.id !== id) || []
+      );
+
       const { error } = await supabase
         .from("tax_calculations")
         .delete()
         .eq("id", id)
-        .eq("user_id", user?.id)
-        .single();
+        .eq("user_id", user?.id);
 
       if (error) {
+        // Revert the optimistic update on error
+        queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
         toast({
           title: "Error",
           description: "Failed to delete estimate. Please try again.",
@@ -82,12 +88,6 @@ export const SavedEstimates = () => {
         });
         throw error;
       }
-
-      // Optimistically update the cache
-      queryClient.setQueryData(
-        ["tax-calculations", user?.id],
-        (old: any) => old?.filter((calc: any) => calc.id !== id) || []
-      );
 
       return id;
     },
