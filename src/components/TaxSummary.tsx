@@ -23,14 +23,14 @@ export const TaxSummary = () => {
     enabled: !!user,
   });
 
-  const { data: estimates } = useQuery({
-    queryKey: ["quarterly-estimates", user?.id],
+  const { data: taxCalculations } = useQuery({
+    queryKey: ["tax-calculations", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("quarterly_estimates")
+        .from("tax_calculations")
         .select("*")
         .eq("user_id", user?.id)
-        .order("quarter", { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -39,10 +39,10 @@ export const TaxSummary = () => {
   });
 
   const totalExpenses = expenses?.reduce((sum, expense) => sum + expense.amount, 0) || 0;
-  const totalIncome = estimates?.reduce((sum, quarter) => sum + (quarter.total_income || 0), 0) || 0;
-  const totalFederalTax = estimates?.reduce((sum, quarter) => sum + (quarter.total_federal_tax || 0), 0) || 0;
-  const totalStateTax = estimates?.reduce((sum, quarter) => sum + (quarter.total_state_tax || 0), 0) || 0;
-  const totalSelfEmploymentTax = estimates?.reduce((sum, quarter) => sum + (quarter.total_self_employment_tax || 0), 0) || 0;
+  const totalIncome = taxCalculations?.reduce((sum, calc) => sum + (calc.income || 0), 0) || 0;
+  const totalFederalTax = taxCalculations?.reduce((sum, calc) => sum + (calc.federal_tax || 0), 0) || 0;
+  const totalStateTax = taxCalculations?.reduce((sum, calc) => sum + (calc.state_tax || 0), 0) || 0;
+  const totalSelfEmploymentTax = taxCalculations?.reduce((sum, calc) => sum + (calc.self_employment_tax || 0), 0) || 0;
   const totalTax = totalFederalTax + totalStateTax + totalSelfEmploymentTax;
   
   const adjustedTaxableIncome = Math.max(0, totalIncome - totalExpenses);
@@ -56,7 +56,7 @@ export const TaxSummary = () => {
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total Income</span>
+            <span className="text-gray-600">Total Income (All Estimates)</span>
             <span className="font-medium">{formatCurrency(totalIncome)}</span>
           </div>
           
