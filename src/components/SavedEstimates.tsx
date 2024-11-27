@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
+import { useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +25,7 @@ export const SavedEstimates = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: calculations, refetch } = useQuery({
+  const { data: calculations } = useQuery({
     queryKey: ["tax-calculations", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,6 +40,30 @@ export const SavedEstimates = () => {
     enabled: !!user,
   });
 
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('tax-calculations-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tax_calculations',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -49,8 +74,7 @@ export const SavedEstimates = () => {
       if (error) throw error;
       return id;
     },
-    onSuccess: async () => {
-      await refetch(); // Immediately refetch the data
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
