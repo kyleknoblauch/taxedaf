@@ -7,6 +7,7 @@ import { ExpenseForm } from "@/components/ExpenseForm";
 import { TaxSummary } from "@/components/TaxSummary";
 import { DraggableBlock } from "@/components/dashboard/DraggableBlock";
 import { SavedEstimates } from "@/components/SavedEstimates";
+import { TaxInformation } from "@/components/TaxInformation";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,12 +15,13 @@ const Dashboard = () => {
     { id: "saved-estimates", title: "Saved Estimates" },
     { id: "add-expense", title: "Add Expense" },
     { id: "tax-summary", title: "Tax Summary" },
+    { id: "tax-information", title: "General Tax Information" },
   ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // Reduce the drag activation distance for better mobile experience
+        distance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -47,6 +49,8 @@ const Dashboard = () => {
         return <ExpenseForm />;
       case "tax-summary":
         return <TaxSummary />;
+      case "tax-information":
+        return <TaxInformation />;
       default:
         return null;
     }
