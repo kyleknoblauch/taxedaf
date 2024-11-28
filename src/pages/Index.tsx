@@ -75,8 +75,8 @@ const Index = () => {
             </div>
           </div>
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
-              TaxedAF
+            <h1 className="text-4xl font-display font-black text-foreground mb-4">
+              taxed<span className="text-primary">AF</span>
             </h1>
             <p className="text-lg text-muted-foreground">
               {displayName ? `${displayName}, self-employed? ` : 'Self-employed? '}

@@ -54,7 +54,9 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Montserrat", "sans-serif"],
+        sans: ["Assistant", "sans-serif"],
+        display: ["Orbitron", "sans-serif"],
+        text: ["Wix Madefor Text", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
