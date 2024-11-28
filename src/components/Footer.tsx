@@ -13,7 +13,7 @@ export const Footer = () => {
         </div>
         <div className="text-center space-y-2">
           <p className="text-gray-600">Taking the guess work out of tax season</p>
-          <p className="text-sm text-gray-500">© 2024 TaxedAF. Let's make taxes suck less.</p>
+          <p className="text-sm text-gray-500">© 2025 taxedAF</p>
         </div>
       </div>
     </footer>
