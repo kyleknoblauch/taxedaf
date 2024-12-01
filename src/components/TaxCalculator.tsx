@@ -60,7 +60,7 @@ export const TaxCalculator = () => {
         
         <div className="space-y-6">
           <div>
-            <label htmlFor="invoiceName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="invoiceName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Name of Invoice
             </label>
             <Input
@@ -74,7 +74,7 @@ export const TaxCalculator = () => {
           </div>
 
           <div>
-            <label htmlFor="income" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="income" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Income by Invoice
             </label>
             <Input
@@ -88,7 +88,7 @@ export const TaxCalculator = () => {
           </div>
 
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Filing Status
             </label>
             <RadioGroup
@@ -108,7 +108,7 @@ export const TaxCalculator = () => {
           </div>
 
           <div>
-            <label htmlFor="annualIncome" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="annualIncome" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Expected Annual Income Range
             </label>
             <Select value={annualIncome} onValueChange={setAnnualIncome}>
@@ -126,7 +126,7 @@ export const TaxCalculator = () => {
           </div>
 
           <div>
-            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="state" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               State
             </label>
             <Select value={selectedState} onValueChange={setSelectedState}>
@@ -144,7 +144,7 @@ export const TaxCalculator = () => {
           </div>
 
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Notes
             </label>
             <Textarea
