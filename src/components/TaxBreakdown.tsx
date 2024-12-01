@@ -36,7 +36,7 @@ export const TaxBreakdown = ({
 
   return (
     <Card className="p-6 space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800">Tax Breakdown</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Tax Breakdown</h2>
       
       <div className="space-y-4">
         <div>
