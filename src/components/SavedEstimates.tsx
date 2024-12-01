@@ -95,9 +95,14 @@ export const SavedEstimates = () => {
 
         return (
           <div key={calc.id} className="space-y-1">
-            <p className="text-xs text-gray-500 pl-1">
-              {calc.created_at ? format(new Date(calc.created_at), 'MMM d, yyyy') : 'Date not available'}
-            </p>
+            <div className="flex justify-between items-center pl-1">
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                {calc.invoice_name || "Untitled Invoice"}
+              </p>
+              <p className="text-xs text-gray-500">
+                {calc.created_at ? format(new Date(calc.created_at), 'MMM d, yyyy') : 'Date not available'}
+              </p>
+            </div>
             <Card className="p-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-start">

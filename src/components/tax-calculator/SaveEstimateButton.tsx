@@ -1,16 +1,17 @@
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/components/AuthProvider";
 
 interface SaveEstimateButtonProps {
   income: number;
   federalTax: number;
   stateTax: number;
   selfEmploymentTax: number;
-  notes: string;
-  disabled: boolean;
+  notes?: string;
+  invoiceName?: string;
+  disabled?: boolean;
 }
 
 export const SaveEstimateButton = ({
@@ -19,28 +20,20 @@ export const SaveEstimateButton = ({
   stateTax,
   selfEmploymentTax,
   notes,
+  invoiceName,
   disabled
 }: SaveEstimateButtonProps) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
-  const handleSaveCalculation = async () => {
+  const handleSave = async () => {
     if (!user) {
       toast({
-        title: "Error",
-        description: "Please log in to save estimates",
-        variant: "destructive",
+        title: "Sign in required",
+        description: "Please sign in to save your tax estimates",
       });
-      return;
-    }
-
-    if (income === 0) {
-      toast({
-        title: "Error",
-        description: "Please enter an income amount first",
-        variant: "destructive",
-      });
+      navigate("/login");
       return;
     }
 
@@ -48,12 +41,12 @@ export const SaveEstimateButton = ({
       const { error } = await supabase
         .from("tax_calculations")
         .insert({
-          user_id: user.id,
           income,
           federal_tax: federalTax,
           state_tax: stateTax,
           self_employment_tax: selfEmploymentTax,
           notes,
+          invoice_name: invoiceName || "Untitled Invoice",
           created_at: new Date().toISOString(),
         });
 
@@ -61,26 +54,21 @@ export const SaveEstimateButton = ({
 
       toast({
         title: "Success",
-        description: "Calculation saved successfully",
+        description: "Your tax estimate has been saved",
       });
-      
-      // Navigate to dashboard and scroll to top
+
       navigate("/dashboard");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to save calculation",
         variant: "destructive",
+        title: "Error",
+        description: "Failed to save tax estimate. Please try again.",
       });
     }
   };
 
   return (
-    <Button 
-      onClick={handleSaveCalculation}
-      disabled={disabled}
-    >
+    <Button onClick={handleSave} disabled={disabled}>
       Save Estimate
     </Button>
   );

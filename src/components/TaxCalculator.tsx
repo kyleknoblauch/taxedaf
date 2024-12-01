@@ -19,6 +19,7 @@ export const TaxCalculator = () => {
   const [filingStatus, setFilingStatus] = useState<"single" | "joint">("single");
   const [annualIncome, setAnnualIncome] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [invoiceName, setInvoiceName] = useState<string>("");
   const navigate = useNavigate();
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +59,20 @@ export const TaxCalculator = () => {
         </div>
         
         <div className="space-y-6">
+          <div>
+            <label htmlFor="invoiceName" className="block text-sm font-medium text-gray-700 mb-1">
+              Name of Invoice
+            </label>
+            <Input
+              id="invoiceName"
+              type="text"
+              value={invoiceName}
+              onChange={(e) => setInvoiceName(e.target.value)}
+              placeholder="Name of invoice"
+              className="w-full"
+            />
+          </div>
+
           <div>
             <label htmlFor="income" className="block text-sm font-medium text-gray-700 mb-1">
               Income by Invoice
@@ -162,6 +177,7 @@ export const TaxCalculator = () => {
                 stateTax={stateTax}
                 selfEmploymentTax={selfEmploymentTax}
                 notes={notes}
+                invoiceName={invoiceName}
                 disabled={income === 0}
               />
             </div>

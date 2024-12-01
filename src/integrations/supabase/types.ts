@@ -66,6 +66,7 @@ export type Database = {
           federal_tax: number | null
           id: string
           income: number | null
+          invoice_name: string | null
           notes: string | null
           self_employment_tax: number | null
           state_tax: number | null
@@ -76,6 +77,7 @@ export type Database = {
           federal_tax?: number | null
           id?: string
           income?: number | null
+          invoice_name?: string | null
           notes?: string | null
           self_employment_tax?: number | null
           state_tax?: number | null
@@ -86,6 +88,7 @@ export type Database = {
           federal_tax?: number | null
           id?: string
           income?: number | null
+          invoice_name?: string | null
           notes?: string | null
           self_employment_tax?: number | null
           state_tax?: number | null
