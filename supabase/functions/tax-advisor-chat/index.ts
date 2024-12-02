@@ -77,7 +77,7 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Calling OpenAI API with model: gpt-4');
+    console.log('Calling OpenAI API with model: gpt-4o');
     
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -86,7 +86,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: userContext },
           { role: 'user', content: message }
