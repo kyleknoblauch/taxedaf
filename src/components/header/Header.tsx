@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { Logo } from "@/components/Logo";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
@@ -33,9 +32,9 @@ export const Header = () => {
         {user ? (
           <>
             <Link to="/dashboard">
-              <Button>Dashboard</Button>
+              <Button variant="outline">Dashboard</Button>
             </Link>
-            <Button variant="outline" onClick={handleSignOut}>
+            <Button onClick={handleSignOut}>
               Sign Out
             </Button>
           </>
