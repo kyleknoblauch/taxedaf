@@ -33,15 +33,18 @@ export const EstimatesList = () => {
   };
 
   const handleSaveNote = async (id: string) => {
+    if (!user?.id) return;
+    
     try {
       const { error } = await supabase
         .from('tax_calculations')
         .update({ notes: editedNote })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
-      await queryClient.invalidateQueries({ queryKey: ['tax-estimates', user?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['tax-estimates', user.id] });
       
       toast({
         title: "Success",
@@ -49,6 +52,7 @@ export const EstimatesList = () => {
       });
       setEditingId(null);
     } catch (error: any) {
+      console.error('Error updating note:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -58,28 +62,37 @@ export const EstimatesList = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!user?.id) return;
+
     try {
+      // First optimistically update the UI
+      const previousEstimates = queryClient.getQueryData(['tax-estimates', user.id]);
+      
+      queryClient.setQueryData(['tax-estimates', user.id], (old: any) => 
+        old?.filter((calc: any) => calc.id !== id)
+      );
+
       const { error } = await supabase
         .from('tax_calculations')
         .delete()
         .eq('id', id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        // If there was an error, rollback the optimistic update
+        queryClient.setQueryData(['tax-estimates', user.id], previousEstimates);
+        throw error;
+      }
 
-      // Immediately update the cache to remove the deleted item
-      queryClient.setQueryData(['tax-estimates', user?.id], (old: any) => 
-        old?.filter((calc: any) => calc.id !== id)
-      );
-
-      // Then invalidate to ensure we're in sync with the server
-      await queryClient.invalidateQueries({ queryKey: ['tax-estimates', user?.id] });
+      // If successful, invalidate to ensure we're in sync with the server
+      await queryClient.invalidateQueries({ queryKey: ['tax-estimates', user.id] });
 
       toast({
         title: "Success",
         description: "Estimate deleted successfully",
       });
     } catch (error: any) {
+      console.error('Error deleting estimate:', error);
       toast({
         variant: "destructive",
         title: "Error",
