@@ -11,18 +11,37 @@ import LoginPage from "./components/LoginPage";
 import ResetPassword from "./components/auth/ResetPassword";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "./components/ui/use-toast";
 
 const queryClient = new QueryClient();
 
 const AuthCallback = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (user) {
-      navigate('/');
-    }
-  }, [user, navigate]);
+    const handleAuthCallback = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (data?.session) {
+          navigate('/', { replace: true });
+        }
+      } catch (error: any) {
+        console.error('Auth callback error:', error);
+        toast({
+          variant: "destructive",
+          title: "Authentication failed",
+          description: error.message,
+        });
+        navigate('/login', { replace: true });
+      }
+    };
+
+    handleAuthCallback();
+  }, [navigate, toast]);
 
   return null;
 };
