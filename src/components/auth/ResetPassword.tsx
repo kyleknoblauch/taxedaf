@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -40,17 +41,20 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">
             Reset your password
-          </h2>
-        </div>
-        <form onSubmit={handleReset} className="mt-8 space-y-6">
-          <div className="rounded-md shadow-sm space-y-4">
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter your new password below
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleReset} className="space-y-6">
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="block text-sm font-medium mb-2">
                 New Password
               </label>
               <Input
@@ -59,21 +63,31 @@ const ResetPassword = () => {
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="New Password"
+                placeholder="Enter your new password"
                 minLength={6}
+                className="w-full"
               />
             </div>
-          </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update Password"}
-          </Button>
-        </form>
-      </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate("/login")}
+            >
+              Back to login
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
