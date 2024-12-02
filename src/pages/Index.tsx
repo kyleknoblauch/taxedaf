@@ -20,7 +20,6 @@ const Index = () => {
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      console.log('Fetching profile for user:', user.id);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -31,7 +30,6 @@ const Index = () => {
         console.error("Error fetching profile:", error);
         return null;
       }
-      console.log('Profile data received:', data);
       return data;
     },
     enabled: !!user,
@@ -39,43 +37,27 @@ const Index = () => {
 
   useEffect(() => {
     const fetchGreeting = async () => {
-      if (!user) {
-        console.log('No user, skipping greeting fetch');
-        return;
-      }
-      
-      if (!profile?.first_name) {
-        console.log('No first_name in profile, skipping greeting fetch');
-        return;
-      }
-
-      console.log('Attempting to fetch greeting for:', profile.first_name);
+      if (!user || !profile?.first_name) return;
       
       try {
         const { data, error } = await supabase.functions.invoke('generate-greeting', {
           body: { firstName: profile.first_name }
         });
         
-        if (error) {
-          console.error('Error fetching greeting:', error);
-          throw error;
-        }
-        
-        console.log('Greeting response:', data);
+        if (error) throw error;
         
         if (data?.greeting) {
           setGreeting(data.greeting);
-        } else {
-          console.error('No greeting in response:', data);
-          setGreeting(`Welcome back, ${profile.first_name}!`);
         }
       } catch (error) {
-        console.error('Error in fetchGreeting:', error);
+        console.error('Error fetching greeting:', error);
         setGreeting(`Welcome back, ${profile.first_name}!`);
       }
     };
 
-    fetchGreeting();
+    if (profile?.first_name) {
+      fetchGreeting();
+    }
   }, [profile?.first_name, user]);
 
   const handleSignOut = async () => {
@@ -131,9 +113,6 @@ const Index = () => {
                 Welcome to the smartest way to handle your self-employed taxes
               </p>
             )}
-            <p className="text-lg text-muted-foreground">
-              Estimate your federal and state tax obligations accurately AF.
-            </p>
           </div>
           
           <TaxCalculator />
