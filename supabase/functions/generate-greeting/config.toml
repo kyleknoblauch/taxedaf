@@ -1,0 +1,2 @@
+[functions.generate-greeting]
+verify_jwt = true
