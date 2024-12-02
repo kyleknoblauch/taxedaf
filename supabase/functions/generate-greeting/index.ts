@@ -6,26 +6,16 @@ const corsHeaders = {
 };
 
 const greetings = [
-  (name) => `${name}, you're a tax wizard. Add another invoice to perfect this tax dance.`,
-  (name) => `${name}, you're the king of taxes. Throw in another invoice for the grand tax tally.`,
-  (name) => `${name}, you're a tax rockstar. Drop another invoice to tune up your tax payment.`,
-  (name) => `${name}, you're the tax maestro. Add one more invoice to orchestrate your tax bill.`,
-  (name) => `${name}, you're the tax guru. Pop another invoice in there for the ultimate tax calculation.`,
-  (name) => `${name}, you're a tax ninja. Slip one more invoice in to sharpen your tax payment.`,
-  (name) => `${name}, you're a tax beast. Toss another invoice into the mix for a beastly tax calculation.`,
-  (name) => `${name}, you're the tax sage. Include another invoice to wise up your tax payment.`,
-  (name) => `${name}, you're the tax jester. Joke one more invoice into the equation for a laugh-worthy tax sum.`,
-  (name) => `${name}, you're the tax captain. Navigate another invoice into your tax voyage for accuracy.`,
-  (name) => `${name}, you're the tax alchemist. Transmute another invoice to refine your tax gold.`,
-  (name) => `${name}, you're the tax chef. Stir another invoice into the pot for a savory tax recipe.`,
-  (name) => `${name}, you're the tax mechanic. Tune up your tax engine with one more invoice.`,
-  (name) => `${name}, you're the tax artist. Paint one more invoice into your tax masterpiece.`,
-  (name) => `${name}, you're the tax architect. Design your tax payment with an additional invoice.`,
-  (name) => `${name}, you're the tax detective. Solve the case with one more invoice in your tax investigation.`,
-  (name) => `${name}, you're the tax gardener. Plant another invoice for a flourishing tax calculation.`,
-  (name) => `${name}, you're the tax magician. Pull another invoice out of your hat for a magical tax sum.`,
-  (name) => `${name}, you're the tax pilot. Fly another invoice into your tax flight plan for precision.`,
-  (name) => `${name}, you're the tax tailor. Stitch one more invoice into your tax suit for a perfect fit.`
+  (name) => `Hey ${name}, back to see how much Uncle Sam will bleed you for? Add another invoice.`,
+  (name) => `Welcome back, ${name}. Let's add another invoice so we can calculate how much the Man will leech from you.`,
+  (name) => `Ah, ${name}, you're back. Another invoice for the state to siphon off your hard-earned cash?`,
+  (name) => `Look who's here, ${name}! Let's give the tax vampires more to grin about with another invoice.`,
+  (name) => `Hi again, ${name}! You're back to see how much more the system can wring out of you with another invoice.`,
+  (name) => `Greetings, ${name}! Time to calculate just how much the government will pilfer with one more invoice.`,
+  (name) => `Yo, ${name}, back to see how much the taxman will pilfer? Let's add another invoice to the mix.`,
+  (name) => `Hey there, ${name}, back to feed the tax beast another invoice. Let's see how much they'll take.`,
+  (name) => `Welcome back, ${name}, to see how much the bureaucracy will gouge? Another invoice to predict.`,
+  (name) => `Good to see you, ${name}! Let's figure out how much more the tax collectors will squeeze with another invoice.`
 ];
 
 serve(async (req) => {
