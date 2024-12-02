@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Logo } from "@/components/Logo";
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -101,6 +102,7 @@ const Index = () => {
             </div>
           </div>
           <div className="text-center mb-12">
+            <Logo width="200" className="mx-auto mb-6" />
             <h1 className="text-4xl font-display font-black text-foreground mb-4">
               taxed<span className="text-primary">AF</span>
             </h1>
