@@ -90,7 +90,7 @@ export const TaxCalculator = () => {
               type="text"
               value={invoiceName}
               onChange={(e) => setInvoiceName(e.target.value)}
-              placeholder="Name of invoice"
+              placeholder="Enter the name of your invoice"
               className="w-full"
             />
           </div>
