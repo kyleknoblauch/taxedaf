@@ -37,7 +37,7 @@ const Index = () => {
 
   useEffect(() => {
     const fetchGreeting = async () => {
-      if (profile?.first_name) {
+      if (profile?.first_name && user) {  // Only fetch if we have both profile and user
         try {
           const { data, error } = await supabase.functions.invoke('generate-greeting', {
             body: { firstName: profile.first_name }
@@ -58,7 +58,7 @@ const Index = () => {
     };
 
     fetchGreeting();
-  }, [profile?.first_name]);
+  }, [profile?.first_name, user]); // Add user to dependencies to refresh on login
 
   const handleSignOut = async () => {
     try {
@@ -76,8 +76,6 @@ const Index = () => {
       });
     }
   };
-
-  const displayName = profile?.first_name || user?.user_metadata?.name || user?.user_metadata?.full_name || '';
 
   return (
     <div className="min-h-screen bg-background">
