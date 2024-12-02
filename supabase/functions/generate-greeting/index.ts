@@ -16,6 +16,11 @@ serve(async (req) => {
   try {
     const { firstName } = await req.json();
     console.log('Generating greeting for:', firstName);
+    console.log('OpenAI API Key exists:', !!openAIApiKey);
+
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key is not configured');
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -38,8 +43,9 @@ serve(async (req) => {
       }),
     });
 
+    console.log('OpenAI Response Status:', response.status);
     const data = await response.json();
-    console.log('OpenAI response:', data);
+    console.log('OpenAI Response:', data);
     
     if (!data.choices?.[0]?.message?.content) {
       throw new Error('Invalid response from OpenAI');
@@ -52,7 +58,7 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in generate-greeting function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
