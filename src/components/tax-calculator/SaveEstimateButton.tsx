@@ -38,9 +38,11 @@ export const SaveEstimateButton = ({
     }
 
     try {
-      const { error } = await supabase
+      console.log('Attempting to save estimate with user_id:', user.id);
+      const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
+          user_id: user.id,
           income,
           federal_tax: federalTax,
           state_tax: stateTax,
@@ -48,9 +50,16 @@ export const SaveEstimateButton = ({
           notes,
           invoice_name: invoiceName || "Untitled Invoice",
           created_at: new Date().toISOString(),
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving estimate:', error);
+        throw error;
+      }
+
+      console.log('Estimate saved successfully:', data);
 
       toast({
         title: "Success",
@@ -59,10 +68,11 @@ export const SaveEstimateButton = ({
 
       navigate("/dashboard");
     } catch (error: any) {
+      console.error('Detailed error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save tax estimate. Please try again.",
+        description: error.message || "Failed to save tax estimate. Please try again.",
       });
     }
   };
