@@ -74,30 +74,38 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Calling OpenAI API...');
+    console.log('Starting OpenAI API call...');
     
+    const payload = {
+      model: 'gpt-4-turbo-preview',
+      messages: [
+        { role: 'system', content: userContext },
+        { role: 'user', content: message }
+      ],
+      temperature: 0.7,
+      max_tokens: 150
+    };
+    
+    console.log('OpenAI request payload:', JSON.stringify(payload));
+
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
-        messages: [
-          { role: 'system', content: userContext },
-          { role: 'user', content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 150
-      }),
+      body: JSON.stringify(payload),
     });
 
     console.log('OpenAI API response status:', openAIResponse.status);
     
     if (!openAIResponse.ok) {
       const errorData = await openAIResponse.json();
-      console.error('OpenAI API error:', errorData);
+      console.error('OpenAI API error details:', {
+        status: openAIResponse.status,
+        statusText: openAIResponse.statusText,
+        error: errorData
+      });
       throw new Error(`OpenAI API error: ${JSON.stringify(errorData)}`);
     }
 
@@ -116,7 +124,11 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Error in tax-advisor-chat function:', error);
+    console.error('Detailed error in tax-advisor-chat function:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+    });
     return new Response(JSON.stringify({ 
       error: error.message || 'An unexpected error occurred',
       timestamp: new Date().toISOString(),
