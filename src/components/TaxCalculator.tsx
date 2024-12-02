@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -12,37 +11,16 @@ import { stateTaxData } from "../data/stateTaxRates";
 import { federalTaxBrackets2024 } from "../data/taxBrackets";
 import { useNavigate } from "react-router-dom";
 import { SaveEstimateButton } from "./tax-calculator/SaveEstimateButton";
-import { getStateFromIP } from "../utils/geolocation";
-import { useToast } from "./ui/use-toast";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 export const TaxCalculator = () => {
   const [income, setIncome] = useState<number>(0);
-  const [selectedState, setSelectedState] = useState<string>("CA");
+  const { selectedState, setSelectedState } = useGeolocation();
   const [filingStatus, setFilingStatus] = useState<"single" | "joint">("single");
   const [annualIncome, setAnnualIncome] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [invoiceName, setInvoiceName] = useState<string>("");
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const detectLocation = async () => {
-      try {
-        const detectedState = await getStateFromIP();
-        if (stateTaxData[detectedState]) {
-          setSelectedState(detectedState);
-          toast({
-            title: "Location detected",
-            description: `Your state has been set to ${stateTaxData[detectedState].name}`,
-          });
-        }
-      } catch (error) {
-        console.error('Error detecting location:', error);
-      }
-    };
-
-    detectLocation();
-  }, [toast]);
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
