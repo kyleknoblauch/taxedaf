@@ -14,6 +14,7 @@ serve(async (req) => {
 
   try {
     const { message, userId } = await req.json();
+    console.log('Received request:', { message, userId });
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -32,6 +33,8 @@ serve(async (req) => {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1);
+
+    console.log('Retrieved user data:', { expensesCount: expenses?.length, hasCalculations: !!calculations?.length });
 
     // Create a context from user's data
     const userContext = `
@@ -52,11 +55,18 @@ serve(async (req) => {
       Keep responses concise and actionable.
     `;
 
+    const openAIApiKey = Deno.env.get('openAI');
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
+
+    console.log('Calling OpenAI API');
+    
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('openAI')}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -72,8 +82,10 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log('OpenAI API response received');
     
     if (!response.ok) {
+      console.error('OpenAI API error:', data);
       throw new Error(data.error?.message || 'Failed to get AI response');
     }
 
