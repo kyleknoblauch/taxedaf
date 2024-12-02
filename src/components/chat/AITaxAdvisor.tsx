@@ -11,7 +11,12 @@ export const AITaxAdvisor = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [conversation, setConversation] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
+  const [conversation, setConversation] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([
+    { 
+      role: 'assistant', 
+      content: "Hi! I can help you identify potential tax deductions based on your financial data. Try asking 'What should I deduct?' to get started."
+    }
+  ]);
   const { user } = useAuth();
   const { toast } = useToast();
 
