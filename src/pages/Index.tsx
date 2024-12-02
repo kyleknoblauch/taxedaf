@@ -58,12 +58,12 @@ const Index = () => {
     };
 
     fetchGreeting();
-  }, [profile?.first_name]); // Only re-run when first_name changes
+  }, [profile?.first_name]);
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      setGreeting(""); // Clear greeting on sign out
+      setGreeting("");
       toast({
         title: "Signed out successfully",
       });
@@ -106,11 +106,17 @@ const Index = () => {
             <h1 className="text-4xl font-display font-black text-foreground mb-4">
               taxed<span className="text-primary">AF</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-2">
-              {greeting || (displayName ? `${displayName}, self-employed? ` : 'Self-employed? ')}
-            </p>
+            {user ? (
+              <p className="text-lg text-muted-foreground mb-2">
+                {greeting}
+              </p>
+            ) : (
+              <p className="text-lg text-muted-foreground mb-2">
+                Welcome to the smartest way to handle your self-employed taxes
+              </p>
+            )}
             <p className="text-lg text-muted-foreground">
-              Estimate your federal and state tax obligations accuratley AF.
+              Estimate your federal and state tax obligations accurately AF.
             </p>
           </div>
           
