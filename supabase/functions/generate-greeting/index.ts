@@ -33,13 +33,14 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are a friendly tax assistant that generates short, casual greetings. Your greetings should be encouraging and mention taxes or finances in a fun way. Keep responses under 100 characters.'
+            content: 'You are a friendly tax assistant that generates short, casual greetings. Generate a different greeting each time that mentions taxes, invoices, or finances in a fun, encouraging way. Keep responses under 60 characters and always include the user\'s first name.'
           },
           { 
             role: 'user', 
-            content: `Generate a casual greeting for ${firstName} who is using a tax calculation app.`
+            content: `Generate a casual, tax-themed greeting for ${firstName} who is using the app again. Make it different from standard welcome messages.`
           }
         ],
+        temperature: 0.9, // Increased for more variety
       }),
     });
 
@@ -60,9 +61,8 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in generate-greeting function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ greeting: `Welcome back, ${firstName}! Ready to tackle some tax calculations?` }),
       { 
-        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     );
