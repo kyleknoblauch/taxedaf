@@ -8,11 +8,13 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [greeting, setGreeting] = useState<string>("");
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -32,6 +34,26 @@ const Index = () => {
     },
     enabled: !!user,
   });
+
+  useEffect(() => {
+    const fetchGreeting = async () => {
+      if (profile?.first_name) {
+        try {
+          const { data, error } = await supabase.functions.invoke('generate-greeting', {
+            body: { firstName: profile.first_name }
+          });
+          
+          if (error) throw error;
+          setGreeting(data.greeting);
+        } catch (error) {
+          console.error('Error fetching greeting:', error);
+          setGreeting(`Welcome back, ${profile.first_name}!`);
+        }
+      }
+    };
+
+    fetchGreeting();
+  }, [profile?.first_name]);
 
   const handleSignOut = async () => {
     try {
@@ -78,8 +100,10 @@ const Index = () => {
             <h1 className="text-4xl font-display font-black text-foreground mb-4">
               taxed<span className="text-primary">AF</span>
             </h1>
+            <p className="text-lg text-muted-foreground mb-2">
+              {greeting || (displayName ? `${displayName}, self-employed? ` : 'Self-employed? ')}
+            </p>
             <p className="text-lg text-muted-foreground">
-              {displayName ? `${displayName}, self-employed? ` : 'Self-employed? '}
               Estimate your federal and state tax obligations accuratley AF.
             </p>
           </div>
