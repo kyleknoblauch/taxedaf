@@ -6,23 +6,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header/Header";
 import { WelcomeSection } from "@/components/welcome/WelcomeSection";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [greeting, setGreeting] = useState<string>("");
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
+      
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle(); // Using maybeSingle instead of single to handle no results gracefully
       
       if (error) {
         console.error("Error fetching profile:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load profile information"
+        });
         return null;
       }
       return data;
