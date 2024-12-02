@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
 import { formatCurrency } from "@/utils/taxCalculations";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil, Check, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +25,8 @@ export const SavedEstimates = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editedNote, setEditedNote] = useState("");
 
   const { data: calculations } = useQuery({
     queryKey: ["tax-calculations", user?.id],
@@ -37,6 +41,35 @@ export const SavedEstimates = () => {
       return data || [];
     },
     enabled: !!user,
+  });
+
+  const updateNoteMutation = useMutation({
+    mutationFn: async ({ id, note }: { id: string; note: string }) => {
+      const { error } = await supabase
+        .from("tax_calculations")
+        .update({ notes: note })
+        .eq("id", id)
+        .eq("user_id", user?.id)
+        .single();
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
+      toast({
+        title: "Success",
+        description: "Note updated successfully",
+      });
+      setEditingId(null);
+      setEditedNote("");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update note",
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -87,6 +120,20 @@ export const SavedEstimates = () => {
     );
   }
 
+  const handleStartEditing = (calc: any) => {
+    setEditingId(calc.id);
+    setEditedNote(calc.notes || "");
+  };
+
+  const handleSaveNote = (id: string) => {
+    updateNoteMutation.mutate({ id, note: editedNote });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditedNote("");
+  };
+
   return (
     <div className="space-y-4">
       {calculations.map((calc) => {
@@ -132,31 +179,64 @@ export const SavedEstimates = () => {
                       <span className="font-medium text-green-600">{formatCurrency(takeHome)}</span>
                     </div>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                  <div className="flex gap-2">
+                    {editingId !== calc.id && (
+                      <Button variant="ghost" size="icon" onClick={() => handleStartEditing(calc)}>
+                        <Pencil className="h-4 w-4 text-gray-500" />
                       </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Estimate</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete this tax estimate? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction 
-                          onClick={() => deleteMutation.mutate(calc.id)}
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Estimate</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this tax estimate? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteMutation.mutate(calc.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
-                {calc.notes && (
+                {editingId === calc.id ? (
+                  <div className="space-y-2 pt-2 border-t">
+                    <Textarea
+                      value={editedNote}
+                      onChange={(e) => setEditedNote(e.target.value)}
+                      placeholder="Add a note about this estimate..."
+                      className="min-h-[80px]"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                        className="flex items-center gap-1"
+                      >
+                        <X className="h-4 w-4" />
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleSaveNote(calc.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <Check className="h-4 w-4" />
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                ) : calc.notes && (
                   <p className="text-sm text-gray-600 mt-2 pt-2 border-t">{calc.notes}</p>
                 )}
               </div>
