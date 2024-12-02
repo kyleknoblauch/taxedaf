@@ -16,10 +16,11 @@ const Index = () => {
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState<string>("");
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
+      console.log('Fetching profile for user:', user.id);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -30,6 +31,7 @@ const Index = () => {
         console.error("Error fetching profile:", error);
         return null;
       }
+      console.log('Profile data received:', data);
       return data;
     },
     enabled: !!user,
@@ -37,23 +39,39 @@ const Index = () => {
 
   useEffect(() => {
     const fetchGreeting = async () => {
-      if (profile?.first_name && user) {
-        try {
-          const { data, error } = await supabase.functions.invoke('generate-greeting', {
-            body: { firstName: profile.first_name }
-          });
-          
-          if (error) {
-            console.error('Error fetching greeting:', error);
-            throw error;
-          }
-          
-          console.log('Greeting response:', data);
-          setGreeting(data.greeting || `Welcome back, ${profile.first_name}!`);
-        } catch (error) {
+      if (!user) {
+        console.log('No user, skipping greeting fetch');
+        return;
+      }
+      
+      if (!profile?.first_name) {
+        console.log('No first_name in profile, skipping greeting fetch');
+        return;
+      }
+
+      console.log('Attempting to fetch greeting for:', profile.first_name);
+      
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-greeting', {
+          body: { firstName: profile.first_name }
+        });
+        
+        if (error) {
           console.error('Error fetching greeting:', error);
+          throw error;
+        }
+        
+        console.log('Greeting response:', data);
+        
+        if (data?.greeting) {
+          setGreeting(data.greeting);
+        } else {
+          console.error('No greeting in response:', data);
           setGreeting(`Welcome back, ${profile.first_name}!`);
         }
+      } catch (error) {
+        console.error('Error in fetchGreeting:', error);
+        setGreeting(`Welcome back, ${profile.first_name}!`);
       }
     };
 

@@ -35,14 +35,19 @@ serve(async (req) => {
 
   try {
     const { firstName } = await req.json();
-    console.log('Generating greeting for:', firstName);
+    console.log('Received request with firstName:', firstName);
+
+    if (!firstName) {
+      console.error('No firstName provided in request');
+      throw new Error('firstName is required');
+    }
 
     // Get random greeting from array
     const randomIndex = Math.floor(Math.random() * greetings.length);
     const greetingFunction = greetings[randomIndex];
     const greeting = greetingFunction(firstName);
 
-    console.log('Selected greeting:', greeting);
+    console.log('Generated greeting:', greeting);
 
     return new Response(
       JSON.stringify({ greeting }),
@@ -54,12 +59,11 @@ serve(async (req) => {
     console.error('Error in generate-greeting function:', error);
     return new Response(
       JSON.stringify({ 
-        greeting: `Welcome back, ${firstName}! Ready to tackle those taxes?`,
         error: error.message 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+        status: 400,
       },
     );
   }
