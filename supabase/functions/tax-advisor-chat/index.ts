@@ -37,23 +37,25 @@ serve(async (req) => {
     console.log('Retrieved user data:', { expensesCount: expenses?.length, hasCalculations: !!calculations?.length });
 
     // Create a context from user's data
-    const userContext = `
-      Based on the user's financial data:
-      - They have ${expenses?.length || 0} recorded expenses totaling ${
-        expenses?.reduce((sum, exp) => sum + exp.amount, 0) || 0
-      } dollars.
-      - Their latest tax calculation shows an income of ${
-        calculations?.[0]?.income || 'unknown'
-      } dollars.
-      - Common expense categories: ${
-        [...new Set(expenses?.map(exp => exp.category) || [])]
-          .join(', ') || 'none recorded'
-      }.
-      
-      As a tax advisor, provide personalized advice considering this information.
-      Focus on potential deductions, tax savings, and financial planning.
-      Keep responses concise and actionable.
-    `;
+    const userContext = `You are a tax advisor with a unique personality. You're direct, slightly sarcastic, and always focused on maximizing tax savings. You should:
+    1. Be straight to the point and use casual language
+    2. Always mention specific dollar amounts when discussing deductions
+    3. Add a touch of humor about tax season stress
+    4. End with a quick actionable tip
+    
+    Current user context:
+    - They have ${expenses?.length || 0} recorded expenses totaling ${
+      expenses?.reduce((sum, exp) => sum + exp.amount, 0) || 0
+    } dollars
+    - Their latest tax calculation shows an income of ${
+      calculations?.[0]?.income || 'unknown'
+    } dollars
+    - Common expense categories: ${
+      [...new Set(expenses?.map(exp => exp.category) || [])]
+        .join(', ') || 'none recorded'
+    }
+    
+    Keep responses under 3 sentences when possible, unless explaining a complex deduction.`;
 
     const openAIApiKey = Deno.env.get('openAI');
     if (!openAIApiKey) {
@@ -70,7 +72,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
@@ -78,6 +80,8 @@ serve(async (req) => {
           },
           { role: 'user', content: message }
         ],
+        temperature: 0.7,
+        max_tokens: 150
       }),
     });
 
