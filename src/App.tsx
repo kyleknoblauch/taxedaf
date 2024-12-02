@@ -23,18 +23,28 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (data?.session) {
+        if (error) {
+          throw error;
+        }
+
+        if (session) {
+          toast({
+            title: "Successfully signed in",
+            description: "Welcome back!",
+          });
           navigate('/', { replace: true });
+        } else {
+          // If no session, redirect to login
+          navigate('/login', { replace: true });
         }
       } catch (error: any) {
         console.error('Auth callback error:', error);
         toast({
           variant: "destructive",
           title: "Authentication failed",
-          description: error.message,
+          description: error.message || "Failed to authenticate. Please try again.",
         });
         navigate('/login', { replace: true });
       }
@@ -43,7 +53,14 @@ const AuthCallback = () => {
     handleAuthCallback();
   }, [navigate, toast]);
 
-  return null;
+  // Show a loading state while processing
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-lg text-muted-foreground">
+        Processing authentication...
+      </div>
+    </div>
+  );
 };
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
