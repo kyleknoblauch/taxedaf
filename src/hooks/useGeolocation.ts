@@ -3,13 +3,11 @@ import { getStateFromIP } from '../utils/geolocation';
 import { useToast } from '@/components/ui/use-toast';
 import { stateTaxData } from '../data/stateTaxRates';
 import { useLocalStorage } from './useLocalStorage';
-import { useAuth } from '@/components/AuthProvider';
 
 export const useGeolocation = () => {
   const [selectedState, setSelectedState] = useState<string>("CA");
   const { toast } = useToast();
-  const { user } = useAuth();
-  const [hasShownLocationMessage, setHasShownLocationMessage] = useLocalStorage('hasShownLocationMessage', false);
+  const [hasVisitedBefore, setHasVisitedBefore] = useLocalStorage('hasVisitedBefore', false);
 
   useEffect(() => {
     const detectLocation = async () => {
@@ -18,13 +16,13 @@ export const useGeolocation = () => {
         if (stateTaxData[detectedState]) {
           setSelectedState(detectedState);
           
-          // Only show the toast if the user is logged in and hasn't seen the message before
-          if (user && !hasShownLocationMessage) {
+          // Show the toast only on first visit
+          if (!hasVisitedBefore) {
             toast({
-              title: "Location detected",
-              description: `Your state has been set to ${stateTaxData[detectedState].name}`,
+              title: "Welcome to taxedAF!",
+              description: `We've detected your state as ${stateTaxData[detectedState].name}. You can change this anytime.`,
             });
-            setHasShownLocationMessage(true);
+            setHasVisitedBefore(true);
           }
         }
       } catch (error) {
@@ -33,7 +31,7 @@ export const useGeolocation = () => {
     };
 
     detectLocation();
-  }, [toast, hasShownLocationMessage, user]);
+  }, [toast, hasVisitedBefore]);
 
   return { selectedState, setSelectedState };
 };
