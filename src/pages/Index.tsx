@@ -102,7 +102,7 @@ const Index = () => {
             </div>
           </div>
           <div className="text-center mb-12">
-            <Logo width="200" className="mx-auto mb-6" />
+            <Logo width="40" className="mx-auto mb-6" />
             <h1 className="text-4xl font-display font-black text-foreground mb-4">
               taxed<span className="text-primary">AF</span>
             </h1>
