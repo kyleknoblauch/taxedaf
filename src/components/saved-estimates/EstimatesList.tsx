@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "../AuthProvider";
 import { EstimateCard } from "./EstimateCard";
@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 export const EstimatesList = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedNote, setEditedNote] = useState("");
 
@@ -40,6 +41,8 @@ export const EstimatesList = () => {
 
       if (error) throw error;
 
+      await queryClient.invalidateQueries({ queryKey: ['tax-estimates', user?.id] });
+      
       toast({
         title: "Success",
         description: "Note updated successfully",
@@ -49,7 +52,7 @@ export const EstimatesList = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update note",
+        description: error.message || "Failed to update note",
       });
     }
   };
@@ -59,9 +62,18 @@ export const EstimatesList = () => {
       const { error } = await supabase
         .from('tax_calculations')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user?.id);
 
       if (error) throw error;
+
+      // Immediately update the cache to remove the deleted item
+      queryClient.setQueryData(['tax-estimates', user?.id], (old: any) => 
+        old?.filter((calc: any) => calc.id !== id)
+      );
+
+      // Then invalidate to ensure we're in sync with the server
+      await queryClient.invalidateQueries({ queryKey: ['tax-estimates', user?.id] });
 
       toast({
         title: "Success",
@@ -71,7 +83,7 @@ export const EstimatesList = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to delete estimate",
+        description: error.message || "Failed to delete estimate",
       });
     }
   };
