@@ -8,6 +8,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import LoginPage from "./components/LoginPage";
+import ResetPassword from "./components/auth/ResetPassword";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/auth/reset-password" element={<ResetPassword />} />
               <Route
                 path="/dashboard"
                 element={
