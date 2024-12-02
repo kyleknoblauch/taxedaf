@@ -67,11 +67,13 @@ const Dashboard = () => {
           
           <div className="space-y-4 pt-10 sm:pt-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h1 className="text-3xl font-bold text-foreground">TaxedAF Dashboard</h1>
+              <h1 className="text-4xl font-display font-black text-foreground">
+                taxed<span className="text-primary">AF</span> Dashboard
+              </h1>
             </div>
 
             <p className="text-lg text-muted-foreground">
-              It's nuts how much we're taxed, but owing the state with penalties is worse. Estimate your tax bill and be less TaxedAF.
+              It's wild how much we're taxed on our earnings, but owing the state with penalties is worse. Calculate your taxes, deduct your expenses and don't pay the IRS a dime more than you need to.
             </p>
 
             <div className="sm:hidden">
