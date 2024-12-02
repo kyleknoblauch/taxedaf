@@ -9,6 +9,7 @@ import { DraggableBlock } from "@/components/dashboard/DraggableBlock";
 import { SavedEstimates } from "@/components/SavedEstimates";
 import { TaxInformation } from "@/components/TaxInformation";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { TaxAdvice } from "@/components/dashboard/TaxAdvice";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const Dashboard = () => {
     { id: "tax-summary", title: "Tax Summary" },
     { id: "add-expense", title: "Add Deduction" },
     { id: "tax-information", title: "General Tax Information" },
+    { id: "tax-advice", title: "AI Tax Advisor" },
   ]);
 
   const sensors = useSensors(
@@ -52,6 +54,8 @@ const Dashboard = () => {
         return <TaxSummary />;
       case "tax-information":
         return <TaxInformation />;
+      case "tax-advice":
+        return <TaxAdvice />;
       default:
         return null;
     }
