@@ -9,8 +9,8 @@ export const WelcomeSection = ({ greeting }: WelcomeSectionProps) => {
   const { user } = useAuth();
 
   return (
-    <div className="text-center mb-12">
-      <Logo width="40" className="mx-auto mb-6" />
+    <div className="text-center mt-8 mb-12">
+      <Logo width="40" className="mx-auto mb-2.5" />
       <h1 className="text-4xl font-display font-black text-foreground mb-4">
         taxed<span className="text-primary">AF</span>
       </h1>
