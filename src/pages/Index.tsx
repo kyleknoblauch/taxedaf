@@ -43,8 +43,13 @@ const Index = () => {
             body: { firstName: profile.first_name }
           });
           
-          if (error) throw error;
-          setGreeting(data.greeting);
+          if (error) {
+            console.error('Error fetching greeting:', error);
+            throw error;
+          }
+          
+          console.log('Greeting response:', data);
+          setGreeting(data.greeting || `Welcome back, ${profile.first_name}!`);
         } catch (error) {
           console.error('Error fetching greeting:', error);
           setGreeting(`Welcome back, ${profile.first_name}!`);
@@ -53,11 +58,12 @@ const Index = () => {
     };
 
     fetchGreeting();
-  }, [profile?.first_name]);
+  }, [profile?.first_name]); // Only re-run when first_name changes
 
   const handleSignOut = async () => {
     try {
       await signOut();
+      setGreeting(""); // Clear greeting on sign out
       toast({
         title: "Signed out successfully",
       });

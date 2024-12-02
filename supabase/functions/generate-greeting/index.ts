@@ -33,18 +33,24 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are a friendly tax assistant that generates short, casual greetings. Generate a different greeting each time that mentions taxes, invoices, or finances in a fun, encouraging way. Keep responses under 60 characters and always include the user\'s first name.'
+            content: 'You are a friendly tax assistant. Generate a short, casual greeting that mentions taxes or finances in a fun way. Keep responses under 60 characters and always include the provided first name.'
           },
           { 
             role: 'user', 
-            content: `Generate a casual, tax-themed greeting for ${firstName} who is using the app again. Make it different from standard welcome messages.`
+            content: `Generate a casual, tax-themed greeting for ${firstName}.`
           }
         ],
-        temperature: 0.9, // Increased for more variety
+        temperature: 0.9,
+        max_tokens: 60,
       }),
     });
 
-    console.log('OpenAI Response Status:', response.status);
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('OpenAI API error:', error);
+      throw new Error('Failed to generate greeting');
+    }
+
     const data = await response.json();
     console.log('OpenAI Response:', data);
     
@@ -53,7 +59,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ greeting: data.choices[0].message.content }),
+      JSON.stringify({ greeting: data.choices[0].message.content.trim() }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
@@ -61,9 +67,13 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in generate-greeting function:', error);
     return new Response(
-      JSON.stringify({ greeting: `Welcome back, ${firstName}! Ready to tackle some tax calculations?` }),
+      JSON.stringify({ 
+        greeting: `Welcome back, ${firstName}! Ready to tackle those taxes?`,
+        error: error.message 
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200, // Still return 200 to not break the UI
       },
     );
   }
