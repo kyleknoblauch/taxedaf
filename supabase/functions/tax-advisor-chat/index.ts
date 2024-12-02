@@ -68,7 +68,10 @@ serve(async (req) => {
     
     Keep responses under 3 sentences when possible, unless explaining a complex deduction.`;
 
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    // Changed from 'OPENAI_API_KEY' to 'openAI' to match the secret name
+    const openAIApiKey = Deno.env.get('openAI');
+    console.log('OpenAI API key present:', !!openAIApiKey);
+    
     if (!openAIApiKey) {
       console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
@@ -77,7 +80,7 @@ serve(async (req) => {
     console.log('Starting OpenAI API call...');
     
     const payload = {
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4',  // Changed from gpt-4-turbo-preview to gpt-4
       messages: [
         { role: 'system', content: userContext },
         { role: 'user', content: message }
