@@ -52,7 +52,7 @@ export const WelcomeSection = ({ greeting }: WelcomeSectionProps) => {
       
       if (isFirstTimeUser) {
         toast({
-          title: `Hey ${profile.first_name || 'there'}!`,
+          title: profile.first_name ? `Hey ${profile.first_name}!` : "Hey!",
           description: "You're gearing up to take on the IRS like a boss. We've got your back to help you save more of your hard-earned cash—legally—and guide you through every move.",
         });
       } else {
