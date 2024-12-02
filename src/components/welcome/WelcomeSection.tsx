@@ -56,10 +56,30 @@ export const WelcomeSection = ({ greeting }: WelcomeSectionProps) => {
           description: "You're gearing up to take on the IRS like a boss. We've got your back to help you save more of your hard-earned cash—legally—and guide you through every move.",
         });
       } else {
-        toast({
-          title: `Welcome back, ${profile.first_name || 'there'}!`,
-          description: `You have ${taxCalculations.length} saved estimate${taxCalculations.length === 1 ? '' : 's'}.`,
-        });
+        // Get greeting from edge function
+        const getGreeting = async () => {
+          try {
+            const { data, error } = await supabase.functions.invoke('generate-greeting', {
+              body: { firstName: profile.first_name || '' }
+            });
+            
+            if (error) throw error;
+            
+            toast({
+              title: data.greeting,
+              description: `You have ${taxCalculations.length} saved estimate${taxCalculations.length === 1 ? '' : 's'}.`,
+            });
+          } catch (error) {
+            console.error('Error fetching greeting:', error);
+            // Fallback greeting if the function fails
+            toast({
+              title: profile.first_name ? `Welcome back, ${profile.first_name}!` : "Welcome back!",
+              description: `You have ${taxCalculations.length} saved estimate${taxCalculations.length === 1 ? '' : 's'}.`,
+            });
+          }
+        };
+
+        getGreeting();
       }
     }
   }, [user, profile, taxCalculations, toast]);
