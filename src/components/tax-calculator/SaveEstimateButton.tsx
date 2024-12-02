@@ -38,7 +38,6 @@ export const SaveEstimateButton = ({
     }
 
     try {
-      console.log('Attempting to save estimate with user_id:', user.id);
       const { data, error } = await supabase
         .from("tax_calculations")
         .insert({

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -8,6 +8,7 @@ import { Logo } from "@/components/Logo";
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -15,6 +16,7 @@ export const Header = () => {
       toast({
         title: "Signed out successfully",
       });
+      navigate('/login');
     } catch (error: any) {
       toast({
         variant: "destructive",
