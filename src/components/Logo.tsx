@@ -1,6 +1,6 @@
 import { useTheme } from "@/components/ThemeProvider";
 
-export const Logo = ({ className = "", width = "200" }: { className?: string; width?: string }) => {
+export const Logo = ({ className = "", width = "150" }: { className?: string; width?: string }) => {
   const { theme } = useTheme();
   
   // Calculate height based on original aspect ratio (229.78/245.85)
