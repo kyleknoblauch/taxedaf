@@ -29,10 +29,15 @@ const AuthCallback = () => {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-  return <>{children}</>;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+    }
+  }, [user, navigate]);
+
+  return user ? <>{children}</> : null;
 };
 
 const App = () => (
