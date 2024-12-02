@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -14,20 +15,36 @@ serve(async (req) => {
   try {
     const { firstName } = await req.json()
     
-    // For now, we'll use a simple array of templates since Grok API isn't publicly available yet
-    const templates = [
-      `${firstName}, you're a tax hero! Slap one more invoice on there to get this tax math spot on.`,
-      `Ready to crunch some numbers, ${firstName}? Your tax game is getting stronger!`,
-      `${firstName}, looking sharp! Time to make those tax calculations work for you.`,
-      `Tax season's got nothing on you, ${firstName}! Let's get those calculations rolling.`,
-      `Welcome back ${firstName}! Ready to make those tax calculations precise AF?`,
-      `${firstName}, you're crushing it! Another day, another perfectly calculated tax estimate.`
-    ]
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are a friendly tax assistant that generates short, casual greetings. Your greetings should be encouraging and mention taxes or finances in a fun way. Keep responses under 100 characters.'
+          },
+          { 
+            role: 'user', 
+            content: `Generate a casual greeting for ${firstName} who is using a tax calculation app.`
+          }
+        ],
+      }),
+    });
+
+    const data = await response.json();
+    console.log('OpenAI response:', data);
     
-    const randomGreeting = templates[Math.floor(Math.random() * templates.length)]
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI');
+    }
 
     return new Response(
-      JSON.stringify({ greeting: randomGreeting }),
+      JSON.stringify({ greeting: data.choices[0].message.content }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
