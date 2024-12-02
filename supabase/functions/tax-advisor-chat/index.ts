@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -17,12 +16,10 @@ serve(async (req) => {
     const { message, userId } = await req.json();
     console.log('Received request:', { message, userId });
 
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch user's financial data
     const { data: expenses, error: expensesError } = await supabase
       .from('expenses')
       .select('*')
@@ -71,7 +68,7 @@ serve(async (req) => {
     
     Keep responses under 3 sentences when possible, unless explaining a complex deduction.`;
 
-    const openAIApiKey = Deno.env.get('openAI');
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
