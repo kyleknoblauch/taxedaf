@@ -1,4 +1,3 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -7,26 +6,26 @@ const corsHeaders = {
 };
 
 const greetings = [
-  (name) => `${name}, ready to crush those tax deductions? 💪`,
-  (name) => `Back in action, ${name}! Let's tackle those taxes 📊`,
-  (name) => `${name}, your tax-tracking superhero has arrived! ✨`,
-  (name) => `Time to make those receipts count, ${name}! 📝`,
-  (name) => `${name}, let's make tax season your favorite season! 🎯`,
-  (name) => `Welcome back ${name}, your tax game is getting stronger! 💫`,
-  (name) => `${name}, you're crushing this tax organization thing! 🏆`,
-  (name) => `Ready to rock those tax calculations, ${name}? 🚀`,
-  (name) => `${name}, you're a tax-tracking champion! 🌟`,
-  (name) => `Let's make those deductions count, ${name}! 💎`,
-  (name) => `${name}, your tax-savvy moves are paying off! 📈`,
-  (name) => `Back for more tax mastery, ${name}? Let's go! 🎯`,
-  (name) => `${name}, you're getting taxedAF organized! 🎨`,
-  (name) => `Time to shine in your tax game, ${name}! ✨`,
-  (name) => `${name}, ready for some tax-saving action? 💪`,
-  (name) => `Your tax journey continues, ${name}! 🚀`,
-  (name) => `${name}, making taxes less taxing! 😎`,
-  (name) => `Back to conquer those taxes, ${name}! 👑`,
-  (name) => `${name}, your tax organization is on point! 🎯`,
-  (name) => `Ready to optimize those deductions, ${name}? 💫`
+  (name) => `${name}, you're a tax wizard. Add another invoice to perfect this tax dance.`,
+  (name) => `${name}, you're the king of taxes. Throw in another invoice for the grand tax tally.`,
+  (name) => `${name}, you're a tax rockstar. Drop another invoice to tune up your tax payment.`,
+  (name) => `${name}, you're the tax maestro. Add one more invoice to orchestrate your tax bill.`,
+  (name) => `${name}, you're the tax guru. Pop another invoice in there for the ultimate tax calculation.`,
+  (name) => `${name}, you're a tax ninja. Slip one more invoice in to sharpen your tax payment.`,
+  (name) => `${name}, you're a tax beast. Toss another invoice into the mix for a beastly tax calculation.`,
+  (name) => `${name}, you're the tax sage. Include another invoice to wise up your tax payment.`,
+  (name) => `${name}, you're the tax jester. Joke one more invoice into the equation for a laugh-worthy tax sum.`,
+  (name) => `${name}, you're the tax captain. Navigate another invoice into your tax voyage for accuracy.`,
+  (name) => `${name}, you're the tax alchemist. Transmute another invoice to refine your tax gold.`,
+  (name) => `${name}, you're the tax chef. Stir another invoice into the pot for a savory tax recipe.`,
+  (name) => `${name}, you're the tax mechanic. Tune up your tax engine with one more invoice.`,
+  (name) => `${name}, you're the tax artist. Paint one more invoice into your tax masterpiece.`,
+  (name) => `${name}, you're the tax architect. Design your tax payment with an additional invoice.`,
+  (name) => `${name}, you're the tax detective. Solve the case with one more invoice in your tax investigation.`,
+  (name) => `${name}, you're the tax gardener. Plant another invoice for a flourishing tax calculation.`,
+  (name) => `${name}, you're the tax magician. Pull another invoice out of your hat for a magical tax sum.`,
+  (name) => `${name}, you're the tax pilot. Fly another invoice into your tax flight plan for precision.`,
+  (name) => `${name}, you're the tax tailor. Stitch one more invoice into your tax suit for a perfect fit.`
 ];
 
 serve(async (req) => {
