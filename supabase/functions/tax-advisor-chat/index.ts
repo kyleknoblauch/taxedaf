@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -22,21 +23,34 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch user's financial data
-    const { data: expenses } = await supabase
+    const { data: expenses, error: expensesError } = await supabase
       .from('expenses')
       .select('*')
       .eq('user_id', userId);
 
-    const { data: calculations } = await supabase
+    if (expensesError) {
+      console.error('Error fetching expenses:', expensesError);
+      throw new Error('Failed to fetch expenses');
+    }
+
+    const { data: calculations, error: calcError } = await supabase
       .from('tax_calculations')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1);
 
-    console.log('Retrieved user data:', { expensesCount: expenses?.length, hasCalculations: !!calculations?.length });
+    if (calcError) {
+      console.error('Error fetching calculations:', calcError);
+      throw new Error('Failed to fetch calculations');
+    }
 
-    // Create a context from user's data
+    console.log('Retrieved user data:', { 
+      expensesCount: expenses?.length, 
+      hasCalculations: !!calculations?.length,
+      totalExpenses: expenses?.reduce((sum, exp) => sum + exp.amount, 0) || 0
+    });
+
     const userContext = `You are a tax advisor with a unique personality. You're direct, slightly sarcastic, and always focused on maximizing tax savings. You should:
     1. Be straight to the point and use casual language
     2. Always mention specific dollar amounts when discussing deductions
@@ -59,13 +73,13 @@ serve(async (req) => {
 
     const openAIApiKey = Deno.env.get('openAI');
     if (!openAIApiKey) {
+      console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Calling OpenAI API');
+    console.log('Calling OpenAI API with model: gpt-4');
     
-    // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -74,10 +88,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4',
         messages: [
-          {
-            role: 'system',
-            content: userContext
-          },
+          { role: 'system', content: userContext },
           { role: 'user', content: message }
         ],
         temperature: 0.7,
@@ -85,12 +96,20 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
-    console.log('OpenAI API response received');
+    console.log('OpenAI API response status:', openAIResponse.status);
     
-    if (!response.ok) {
-      console.error('OpenAI API error:', data);
-      throw new Error(data.error?.message || 'Failed to get AI response');
+    if (!openAIResponse.ok) {
+      const errorData = await openAIResponse.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data = await openAIResponse.json();
+    console.log('OpenAI API response received successfully');
+    
+    if (!data.choices?.[0]?.message?.content) {
+      console.error('Unexpected OpenAI response format:', data);
+      throw new Error('Invalid response format from OpenAI');
     }
 
     return new Response(JSON.stringify({ 
@@ -101,7 +120,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in tax-advisor-chat function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'An unexpected error occurred',
+      timestamp: new Date().toISOString(),
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
