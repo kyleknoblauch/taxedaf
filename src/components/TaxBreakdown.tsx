@@ -1,5 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "./AuthProvider";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 interface TaxBreakdownProps {
   income: number;
@@ -14,6 +17,10 @@ export const TaxBreakdown = ({
   stateTax,
   selfEmploymentTax,
 }: TaxBreakdownProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const totalTax = federalTax + stateTax + selfEmploymentTax;
   const takeHome = income - totalTax;
   
@@ -32,6 +39,24 @@ export const TaxBreakdown = ({
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     }).format(amount / income);
+  };
+
+  const handleDeductionClick = () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to manage your tax deductions",
+      });
+      navigate("/login");
+      return;
+    }
+
+    navigate("/dashboard", { 
+      state: { 
+        expandDeductions: true,
+        scrollToTop: true
+      }
+    });
   };
 
   return (
@@ -73,7 +98,7 @@ export const TaxBreakdown = ({
         </div>
       </div>
 
-      <div className="pt-4 border-t">
+      <div className="pt-4 border-t space-y-4">
         <div className="flex justify-between mb-2">
           <span className="font-medium">Total Tax</span>
           <div className="flex gap-2">
@@ -88,6 +113,12 @@ export const TaxBreakdown = ({
             <span className="text-gray-500">({formatPercentage(takeHome)})</span>
           </div>
         </div>
+        <button
+          onClick={handleDeductionClick}
+          className="w-full text-sm text-primary hover:text-primary/90 underline text-left mt-2"
+        >
+          Cut Your Taxes & Deduct Your Business Costs
+        </button>
       </div>
     </Card>
   );

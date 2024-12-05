@@ -21,8 +21,21 @@ const Dashboard = () => {
   ]);
 
   useEffect(() => {
-    if (location.state?.fromSaveEstimate) {
+    if (location.state?.scrollToTop || location.state?.fromSaveEstimate) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (location.state?.expandDeductions) {
+      // Move add-expense to the top if it's not already there
+      setItems(prevItems => {
+        const currentIndex = prevItems.findIndex(item => item.id === "add-expense");
+        if (currentIndex === 0) return prevItems;
+        
+        const newItems = [...prevItems];
+        const [movedItem] = newItems.splice(currentIndex, 1);
+        newItems.unshift({ ...movedItem, defaultOpen: true });
+        return newItems;
+      });
     }
   }, [location.state]);
 
