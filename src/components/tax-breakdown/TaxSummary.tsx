@@ -14,6 +14,7 @@ interface TaxSummaryProps {
   stateTax: number;
   selfEmploymentTax: number;
   invoiceName?: string;
+  notes?: string;
 }
 
 export const TaxSummary = ({
@@ -27,6 +28,7 @@ export const TaxSummary = ({
   stateTax,
   selfEmploymentTax,
   invoiceName,
+  notes,
 }: TaxSummaryProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -43,9 +45,9 @@ export const TaxSummary = ({
     }
 
     try {
-      console.log("Saving tax calculation with invoice name:", invoiceName); // Debug log
+      console.log('Saving tax calculation with invoice name:', invoiceName);
       
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
           user_id: user.id,
@@ -53,24 +55,32 @@ export const TaxSummary = ({
           federal_tax: federalTax,
           state_tax: stateTax,
           self_employment_tax: selfEmploymentTax,
+          notes,
           invoice_name: invoiceName || "Untitled Invoice",
           created_at: new Date().toISOString(),
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving estimate:', error);
+        throw error;
+      }
+
+      console.log('Estimate saved successfully:', data);
 
       toast({
         title: "Success",
         description: "Your tax estimate has been saved",
       });
 
-      onDeductionClick();
+      navigate("/dashboard", { state: { fromSaveEstimate: true } });
     } catch (error: any) {
-      console.error('Error saving estimate:', error);
+      console.error('Detailed error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to save tax estimate",
+        description: error.message || "Failed to save tax estimate. Please try again.",
       });
     }
   };

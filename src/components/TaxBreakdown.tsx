@@ -12,6 +12,7 @@ interface TaxBreakdownProps {
   stateTax: number;
   selfEmploymentTax: number;
   invoiceName?: string;
+  notes?: string;
 }
 
 export const TaxBreakdown = ({
@@ -20,6 +21,7 @@ export const TaxBreakdown = ({
   stateTax,
   selfEmploymentTax,
   invoiceName,
+  notes,
 }: TaxBreakdownProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -78,6 +80,7 @@ export const TaxBreakdown = ({
         stateTax={stateTax}
         selfEmploymentTax={selfEmploymentTax}
         invoiceName={invoiceName}
+        notes={notes}
       />
     </Card>
   );
