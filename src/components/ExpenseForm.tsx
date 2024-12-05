@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 const EXPENSE_CATEGORIES = [
   "Office Supplies",
@@ -117,6 +118,13 @@ export const ExpenseForm = () => {
         <Button type="submit" className="w-full">
           Add Deduction
         </Button>
+
+        <Link 
+          to="/deduction-guide" 
+          className="block text-sm text-primary hover:text-primary/90 underline text-center mt-2"
+        >
+          What can I deduct?
+        </Link>
       </form>
     </Card>
   );

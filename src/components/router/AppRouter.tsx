@@ -8,6 +8,7 @@ import Index from "@/pages/Index";
 import Dashboard from "@/pages/Dashboard";
 import LoginPage from "@/components/LoginPage";
 import ResetPassword from "@/components/auth/ResetPassword";
+import DeductionGuide from "@/pages/DeductionGuide";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export const AppRouter = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
+        <Route path="/deduction-guide" element={<DeductionGuide />} />
         <Route
           path="/dashboard"
           element={
