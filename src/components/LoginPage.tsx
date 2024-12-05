@@ -24,18 +24,9 @@ const LoginPage = () => {
     if (user) {
       const state = location.state as { returnTo?: string; estimateData?: any } | null;
       if (state?.returnTo) {
-        navigate(state.returnTo, { 
-          state: { 
-            estimateData: state.estimateData,
-            scrollToTop: true 
-          }
-        });
+        navigate(state.returnTo, { state: { estimateData: state.estimateData } });
       } else {
-        navigate('/', { 
-          state: { 
-            scrollToTop: true 
-          }
-        });
+        navigate('/');
       }
     }
   }, [user, navigate, location]);

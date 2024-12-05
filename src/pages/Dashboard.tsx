@@ -21,7 +21,7 @@ const Dashboard = () => {
   ]);
 
   useEffect(() => {
-    if (location.state?.scrollToTop) {
+    if (location.state?.scrollToTop || location.state?.fromSaveEstimate) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
