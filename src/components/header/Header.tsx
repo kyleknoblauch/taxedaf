@@ -32,9 +32,12 @@ export const Header = () => {
       <div className="flex gap-4">
         {user ? (
           <>
-            <Link to="/dashboard">
-              <Button variant="outline">Dashboard</Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/dashboard", { state: { scrollToTop: true } })}
+            >
+              Dashboard
+            </Button>
             <Button onClick={handleSignOut}>
               Sign Out
             </Button>
