@@ -27,6 +27,8 @@ export const TaxBreakdown = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  console.log('TaxBreakdown received invoice name:', invoiceName); // Debug log
+  
   const totalTax = federalTax + stateTax + selfEmploymentTax;
   const takeHome = income - totalTax;
 

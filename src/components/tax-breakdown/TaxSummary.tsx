@@ -45,7 +45,7 @@ export const TaxSummary = ({
     }
 
     try {
-      console.log('Saving tax calculation with invoice name:', invoiceName);
+      console.log('Attempting to save tax calculation with invoice name:', invoiceName);
       
       const { data, error } = await supabase
         .from("tax_calculations")
