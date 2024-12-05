@@ -7,12 +7,12 @@ export const TaxInformation = () => {
       <div>
         <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">Federal Taxes</h3>
         <ul className="list-disc pl-6 mt-2 space-y-2 text-gray-600">
+          <li><span className="font-medium">Debt Interest:</span> The Heritage Foundation has indicated that interest on the federal debt consumes about 40% of all personal income taxes. Current national debt is over $36 trillion.</li>
           <li><span className="font-medium">Social Security & Medicare:</span> A portion of your paycheck goes to these programs to support retirement benefits and healthcare for seniors and individuals with disabilities.</li>
           <li><span className="font-medium">Defense:</span> Funds are allocated for national security, including military operations and preparedness.</li>
           <li><span className="font-medium">Infrastructure:</span> Maintaining and improving roads, bridges, and public transit systems across the country.</li>
           <li><span className="font-medium">Education & Research:</span> Supporting schools, universities, and innovation to advance knowledge and competitiveness.</li>
           <li><span className="font-medium">Law Enforcement & Courts:</span> Funding federal law enforcement, prisons, and the judiciary system.</li>
-          <li><span className="font-medium">Debt Interest:</span> Paying interest on the national debt accumulated by previous spending.</li>
         </ul>
       </div>
 
