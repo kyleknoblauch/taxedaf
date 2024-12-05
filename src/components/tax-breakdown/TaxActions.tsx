@@ -81,7 +81,7 @@ export const TaxActions = ({
         description: "Your tax estimate has been saved",
       });
 
-      navigate("/dashboard");
+      navigate("/dashboard", { state: { scrollToTop: true } });
     } catch (error: any) {
       console.error('Error saving estimate:', error);
       toast({
@@ -92,10 +92,14 @@ export const TaxActions = ({
     }
   };
 
+  const handleCutTaxesClick = () => {
+    navigate("/deduction-guide", { state: { scrollToTop: true } });
+  };
+
   return (
     <div className="space-y-2">
       <button
-        onClick={handleSaveEstimate}
+        onClick={handleCutTaxesClick}
         className="w-full text-sm text-primary hover:text-primary/90 underline text-left mt-2"
       >
         Cut Your Taxes & Deduct Your Business Costs
