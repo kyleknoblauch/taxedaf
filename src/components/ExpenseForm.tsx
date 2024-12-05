@@ -6,6 +6,7 @@ import { useAuth } from "./AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { ExpenseFormFields } from "./expense-form/ExpenseFormFields";
 import { ExpenseFormActions } from "./expense-form/ExpenseFormActions";
+import { useNavigate } from "react-router-dom";
 
 export const ExpenseForm = () => {
   const [description, setDescription] = useState("");
@@ -14,6 +15,7 @@ export const ExpenseForm = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +49,9 @@ export const ExpenseForm = () => {
       setCategory("");
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+      
+      // Navigate to dashboard and scroll to expenses
+      navigate("/dashboard", { state: { scrollToExpenses: true } });
     } catch (error) {
       toast({
         title: "Error",

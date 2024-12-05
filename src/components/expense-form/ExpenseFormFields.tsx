@@ -22,6 +22,24 @@ export const ExpenseFormFields = ({
   return (
     <>
       <div>
+        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+          Category
+        </label>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            {EXPENSE_CATEGORIES.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
           Description
         </label>
@@ -44,24 +62,6 @@ export const ExpenseFormFields = ({
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Enter amount"
         />
-      </div>
-
-      <div>
-        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-          Category
-        </label>
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            {EXPENSE_CATEGORIES.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {cat}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
     </>
   );
