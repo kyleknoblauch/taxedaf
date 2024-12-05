@@ -46,7 +46,7 @@ export const ExpensesList = ({
   return (
     <div className="space-y-4">
       {expenses?.map((expense) => (
-        <div key={expense.id} className="flex items-center justify-between pl-4 py-2 hover:bg-gray-50 rounded-lg">
+        <div key={expense.id} className="flex items-center justify-between pl-4 py-2 rounded-lg">
           <div className="flex-grow">
             <div className="flex items-center gap-2">
               <span className="text-gray-600">{expense.description}</span>

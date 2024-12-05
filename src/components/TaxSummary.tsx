@@ -3,11 +3,12 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
 import { Separator } from "@/components/ui/separator";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { TaxBreakdownSection } from "./tax-summary/TaxBreakdownSection";
 import { ExpensesList } from "./tax-summary/ExpensesList";
 import { FinalCalculations } from "./tax-summary/FinalCalculations";
+import { useLocation } from "react-router-dom";
 
 export const TaxSummary = () => {
   const { user } = useAuth();
@@ -15,6 +16,8 @@ export const TaxSummary = () => {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedNote, setEditedNote] = useState("");
+  const location = useLocation();
+  const expensesRef = useRef<HTMLDivElement>(null);
 
   const { data: expenses } = useQuery({
     queryKey: ["expenses", user?.id],
@@ -30,6 +33,12 @@ export const TaxSummary = () => {
     },
     enabled: !!user,
   });
+
+  useEffect(() => {
+    if (location.state?.scrollToExpenses && expensesRef.current) {
+      expensesRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [location.state?.scrollToExpenses, expenses]);
 
   const { data: taxCalculations } = useQuery({
     queryKey: ["tax-calculations", user?.id],
@@ -143,7 +152,7 @@ export const TaxSummary = () => {
 
       <Separator />
 
-      <div className="space-y-4">
+      <div className="space-y-4" ref={expensesRef}>
         <h3 className="text-lg font-medium text-gray-700 dark:text-white">Deductions</h3>
         <ExpensesList
           expenses={expenses || []}

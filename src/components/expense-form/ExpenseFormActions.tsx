@@ -1,10 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const ExpenseFormActions = () => {
+  const navigate = useNavigate();
+
+  const handleAddDeduction = () => {
+    navigate("/dashboard", { state: { scrollToExpenses: true } });
+  };
+
   return (
     <>
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full" onClick={handleAddDeduction}>
         Add Deduction
       </Button>
 
