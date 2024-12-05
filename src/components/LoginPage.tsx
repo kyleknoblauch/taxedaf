@@ -106,7 +106,7 @@ const LoginPage = () => {
           setPassword={setPassword}
           firstName={firstName}
           setFirstName={setFirstName}
-          lastName={setLastName}
+          lastName={lastName}
           setLastName={setLastName}
           isSignUp={isSignUp}
           isResetPassword={isResetPassword}
