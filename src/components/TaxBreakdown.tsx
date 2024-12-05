@@ -1,9 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { useAuth } from "./AuthProvider";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 import { TaxProgressBar } from "./tax-breakdown/TaxProgressBar";
 import { TaxSummary } from "./tax-breakdown/TaxSummary";
+import { TaxActions } from "./tax-breakdown/TaxActions";
 import { formatCurrency, formatPercentage } from "@/utils/formatters";
 
 interface TaxBreakdownProps {
@@ -23,10 +21,6 @@ export const TaxBreakdown = ({
   invoiceName,
   notes,
 }: TaxBreakdownProps) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
   console.log('TaxBreakdown - Props received:', { 
     income,
     federalTax,
@@ -75,7 +69,15 @@ export const TaxBreakdown = ({
         income={income}
         formatCurrency={formatCurrency}
         formatPercentage={formatPercentageWithIncome}
-        onDeductionClick={() => {}}
+        federalTax={federalTax}
+        stateTax={stateTax}
+        selfEmploymentTax={selfEmploymentTax}
+        invoiceName={invoiceName}
+        notes={notes}
+      />
+
+      <TaxActions
+        income={income}
         federalTax={federalTax}
         stateTax={stateTax}
         selfEmploymentTax={selfEmploymentTax}

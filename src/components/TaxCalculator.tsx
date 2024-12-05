@@ -10,7 +10,6 @@ import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } fr
 import { stateTaxData } from "../data/stateTaxRates";
 import { federalTaxBrackets2024 } from "../data/taxBrackets";
 import { useNavigate } from "react-router-dom";
-import { SaveEstimateButton } from "./tax-calculator/SaveEstimateButton";
 import { useGeolocation } from "../hooks/useGeolocation";
 
 export const TaxCalculator = () => {
@@ -172,17 +171,6 @@ export const TaxCalculator = () => {
             <p className="text-sm text-gray-500 text-center">
               * This is an approximate estimate for what you may owe in tax based on 2024 data. Consider setting aside this amount now to ensure you have funds available when taxes are due. Please consult with a tax professional for precise calculations.
             </p>
-            <div className="flex justify-end">
-              <SaveEstimateButton
-                income={income}
-                federalTax={federalTax}
-                stateTax={stateTax}
-                selfEmploymentTax={selfEmploymentTax}
-                notes={notes}
-                invoiceName={invoiceName}
-                disabled={income === 0}
-              />
-            </div>
           </div>
         </>
       )}

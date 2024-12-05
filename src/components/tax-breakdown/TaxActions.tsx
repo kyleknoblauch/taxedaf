@@ -1,33 +1,31 @@
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
-interface SaveEstimateButtonProps {
+interface TaxActionsProps {
   income: number;
   federalTax: number;
   stateTax: number;
   selfEmploymentTax: number;
-  notes?: string;
   invoiceName?: string;
-  disabled?: boolean;
+  notes?: string;
 }
 
-export const SaveEstimateButton = ({
+export const TaxActions = ({
   income,
   federalTax,
   stateTax,
   selfEmploymentTax,
-  notes,
   invoiceName,
-  disabled
-}: SaveEstimateButtonProps) => {
+  notes,
+}: TaxActionsProps) => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSave = async () => {
+  const handleSaveEstimate = async () => {
     if (!user) {
       toast({
         title: "Sign in required",
@@ -38,6 +36,15 @@ export const SaveEstimateButton = ({
     }
 
     try {
+      console.log('TaxActions - Saving estimate with:', {
+        income,
+        federalTax,
+        stateTax,
+        selfEmploymentTax,
+        invoiceName,
+        notes
+      });
+
       const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
@@ -53,13 +60,10 @@ export const SaveEstimateButton = ({
         .select()
         .single();
 
-      if (error) {
-        console.error('Error saving estimate:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log('Estimate saved successfully:', data);
-
+      console.log('TaxActions - Estimate saved successfully:', data);
+      
       toast({
         title: "Success",
         description: "Your tax estimate has been saved",
@@ -67,18 +71,28 @@ export const SaveEstimateButton = ({
 
       navigate("/dashboard", { state: { fromSaveEstimate: true } });
     } catch (error: any) {
-      console.error('Detailed error:', error);
+      console.error('Error saving estimate:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to save tax estimate. Please try again.",
+        description: error.message || "Failed to save tax estimate",
       });
     }
   };
 
   return (
-    <Button onClick={handleSave} disabled={disabled}>
-      Save Estimate
-    </Button>
+    <div className="space-y-2">
+      <button
+        onClick={handleSaveEstimate}
+        className="w-full text-sm text-primary hover:text-primary/90 underline text-left mt-2"
+      >
+        Cut Your Taxes & Deduct Your Business Costs
+      </button>
+      <div className="flex justify-end">
+        <Button onClick={handleSaveEstimate} className="mt-2">
+          Save Estimate
+        </Button>
+      </div>
+    </div>
   );
 };
