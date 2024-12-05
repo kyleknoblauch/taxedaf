@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./components/AuthProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
-import { AITaxAdvisor } from "./components/chat/AITaxAdvisor";
 import { AppRouter } from "./components/router/AppRouter";
 
 const queryClient = new QueryClient();
@@ -17,7 +16,6 @@ const App = () => (
           <Toaster />
           <Sonner />
           <AppRouter />
-          <AITaxAdvisor />
         </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
