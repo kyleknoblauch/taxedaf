@@ -11,6 +11,7 @@ interface TaxBreakdownProps {
   federalTax: number;
   stateTax: number;
   selfEmploymentTax: number;
+  invoiceName?: string;
 }
 
 export const TaxBreakdown = ({
@@ -18,6 +19,7 @@ export const TaxBreakdown = ({
   federalTax,
   stateTax,
   selfEmploymentTax,
+  invoiceName,
 }: TaxBreakdownProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -29,15 +31,6 @@ export const TaxBreakdown = ({
   const formatPercentageWithIncome = (amount: number) => formatPercentage(amount, income);
   
   const handleDeductionClick = () => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to manage your tax deductions",
-      });
-      navigate("/login");
-      return;
-    }
-
     navigate("/dashboard", { 
       state: { 
         expandDeductions: true,
@@ -81,6 +74,10 @@ export const TaxBreakdown = ({
         formatCurrency={formatCurrency}
         formatPercentage={formatPercentageWithIncome}
         onDeductionClick={handleDeductionClick}
+        federalTax={federalTax}
+        stateTax={stateTax}
+        selfEmploymentTax={selfEmploymentTax}
+        invoiceName={invoiceName}
       />
     </Card>
   );
