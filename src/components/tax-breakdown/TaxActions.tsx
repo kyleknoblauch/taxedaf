@@ -26,25 +26,37 @@ export const TaxActions = ({
   const { toast } = useToast();
 
   const handleSaveEstimate = async () => {
+    console.log('TaxActions - handleSaveEstimate called with user:', user?.id);
+    console.log('TaxActions - Data to save:', {
+      income,
+      federalTax,
+      stateTax,
+      selfEmploymentTax,
+      invoiceName,
+      notes
+    });
+
     if (!user) {
+      console.log('TaxActions - No user found, redirecting to login');
       toast({
         title: "Sign in required",
         description: "Please sign in to save your tax estimates",
       });
-      navigate("/login");
+      navigate("/login", { state: { 
+        returnTo: "/dashboard",
+        estimateData: {
+          income,
+          federalTax,
+          stateTax,
+          selfEmploymentTax,
+          invoiceName,
+          notes
+        }
+      }});
       return;
     }
 
     try {
-      console.log('TaxActions - Saving estimate with:', {
-        income,
-        federalTax,
-        stateTax,
-        selfEmploymentTax,
-        invoiceName,
-        notes
-      });
-
       const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
@@ -69,7 +81,7 @@ export const TaxActions = ({
         description: "Your tax estimate has been saved",
       });
 
-      navigate("/dashboard", { state: { fromSaveEstimate: true } });
+      navigate("/dashboard");
     } catch (error: any) {
       console.error('Error saving estimate:', error);
       toast({

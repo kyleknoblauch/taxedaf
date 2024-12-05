@@ -1,5 +1,5 @@
 import { useAuth } from "./AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ import { SocialAuth } from "./auth/SocialAuth";
 const LoginPage = () => {
   const { user, signInWithEmail, signUpWithEmail, signInWithTwitter } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,9 +22,14 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      const state = location.state as { returnTo?: string; estimateData?: any } | null;
+      if (state?.returnTo) {
+        navigate(state.returnTo, { state: { estimateData: state.estimateData } });
+      } else {
+        navigate('/');
+      }
     }
-  }, [user, navigate]);
+  }, [user, navigate, location]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +106,7 @@ const LoginPage = () => {
           setPassword={setPassword}
           firstName={firstName}
           setFirstName={setFirstName}
-          lastName={lastName}
+          lastName={setLastName}
           setLastName={setLastName}
           isSignUp={isSignUp}
           isResetPassword={isResetPassword}
