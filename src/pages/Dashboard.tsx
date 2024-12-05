@@ -1,8 +1,8 @@
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { TaxSummary } from "@/components/TaxSummary";
 import { DraggableBlock } from "@/components/dashboard/DraggableBlock";
@@ -12,12 +12,19 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [items, setItems] = useState([
-    { id: "saved-estimates", title: "Saved Estimates" },
-    { id: "tax-summary", title: "Tax Summary" },
-    { id: "add-expense", title: "Add Deduction" },
-    { id: "tax-information", title: "General Tax Information" },
+    { id: "saved-estimates", title: "Saved Estimates", defaultOpen: true },
+    { id: "add-expense", title: "Add Deduction", defaultOpen: true },
+    { id: "tax-summary", title: "Tax Summary", defaultOpen: true },
+    { id: "tax-information", title: "General Tax Information", defaultOpen: false },
   ]);
+
+  useEffect(() => {
+    if (location.state?.fromSaveEstimate) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.state]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -111,6 +118,7 @@ const Dashboard = () => {
                     key={item.id}
                     id={item.id}
                     title={item.title}
+                    defaultOpen={item.defaultOpen}
                   >
                     {renderBlockContent(item.id)}
                   </DraggableBlock>

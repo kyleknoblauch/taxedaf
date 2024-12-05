@@ -65,7 +65,7 @@ export const SaveEstimateButton = ({
         description: "Your tax estimate has been saved",
       });
 
-      navigate("/dashboard");
+      navigate("/dashboard", { state: { fromSaveEstimate: true } });
     } catch (error: any) {
       console.error('Detailed error:', error);
       toast({

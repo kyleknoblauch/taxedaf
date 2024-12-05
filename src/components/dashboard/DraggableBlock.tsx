@@ -9,10 +9,11 @@ interface DraggableBlockProps {
   id: string;
   title: string;
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
-export const DraggableBlock = ({ id, title, children }: DraggableBlockProps) => {
-  const [isOpen, setIsOpen] = useState(true);
+export const DraggableBlock = ({ id, title, children, defaultOpen = true }: DraggableBlockProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const {
     attributes,
     listeners,
