@@ -93,6 +93,19 @@ export const TaxActions = ({
   };
 
   const handleCutTaxesClick = () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to access the deduction guide",
+      });
+      navigate("/login", { 
+        state: { 
+          returnTo: "/deduction-guide",
+          scrollToTop: true
+        }
+      });
+      return;
+    }
     navigate("/deduction-guide", { state: { scrollToTop: true } });
   };
 
