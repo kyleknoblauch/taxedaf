@@ -15,8 +15,9 @@ export const Header = () => {
       toast({
         title: "Signed out successfully",
       });
-      navigate('/login');
+      navigate('/');
     } catch (error: any) {
+      console.error('Sign out error:', error);
       toast({
         variant: "destructive",
         title: "Error signing out",
