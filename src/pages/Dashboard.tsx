@@ -102,7 +102,7 @@ const Dashboard = () => {
                 onClick={() => navigate("/")}
                 className="w-full text-primary hover:text-primary/90"
               >
-                Back to Calculator
+                Add Another Invoice
               </Button>
             </div>
 
@@ -112,7 +112,7 @@ const Dashboard = () => {
                 onClick={() => navigate("/")}
                 className="text-primary hover:text-primary/90"
               >
-                Back to Calculator
+                Add Another Invoice
               </Button>
             </div>
           </div>
