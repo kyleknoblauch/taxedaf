@@ -27,21 +27,19 @@ export const TaxBreakdown = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  console.log('TaxBreakdown received invoice name:', invoiceName); // Debug log
+  console.log('TaxBreakdown - Props received:', { 
+    income,
+    federalTax,
+    stateTax,
+    selfEmploymentTax,
+    invoiceName,
+    notes 
+  });
   
   const totalTax = federalTax + stateTax + selfEmploymentTax;
   const takeHome = income - totalTax;
 
   const formatPercentageWithIncome = (amount: number) => formatPercentage(amount, income);
-  
-  const handleDeductionClick = () => {
-    navigate("/dashboard", { 
-      state: { 
-        expandDeductions: true,
-        scrollToTop: true
-      }
-    });
-  };
 
   return (
     <Card className="p-6 space-y-6">
@@ -77,7 +75,7 @@ export const TaxBreakdown = ({
         income={income}
         formatCurrency={formatCurrency}
         formatPercentage={formatPercentageWithIncome}
-        onDeductionClick={handleDeductionClick}
+        onDeductionClick={() => {}}
         federalTax={federalTax}
         stateTax={stateTax}
         selfEmploymentTax={selfEmploymentTax}

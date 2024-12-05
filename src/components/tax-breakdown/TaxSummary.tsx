@@ -34,6 +34,17 @@ export const TaxSummary = ({
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  console.log('TaxSummary - Props received:', {
+    totalTax,
+    takeHome,
+    income,
+    federalTax,
+    stateTax,
+    selfEmploymentTax,
+    invoiceName,
+    notes
+  });
+
   const handleDeductionClick = async () => {
     if (!user) {
       toast({
@@ -45,7 +56,15 @@ export const TaxSummary = ({
     }
 
     try {
-      console.log('Attempting to save tax calculation with invoice name:', invoiceName);
+      console.log('TaxSummary - Attempting to save calculation with:', {
+        user_id: user.id,
+        income,
+        federal_tax: federalTax,
+        state_tax: stateTax,
+        self_employment_tax: selfEmploymentTax,
+        notes,
+        invoice_name: invoiceName || "Untitled Invoice"
+      });
       
       const { data, error } = await supabase
         .from("tax_calculations")
@@ -67,7 +86,7 @@ export const TaxSummary = ({
         throw error;
       }
 
-      console.log('Estimate saved successfully:', data);
+      console.log('TaxSummary - Estimate saved successfully:', data);
 
       toast({
         title: "Success",

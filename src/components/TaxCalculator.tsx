@@ -165,6 +165,8 @@ export const TaxCalculator = () => {
             federalTax={federalTax}
             stateTax={stateTax}
             selfEmploymentTax={selfEmploymentTax}
+            invoiceName={invoiceName}
+            notes={notes}
           />
           <div className="space-y-2">
             <p className="text-sm text-gray-500 text-center">
