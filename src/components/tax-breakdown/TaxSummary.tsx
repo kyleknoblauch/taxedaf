@@ -26,7 +26,7 @@ export const TaxSummary = ({
   federalTax,
   stateTax,
   selfEmploymentTax,
-  invoiceName = "Untitled Invoice",
+  invoiceName,
 }: TaxSummaryProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +43,8 @@ export const TaxSummary = ({
     }
 
     try {
-      // Save the estimate first
+      console.log("Saving tax calculation with invoice name:", invoiceName); // Debug log
+      
       const { error } = await supabase
         .from("tax_calculations")
         .insert({
@@ -52,7 +53,7 @@ export const TaxSummary = ({
           federal_tax: federalTax,
           state_tax: stateTax,
           self_employment_tax: selfEmploymentTax,
-          invoice_name: invoiceName,
+          invoice_name: invoiceName || "Untitled Invoice",
           created_at: new Date().toISOString(),
         });
 
@@ -63,7 +64,6 @@ export const TaxSummary = ({
         description: "Your tax estimate has been saved",
       });
 
-      // Then navigate to dashboard with the deductions section expanded
       onDeductionClick();
     } catch (error: any) {
       console.error('Error saving estimate:', error);
