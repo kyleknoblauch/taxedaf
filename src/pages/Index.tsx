@@ -1,6 +1,5 @@
 import { TaxCalculator } from "@/components/TaxCalculator";
 import { useAuth } from "@/components/AuthProvider";
-import { Footer } from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
@@ -64,7 +63,6 @@ const Index = () => {
           <TaxCalculator />
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
