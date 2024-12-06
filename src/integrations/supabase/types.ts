@@ -79,52 +79,46 @@ export type Database = {
       }
       quarterly_estimates: {
         Row: {
-          user_id: string
-          quarter: string
-          total_income: number | null
-          total_expenses: number | null
-          total_federal_tax: number | null
-          total_state_tax: number | null
-          total_self_employment_tax: number | null
-          total_tax: number | null
-          paid_at: string | null
           archived: boolean
           archived_at: string | null
           manual_unarchive_count: number | null
-          can_unarchive: boolean
-          archive_expires_at: string | null
+          paid_at: string | null
+          quarter: string
+          total_expenses: number | null
+          total_federal_tax: number | null
+          total_income: number | null
+          total_self_employment_tax: number | null
+          total_state_tax: number | null
+          total_tax: number | null
+          user_id: string
         }
         Insert: {
-          user_id: string
-          quarter: string
-          total_income?: number | null
-          total_expenses?: number | null
-          total_federal_tax?: number | null
-          total_state_tax?: number | null
-          total_self_employment_tax?: number | null
-          total_tax?: number | null
-          paid_at?: string | null
           archived?: boolean
           archived_at?: string | null
           manual_unarchive_count?: number | null
-          can_unarchive?: boolean
-          archive_expires_at?: string | null
+          paid_at?: string | null
+          quarter: string
+          total_expenses?: number | null
+          total_federal_tax?: number | null
+          total_income?: number | null
+          total_self_employment_tax?: number | null
+          total_state_tax?: number | null
+          total_tax?: number | null
+          user_id: string
         }
         Update: {
-          user_id?: string
-          quarter?: string
-          total_income?: number | null
-          total_expenses?: number | null
-          total_federal_tax?: number | null
-          total_state_tax?: number | null
-          total_self_employment_tax?: number | null
-          total_tax?: number | null
-          paid_at?: string | null
           archived?: boolean
           archived_at?: string | null
           manual_unarchive_count?: number | null
-          can_unarchive?: boolean
-          archive_expires_at?: string | null
+          paid_at?: string | null
+          quarter?: string
+          total_expenses?: number | null
+          total_federal_tax?: number | null
+          total_income?: number | null
+          total_self_employment_tax?: number | null
+          total_state_tax?: number | null
+          total_tax?: number | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -155,7 +149,7 @@ export type Database = {
           quarter_id?: string | null
           self_employment_tax?: number | null
           state_tax?: number | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           archived?: boolean
@@ -206,7 +200,7 @@ export type Tables<
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never,
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -218,10 +212,10 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
-    : never
+        Row: infer R
+      }
+      ? R
+      : never
     : never
 
 export type TablesInsert<

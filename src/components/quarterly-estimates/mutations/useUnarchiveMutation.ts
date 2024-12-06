@@ -17,7 +17,7 @@ export const useUnarchiveMutation = (userId: string | undefined) => {
       // First, check if the quarter can be unarchived
       const { data: quarterData, error: checkError } = await supabase
         .from("quarterly_estimates")
-        .select("can_unarchive, archive_expires_at")
+        .select("can_unarchive, archive_expires_at, manual_unarchive_count")
         .eq("user_id", userId)
         .eq("quarter", quarter)
         .single();
