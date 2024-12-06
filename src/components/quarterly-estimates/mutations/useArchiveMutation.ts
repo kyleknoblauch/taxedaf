@@ -6,12 +6,16 @@ interface ArchiveMutationVariables {
   quarter: string;
 }
 
+interface ArchiveMutationResponse {
+  success: boolean;
+}
+
 export const useArchiveMutation = (userId: string | undefined) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (variables: ArchiveMutationVariables) => {
+  return useMutation<ArchiveMutationResponse, Error, ArchiveMutationVariables>({
+    mutationFn: async (variables) => {
       console.log('Archiving quarter:', variables.quarter);
       const { error } = await supabase
         .rpc('archive_quarterly_estimate', {
@@ -20,6 +24,7 @@ export const useArchiveMutation = (userId: string | undefined) => {
         });
 
       if (error) throw error;
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
