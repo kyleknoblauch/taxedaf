@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Database } from "@/integrations/supabase/types";
+
+type QuarterlyEstimate = Database["public"]["Tables"]["quarterly_estimates"]["Row"];
 
 interface UnarchiveQuarterParams {
   quarter: string;
@@ -34,7 +37,7 @@ export const useUnarchiveMutation = (userId: string | undefined) => {
         .update({
           archived: false,
           archived_at: null,
-          manual_unarchive_count: quarterData.manual_unarchive_count + 1
+          manual_unarchive_count: (quarterData.manual_unarchive_count || 0) + 1
         })
         .eq("user_id", userId)
         .eq("quarter", quarter);

@@ -9,6 +9,7 @@ import { QuarterInfo } from "../quarterly-estimates/QuarterInfo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useUnarchiveMutation } from "../quarterly-estimates/mutations/useUnarchiveMutation";
+import { QuarterlyEstimate } from "@/types/quarterlyEstimates";
 
 export const ArchivedQuarters = () => {
   const { user } = useAuth();
@@ -53,7 +54,7 @@ export const ArchivedQuarters = () => {
           ...quarter,
           taxCalculations: taxCalcsResponse.data || [],
           expenses: expensesResponse.data || []
-        };
+        } as QuarterlyEstimate;
       }));
 
       return quartersWithDetails;
@@ -124,7 +125,7 @@ export const ArchivedQuarters = () => {
   return (
     <Card className="p-6">
       <div className="space-y-8">
-        {archivedQuarters.map((quarter) => {
+        {archivedQuarters?.map((quarter: QuarterlyEstimate) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
           const canUnarchive = quarter.can_unarchive;
           const archiveExpiresAt = quarter.archive_expires_at ? new Date(quarter.archive_expires_at) : null;
