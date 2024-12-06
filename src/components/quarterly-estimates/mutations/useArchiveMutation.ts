@@ -15,12 +15,12 @@ export const useArchiveMutation = (userId: string | undefined) => {
   const queryClient = useQueryClient();
 
   return useMutation<ArchiveMutationResponse, Error, ArchiveMutationVariables>({
-    mutationFn: async (variables) => {
-      console.log('Archiving quarter:', variables.quarter);
+    mutationFn: async ({ quarter }) => {
+      console.log('Archiving quarter:', quarter);
       const { error } = await supabase
         .rpc('archive_quarterly_estimate', {
           p_user_id: userId,
-          p_quarter: variables.quarter
+          p_quarter: quarter
         });
 
       if (error) throw error;
