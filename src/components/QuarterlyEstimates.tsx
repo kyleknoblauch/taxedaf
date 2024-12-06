@@ -160,7 +160,7 @@ export const QuarterlyEstimates = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => archiveMutation.mutate(quarter.quarter)}
+                    onClick={() => archiveMutation.mutate({ quarter: quarter.quarter })}
                     className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
                   >
                     <Archive className="h-4 w-4" />

@@ -2,17 +2,21 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
+interface ArchiveMutationVariables {
+  quarter: string;
+}
+
 export const useArchiveMutation = (userId: string | undefined) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (quarter: string) => {
-      console.log('Archiving quarter:', quarter);
+    mutationFn: async (variables: ArchiveMutationVariables) => {
+      console.log('Archiving quarter:', variables.quarter);
       const { error } = await supabase
         .rpc('archive_quarterly_estimate', {
           p_user_id: userId,
-          p_quarter: quarter
+          p_quarter: variables.quarter
         });
 
       if (error) throw error;
