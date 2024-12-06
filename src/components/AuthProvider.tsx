@@ -1,12 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, updateProfileFromProvider } from '@/utils/authUtils';
-import { signInWithEmail, signUpWithEmail, signInWithTwitter, signOut } from '@/utils/authOperations';
+import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
 
 type AuthContextType = {
   user: any;
   signInWithEmail: (email: string, password: string) => Promise<any>;
   signUpWithEmail: (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => Promise<any>;
   signInWithTwitter: () => Promise<any>;
+  signInWithLinkedIn: () => Promise<any>;
   signOut: () => Promise<any>;
 };
 
@@ -48,7 +49,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       user, 
       signInWithEmail, 
       signUpWithEmail, 
-      signInWithTwitter, 
+      signInWithTwitter,
+      signInWithLinkedIn, 
       signOut: handleSignOut 
     }}>
       {children}

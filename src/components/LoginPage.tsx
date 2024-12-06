@@ -9,7 +9,7 @@ import { AuthLinks } from "./auth/AuthLinks";
 import { SocialAuth } from "./auth/SocialAuth";
 
 const LoginPage = () => {
-  const { user, signInWithEmail, signUpWithEmail, signInWithTwitter } = useAuth();
+  const { user, signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -121,7 +121,10 @@ const LoginPage = () => {
         />
 
         {!isResetPassword && (
-          <SocialAuth onTwitterSignIn={signInWithTwitter} />
+          <SocialAuth 
+            onTwitterSignIn={signInWithTwitter}
+            onLinkedInSignIn={signInWithLinkedIn}
+          />
         )}
       </div>
     </div>

@@ -32,6 +32,17 @@ export const signInWithTwitter = async () => {
   return { data, error: null };
 };
 
+export const signInWithLinkedIn = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'linkedin',
+    options: {
+      redirectTo: window.location.origin + '/auth/callback',
+    },
+  });
+  if (error) throw error;
+  return { data, error: null };
+};
+
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
