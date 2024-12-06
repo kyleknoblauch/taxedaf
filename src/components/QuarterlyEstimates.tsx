@@ -11,15 +11,18 @@ export const QuarterlyEstimates = () => {
   const { data: estimates } = useQuery({
     queryKey: ["quarterly-estimates", user?.id],
     queryFn: async () => {
+      console.log('Fetching quarterly estimates for user:', user?.id);
       const { data, error } = await supabase
         .from("quarterly_estimates")
         .select("*")
         .eq("user_id", user?.id)
-        .order("quarter", { ascending: false })
-        // Filter out future quarters
-        .filter('quarter', 'lte', new Date().toISOString());
+        .order("quarter", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching quarterly estimates:', error);
+        throw error;
+      }
+      console.log('Quarterly estimates data:', data);
       return data;
     },
     enabled: !!user,
