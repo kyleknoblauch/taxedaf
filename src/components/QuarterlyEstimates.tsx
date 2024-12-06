@@ -1,18 +1,19 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { QuarterInfo } from "./quarterly-estimates/QuarterInfo";
 import { QuarterlyAmounts } from "./quarterly-estimates/QuarterlyAmounts";
 import { PaymentDialog } from "./quarterly-estimates/PaymentDialog";
 import { Archive, CheckCircle } from "lucide-react";
+import { useArchiveMutation } from "./quarterly-estimates/mutations/useArchiveMutation";
+import { useTogglePaidMutation } from "./quarterly-estimates/mutations/useTogglePaidMutation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: estimates } = useQuery({
@@ -65,60 +66,8 @@ export const QuarterlyEstimates = () => {
     };
   }, [user?.id, queryClient]);
 
-  const togglePaidMutation = useMutation({
-    mutationFn: async ({ quarter, currentPaidStatus }: { quarter: string; currentPaidStatus: string | null }) => {
-      const { error } = await supabase
-        .from("quarterly_estimates")
-        .update({ paid_at: currentPaidStatus ? null : new Date().toISOString() })
-        .eq("user_id", user?.id)
-        .eq("quarter", quarter);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
-      toast({
-        title: "Success",
-        description: "Payment status updated successfully",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update payment status",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const archiveMutation = useMutation<void, Error, string>({
-    mutationFn: async (quarter: string) => {
-      console.log('Archiving quarter:', quarter);
-      const { error } = await supabase
-        .rpc('archive_quarterly_estimate', {
-          p_user_id: user?.id,
-          p_quarter: quarter
-        });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
-      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      toast({
-        title: "Success",
-        description: "Quarter archived successfully",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to archive quarter",
-        variant: "destructive",
-      });
-    },
-  });
+  const togglePaidMutation = useTogglePaidMutation(user?.id);
+  const archiveMutation = useArchiveMutation(user?.id);
 
   const getQuarterInfo = (date: string) => {
     const quarterDate = new Date(date);
