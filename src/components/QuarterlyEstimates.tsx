@@ -2,13 +2,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { QuarterInfo } from "./quarterly-estimates/QuarterInfo";
 import { QuarterlyAmounts } from "./quarterly-estimates/QuarterlyAmounts";
 import { PaymentDialog } from "./quarterly-estimates/PaymentDialog";
-import { CheckCircle } from "lucide-react";
+import { MarkAsPaidDialog } from "./quarterly-estimates/MarkAsPaidDialog";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
@@ -165,18 +164,16 @@ export const QuarterlyEstimates = () => {
               />
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <Button
-                  variant={isPaid ? "outline" : "default"}
-                  size="sm"
-                  onClick={() => togglePaidMutation.mutate({ 
-                    quarter: quarter.quarter,
-                    currentPaidStatus: quarter.paid_at
-                  })}
-                  className="flex items-center gap-2"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  {isPaid ? "Paid" : "Mark as Paid"}
-                </Button>
+                <MarkAsPaidDialog
+                  isPaid={isPaid}
+                  loading={togglePaidMutation.isPending}
+                  onConfirm={() => 
+                    togglePaidMutation.mutate({
+                      quarter: quarter.quarter,
+                      currentPaidStatus: quarter.paid_at
+                    })
+                  }
+                />
 
                 <PaymentDialog
                   federalTax={quarter.total_federal_tax}
