@@ -91,7 +91,7 @@ export const QuarterlyEstimates = () => {
     },
   });
 
-  const archiveMutation = useMutation({
+  const archiveMutation = useMutation<void, Error, string>({
     mutationFn: async (quarter: string) => {
       console.log('Archiving quarter:', quarter);
       const { error } = await supabase
