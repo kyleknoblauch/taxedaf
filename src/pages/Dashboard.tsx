@@ -9,12 +9,14 @@ import { DraggableBlock } from "@/components/dashboard/DraggableBlock";
 import { SavedEstimates } from "@/components/SavedEstimates";
 import { TaxInformation } from "@/components/TaxInformation";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { QuarterlyEstimates } from "@/components/QuarterlyEstimates";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [items, setItems] = useState([
     { id: "saved-estimates", title: "Saved Estimates", defaultOpen: true },
+    { id: "quarterly-estimates", title: "Quarterly Tax Estimates", defaultOpen: true },
     { id: "add-expense", title: "Add Deduction", defaultOpen: true },
     { id: "tax-summary", title: "Tax Summary", defaultOpen: true },
     { id: "tax-information", title: "General Tax Information", defaultOpen: false },
@@ -26,7 +28,6 @@ const Dashboard = () => {
     }
 
     if (location.state?.expandDeductions) {
-      // Move add-expense to the top if it's not already there
       setItems(prevItems => {
         const currentIndex = prevItems.findIndex(item => item.id === "add-expense");
         if (currentIndex === 0) return prevItems;
@@ -66,6 +67,8 @@ const Dashboard = () => {
     switch (id) {
       case "saved-estimates":
         return <SavedEstimates />;
+      case "quarterly-estimates":
+        return <QuarterlyEstimates />;
       case "add-expense":
         return <ExpenseForm />;
       case "tax-summary":

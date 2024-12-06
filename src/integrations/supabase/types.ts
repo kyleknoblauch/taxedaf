@@ -60,6 +60,39 @@ export type Database = {
         }
         Relationships: []
       }
+      quarterly_estimates: {
+        Row: {
+          quarter: string
+          total_expenses: number | null
+          total_federal_tax: number | null
+          total_income: number | null
+          total_self_employment_tax: number | null
+          total_state_tax: number | null
+          total_tax: number | null
+          user_id: string
+        }
+        Insert: {
+          quarter: string
+          total_expenses?: number | null
+          total_federal_tax?: number | null
+          total_income?: number | null
+          total_self_employment_tax?: number | null
+          total_state_tax?: number | null
+          total_tax?: number | null
+          user_id: string
+        }
+        Update: {
+          quarter?: string
+          total_expenses?: number | null
+          total_federal_tax?: number | null
+          total_income?: number | null
+          total_self_employment_tax?: number | null
+          total_state_tax?: number | null
+          total_tax?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       tax_calculations: {
         Row: {
           created_at: string | null
@@ -98,19 +131,7 @@ export type Database = {
       }
     }
     Views: {
-      quarterly_estimates: {
-        Row: {
-          quarter: string | null
-          total_expenses: number | null
-          total_federal_tax: number | null
-          total_income: number | null
-          total_self_employment_tax: number | null
-          total_state_tax: number | null
-          total_tax: number | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       [_ in never]: never
