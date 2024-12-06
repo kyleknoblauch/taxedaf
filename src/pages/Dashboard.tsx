@@ -12,7 +12,6 @@ const Dashboard = () => {
     { id: "add-expense", title: "Add Deduction", defaultOpen: true },
     { id: "tax-summary", title: "Tax Summary", defaultOpen: true },
     { id: "quarterly-estimates", title: "Quarterly Tax Estimates", defaultOpen: true },
-    { id: "archived-quarters", title: "Archived Quarters", defaultOpen: false },
     { id: "tax-information", title: "General Tax Information", defaultOpen: false },
   ]);
 

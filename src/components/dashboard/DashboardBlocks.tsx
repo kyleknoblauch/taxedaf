@@ -4,7 +4,6 @@ import { QuarterlyEstimates } from "@/components/QuarterlyEstimates";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { TaxSummary } from "@/components/TaxSummary";
 import { TaxInformation } from "@/components/TaxInformation";
-import { ArchivedQuarters } from "./ArchivedQuarters";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 interface DashboardItem {
@@ -29,8 +28,6 @@ const renderBlockContent = (id: string) => {
       return <TaxSummary />;
     case "tax-information":
       return <TaxInformation />;
-    case "archived-quarters":
-      return <ArchivedQuarters />;
     default:
       return null;
   }
