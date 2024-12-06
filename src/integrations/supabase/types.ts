@@ -62,6 +62,7 @@ export type Database = {
       }
       quarterly_estimates: {
         Row: {
+          paid_at: string | null
           quarter: string
           total_expenses: number | null
           total_federal_tax: number | null
@@ -72,6 +73,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          paid_at?: string | null
           quarter: string
           total_expenses?: number | null
           total_federal_tax?: number | null
@@ -82,6 +84,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          paid_at?: string | null
           quarter?: string
           total_expenses?: number | null
           total_federal_tax?: number | null

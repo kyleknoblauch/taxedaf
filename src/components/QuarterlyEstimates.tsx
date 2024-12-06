@@ -1,12 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
 import { formatCurrency } from "@/utils/taxCalculations";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, CheckCircle, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: estimates } = useQuery({
     queryKey: ["quarterly-estimates", user?.id],
@@ -28,20 +33,69 @@ export const QuarterlyEstimates = () => {
     enabled: !!user,
   });
 
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel('quarterly-estimates-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'quarterly_estimates',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
+  const markAsPaidMutation = useMutation({
+    mutationFn: async ({ quarter }: { quarter: string }) => {
+      const { error } = await supabase
+        .from("quarterly_estimates")
+        .update({ paid_at: new Date().toISOString() })
+        .eq("user_id", user?.id)
+        .eq("quarter", quarter);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+      toast({
+        title: "Success",
+        description: "Payment status updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update payment status",
+        variant: "destructive",
+      });
+    },
+  });
+
   const getQuarterInfo = (date: string) => {
     const quarterDate = new Date(date);
     const month = quarterDate.getMonth();
     const year = quarterDate.getFullYear();
     
-    // Determine quarter number and date range
     let quarterNum, startMonth, endMonth, dueDate, taxYear;
     if (month >= 0 && month < 3) {
-      // Q4 of previous year, due in January
       quarterNum = 4;
       startMonth = "October";
       endMonth = "December";
       dueDate = "January 15";
-      taxYear = year - 1; // Previous year since this is Q4 payment
+      taxYear = year - 1;
     } else if (month >= 3 && month < 6) {
       quarterNum = 1;
       startMonth = "January";
@@ -70,6 +124,10 @@ export const QuarterlyEstimates = () => {
     };
   };
 
+  const getPaymentLink = (quarterNum: number, year: number) => {
+    return `https://www.irs.gov/payments/direct-pay`;
+  };
+
   if (!estimates?.length) {
     return (
       <Card className="p-6">
@@ -83,6 +141,9 @@ export const QuarterlyEstimates = () => {
       <div className="space-y-8">
         {estimates.map((quarter) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
+          const isPaid = !!quarter.paid_at;
+          const paymentLink = getPaymentLink(quarterNum, taxYear);
+
           return (
             <div key={quarter.quarter} className="border-b pb-6 last:border-b-0">
               <div className="flex items-center gap-2 mb-4">
@@ -125,6 +186,38 @@ export const QuarterlyEstimates = () => {
                   <p className="text-sm text-gray-500">Total Tax Due</p>
                   <p className="text-lg font-medium text-red-600">{formatCurrency(quarter.total_tax)}</p>
                 </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                {isPaid ? (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="h-5 w-5" />
+                    <span className="text-sm font-medium">
+                      Paid on {new Date(quarter.paid_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => markAsPaidMutation.mutate({ quarter: quarter.quarter })}
+                      className="flex items-center gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Mark as Paid
+                    </Button>
+                    <a
+                      href={paymentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      Make Payment
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </>
+                )}
               </div>
             </div>
           );
