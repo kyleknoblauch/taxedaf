@@ -47,8 +47,11 @@ export const ExpenseForm = () => {
       setDescription("");
       setAmount("");
       setCategory("");
+      
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
       
       // Navigate to dashboard and scroll to expenses
       navigate("/dashboard", { state: { scrollToExpenses: true } });

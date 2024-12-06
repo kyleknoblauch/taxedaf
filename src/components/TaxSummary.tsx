@@ -88,7 +88,10 @@ export const TaxSummary = () => {
       if (error) throw error;
     },
     onSuccess: () => {
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations", user?.id] });
       toast({
         title: "Success",
         description: "Expense deleted successfully",
