@@ -103,6 +103,11 @@ export const TaxSummary = () => {
     },
   });
 
+  const handleDeleteExpense = async (id: string): Promise<void> => {
+    console.log('TaxSummary - Deleting expense:', id);
+    await deleteExpenseMutation.mutateAsync(id);
+  };
+
   const updateNoteMutation = useMutation({
     mutationFn: async ({ id, note }: { id: string; note: string }) => {
       const { error } = await supabase
@@ -166,7 +171,7 @@ export const TaxSummary = () => {
             updateNoteMutation.mutate({ id, note: editedNote });
           }}
           onCancelEdit={() => setEditingId(null)}
-          onDelete={deleteExpenseMutation.mutate}
+          onDelete={handleDeleteExpense}
           onEditNoteChange={(note) => setEditedNote(note)}
         />
       </div>
