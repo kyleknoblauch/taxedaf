@@ -10,25 +10,32 @@ export const useArchiveMutation = (userId: string | undefined) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, ArchiveQuarterParams>({
-    mutationFn: async ({ quarter }) => {
-      if (!userId) throw new Error('User ID is required');
+  return useMutation({
+    mutationFn: async ({ quarter }: ArchiveQuarterParams) => {
+      if (!userId) {
+        console.error('No user ID provided');
+        throw new Error('User ID is required');
+      }
+
+      console.log('Attempting to archive quarter:', quarter, 'for user:', userId);
       
-      console.log('Archiving quarter:', quarter, 'for user:', userId);
-      
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('quarterly_estimates')
-        .update({ 
+        .update({
           archived: true,
           archived_at: new Date().toISOString()
         })
         .eq('user_id', userId)
-        .eq('quarter', quarter);
+        .eq('quarter', quarter)
+        .select();
 
       if (error) {
         console.error('Archive error:', error);
-        throw error;
+        throw new Error(error.message);
       }
+
+      console.log('Archive successful:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
@@ -41,7 +48,7 @@ export const useArchiveMutation = (userId: string | undefined) => {
       console.error('Archive mutation error:', error);
       toast({
         title: "Error",
-        description: "Failed to archive quarter",
+        description: "Failed to archive quarter. Please try again.",
         variant: "destructive",
       });
     },
