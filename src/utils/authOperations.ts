@@ -33,12 +33,12 @@ export const signInWithTwitter = async () => {
 };
 
 export const signInWithLinkedIn = async () => {
-  console.log('Attempting LinkedIn sign in...');
+  console.log('Starting LinkedIn sign in process...');
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'linkedin',
       options: {
-        redirectTo: 'https://thzxkofmzrwmaivkorfj.supabase.co/auth/v1/callback',
+        redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
           response_type: 'code',
           scope: 'openid profile email',
