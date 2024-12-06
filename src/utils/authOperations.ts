@@ -38,7 +38,7 @@ export const signInWithLinkedIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'linkedin',
       options: {
-        redirectTo: 'https://taxedaf.com/auth/callback',
+        redirectTo: 'https://thzxkofmzrwmaivkorfj.supabase.co/auth/v1/callback',
         scopes: 'openid profile email',
       },
     });
