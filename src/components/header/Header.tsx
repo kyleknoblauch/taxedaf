@@ -15,15 +15,22 @@ export const Header = () => {
 
     try {
       setIsSigningOut(true);
+      console.log('Starting sign out in Header...');
       await signOut();
       
-      // Clear any stored state or cached data here if needed
       toast({
         title: "Signed out successfully",
       });
       
-      // Force a full page reload to clear any cached state
-      window.location.href = '/';
+      // Clear any local storage or session storage if needed
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Small delay to ensure state updates are processed
+      setTimeout(() => {
+        console.log('Reloading page...');
+        window.location.href = '/';
+      }, 100);
     } catch (error: any) {
       console.error('Sign out error:', error);
       toast({
