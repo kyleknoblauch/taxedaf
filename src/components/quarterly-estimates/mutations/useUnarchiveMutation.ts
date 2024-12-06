@@ -1,9 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { QuarterlyEstimate } from "@/types/quarterlyEstimates";
 
 interface UnarchiveQuarterParams {
   quarter: string;
+}
+
+interface QuarterArchiveStatus {
+  can_unarchive: boolean;
+  archive_expires_at: string | null;
+  manual_unarchive_count: number;
 }
 
 export const useUnarchiveMutation = (userId: string | undefined) => {
@@ -17,7 +24,7 @@ export const useUnarchiveMutation = (userId: string | undefined) => {
       // First, check if the quarter can be unarchived
       const { data: quarterData, error: checkError } = await supabase
         .from("quarterly_estimates")
-        .select("can_unarchive, archive_expires_at, manual_unarchive_count")
+        .select<string, QuarterArchiveStatus>("can_unarchive, archive_expires_at, manual_unarchive_count")
         .eq("user_id", userId)
         .eq("quarter", quarter)
         .single();

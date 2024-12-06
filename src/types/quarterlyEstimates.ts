@@ -1,4 +1,4 @@
-import { Database } from "@/integrations/supabase/types";
+import { TaxCalculation, Expense } from './database';
 
 export interface QuarterlyEstimate {
   user_id: string;
@@ -15,6 +15,6 @@ export interface QuarterlyEstimate {
   can_unarchive: boolean;
   archive_expires_at: string | null;
   manual_unarchive_count: number;
-  taxCalculations: Array<Database["public"]["Tables"]["tax_calculations"]["Row"]>;
-  expenses: Array<Database["public"]["Tables"]["expenses"]["Row"]>;
+  taxCalculations: TaxCalculation[];
+  expenses: Expense[];
 }
