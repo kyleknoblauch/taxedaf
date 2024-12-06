@@ -29,33 +29,39 @@ export const QuarterlyEstimates = () => {
     const year = quarterDate.getFullYear();
     
     // Determine quarter number and date range
-    let quarterNum, startMonth, endMonth, dueDate;
+    let quarterNum, startMonth, endMonth, dueDate, taxYear;
     if (month >= 0 && month < 3) {
+      // Q4 of previous year, due in January
       quarterNum = 4;
       startMonth = "October";
       endMonth = "December";
       dueDate = "January 15";
+      taxYear = year - 1; // Previous year since this is Q4 payment
     } else if (month >= 3 && month < 6) {
       quarterNum = 1;
       startMonth = "January";
       endMonth = "March";
       dueDate = "April 15";
+      taxYear = year;
     } else if (month >= 6 && month < 9) {
       quarterNum = 2;
       startMonth = "April";
       endMonth = "June";
       dueDate = "June 15";
+      taxYear = year;
     } else {
       quarterNum = 3;
       startMonth = "July";
       endMonth = "September";
       dueDate = "September 15";
+      taxYear = year;
     }
 
     return {
       quarterNum,
-      dateRange: `${startMonth} - ${endMonth} ${year}`,
+      dateRange: `${startMonth} - ${endMonth} ${taxYear}`,
       dueDate: `${dueDate}, ${year}`,
+      taxYear,
     };
   };
 
@@ -72,14 +78,21 @@ export const QuarterlyEstimates = () => {
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Quarterly Estimates</h2>
       <div className="space-y-8">
         {estimates.map((quarter) => {
-          const { quarterNum, dateRange, dueDate } = getQuarterInfo(quarter.quarter);
+          const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
           return (
             <div key={quarter.quarter} className="border-b pb-6 last:border-b-0">
               <div className="flex items-center gap-2 mb-4">
                 <CalendarClock className="h-5 w-5 text-blue-500" />
                 <div>
                   <h3 className="text-lg font-medium">Q{quarterNum} ({dateRange})</h3>
-                  <p className="text-sm text-red-600 font-medium">Payment Due: {dueDate}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <p className="text-sm text-red-600 font-medium">Payment Due: {dueDate}</p>
+                    {quarterNum === 4 && (
+                      <p className="text-sm text-gray-500">
+                        (for {taxYear} taxes)
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
               
