@@ -39,6 +39,10 @@ export const signInWithLinkedIn = async () => {
       provider: 'linkedin',
       options: {
         redirectTo: 'https://thzxkofmzrwmaivkorfj.supabase.co/auth/v1/callback',
+        queryParams: {
+          response_type: 'code',
+          scope: 'openid profile email',
+        },
       },
     });
     console.log('LinkedIn sign in response:', { data, error });
