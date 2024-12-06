@@ -35,6 +35,7 @@ export const signInWithTwitter = async () => {
 export const signInWithLinkedIn = async () => {
   console.log('Starting LinkedIn sign in process...');
   console.log('Current origin:', window.location.origin);
+  console.log('Redirect URL:', `${window.location.origin}/auth/callback`);
   
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
