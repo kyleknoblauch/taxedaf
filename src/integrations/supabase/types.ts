@@ -79,10 +79,8 @@ export type Database = {
       }
       quarterly_estimates: {
         Row: {
-          archive_expires_at: string | null
           archived: boolean
           archived_at: string | null
-          can_unarchive: boolean | null
           manual_unarchive_count: number | null
           paid_at: string | null
           quarter: string
@@ -95,10 +93,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          archive_expires_at?: string | null
           archived?: boolean
           archived_at?: string | null
-          can_unarchive?: boolean | null
           manual_unarchive_count?: number | null
           paid_at?: string | null
           quarter: string
@@ -111,10 +107,8 @@ export type Database = {
           user_id: string
         }
         Update: {
-          archive_expires_at?: string | null
           archived?: boolean
           archived_at?: string | null
-          can_unarchive?: boolean | null
           manual_unarchive_count?: number | null
           paid_at?: string | null
           quarter?: string
