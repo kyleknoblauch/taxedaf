@@ -33,13 +33,13 @@ export const signInWithTwitter = async () => {
 };
 
 export const signInWithLinkedIn = async () => {
-  console.log('Starting LinkedIn sign in process...');
+  console.log('Starting LinkedIn OIDC sign in process...');
   console.log('Current origin:', window.location.origin);
   console.log('Redirect URL:', `${window.location.origin}/auth/callback`);
   
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'linkedin',
+      provider: 'linkedin_oidc',  // Changed from 'linkedin' to 'linkedin_oidc'
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
@@ -49,16 +49,16 @@ export const signInWithLinkedIn = async () => {
       },
     });
     
-    console.log('LinkedIn sign in response:', { data, error });
+    console.log('LinkedIn OIDC sign in response:', { data, error });
     
     if (error) {
-      console.error('LinkedIn sign in error:', error);
+      console.error('LinkedIn OIDC sign in error:', error);
       throw error;
     }
     
     return { data, error: null };
   } catch (error) {
-    console.error('LinkedIn sign in caught error:', error);
+    console.error('LinkedIn OIDC sign in caught error:', error);
     throw error;
   }
 };
