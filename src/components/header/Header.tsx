@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -8,7 +8,6 @@ import { useState } from "react";
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
@@ -23,7 +22,7 @@ export const Header = () => {
         title: "Signed out successfully",
       });
       
-      // Force navigation to home page
+      // Force a full page reload to clear any cached state
       window.location.href = '/';
     } catch (error: any) {
       console.error('Sign out error:', error);
