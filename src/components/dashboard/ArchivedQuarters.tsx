@@ -3,13 +3,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "../AuthProvider";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { QuarterlyAmounts } from "../quarterly-estimates/QuarterlyAmounts";
 import { QuarterInfo } from "../quarterly-estimates/QuarterInfo";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useUnarchiveMutation } from "../quarterly-estimates/mutations/useUnarchiveMutation";
 
 export const ArchivedQuarters = () => {
   const { user } = useAuth();
+  const unarchiveMutation = useUnarchiveMutation(user?.id);
 
   const { data: archivedQuarters, isLoading } = useQuery({
     queryKey: ["archived-quarters", user?.id],
@@ -57,6 +60,10 @@ export const ArchivedQuarters = () => {
     },
     enabled: !!user?.id
   });
+
+  const handleUnarchive = async (quarter: string) => {
+    await unarchiveMutation.mutateAsync({ quarter });
+  };
 
   if (isLoading) {
     return (
@@ -119,6 +126,8 @@ export const ArchivedQuarters = () => {
       <div className="space-y-8">
         {archivedQuarters.map((quarter) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
+          const canUnarchive = quarter.can_unarchive;
+          const archiveExpiresAt = quarter.archive_expires_at ? new Date(quarter.archive_expires_at) : null;
           
           return (
             <div key={quarter.quarter} className="border-b pb-6 last:border-b-0">
@@ -129,9 +138,16 @@ export const ArchivedQuarters = () => {
                   dueDate={dueDate}
                   taxYear={taxYear}
                 />
-                <Badge variant="secondary" className="ml-2">
-                  Archived {format(new Date(quarter.archived_at), "MMM d, yyyy")}
-                </Badge>
+                <div className="flex flex-col items-end gap-2">
+                  <Badge variant="secondary" className="ml-2">
+                    Archived {format(new Date(quarter.archived_at), "MMM d, yyyy")}
+                  </Badge>
+                  {archiveExpiresAt && canUnarchive && (
+                    <span className="text-xs text-gray-500">
+                      Can unarchive for {formatDistanceToNow(archiveExpiresAt)}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <QuarterlyAmounts
@@ -142,6 +158,26 @@ export const ArchivedQuarters = () => {
                 totalSelfEmploymentTax={quarter.total_self_employment_tax}
                 totalTax={quarter.total_tax}
               />
+
+              {canUnarchive && (
+                <div className="mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleUnarchive(quarter.quarter)}
+                    disabled={unarchiveMutation.isPending}
+                    className="w-full"
+                  >
+                    {unarchiveMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Unarchiving...
+                      </>
+                    ) : (
+                      'Unarchive Quarter'
+                    )}
+                  </Button>
+                </div>
+              )}
 
               {/* Tax Calculations Section */}
               {quarter.taxCalculations.length > 0 && (

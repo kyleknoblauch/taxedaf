@@ -81,6 +81,7 @@ export type Database = {
         Row: {
           archived: boolean
           archived_at: string | null
+          manual_unarchive_count: number | null
           paid_at: string | null
           quarter: string
           total_expenses: number | null
@@ -94,6 +95,7 @@ export type Database = {
         Insert: {
           archived?: boolean
           archived_at?: string | null
+          manual_unarchive_count?: number | null
           paid_at?: string | null
           quarter: string
           total_expenses?: number | null
@@ -107,6 +109,7 @@ export type Database = {
         Update: {
           archived?: boolean
           archived_at?: string | null
+          manual_unarchive_count?: number | null
           paid_at?: string | null
           quarter?: string
           total_expenses?: number | null
