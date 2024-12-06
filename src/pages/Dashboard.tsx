@@ -9,9 +9,9 @@ const Dashboard = () => {
   const location = useLocation();
   const [items, setItems] = useState([
     { id: "saved-estimates", title: "Saved Estimates", defaultOpen: true },
-    { id: "quarterly-estimates", title: "Quarterly Tax Estimates", defaultOpen: true },
     { id: "add-expense", title: "Add Deduction", defaultOpen: true },
     { id: "tax-summary", title: "Tax Summary", defaultOpen: true },
+    { id: "quarterly-estimates", title: "Quarterly Tax Estimates", defaultOpen: true },
     { id: "tax-information", title: "General Tax Information", defaultOpen: false },
   ]);
 
