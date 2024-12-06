@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { QuarterInfo } from "./quarterly-estimates/QuarterInfo";
 import { QuarterlyAmounts } from "./quarterly-estimates/QuarterlyAmounts";
 import { PaymentDialog } from "./quarterly-estimates/PaymentDialog";
-import { CheckCircle } from "lucide-react";
+import { Archive, CheckCircle } from "lucide-react";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
@@ -86,6 +86,35 @@ export const QuarterlyEstimates = () => {
       toast({
         title: "Error",
         description: "Failed to update payment status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: async (quarter: string) => {
+      console.log('Archiving quarter:', quarter);
+      const { error } = await supabase
+        .rpc('archive_quarterly_estimate', {
+          p_user_id: user?.id,
+          p_quarter: quarter
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      toast({
+        title: "Success",
+        description: "Quarter archived successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to archive quarter",
         variant: "destructive",
       });
     },
@@ -177,6 +206,18 @@ export const QuarterlyEstimates = () => {
                   <CheckCircle className="h-4 w-4" />
                   {isPaid ? "Paid" : "Mark as Paid"}
                 </Button>
+
+                {isPaid && !quarter.archived && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => archiveMutation.mutate(quarter.quarter)}
+                    className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
+                  >
+                    <Archive className="h-4 w-4" />
+                    Archive Quarter
+                  </Button>
+                )}
 
                 <PaymentDialog
                   federalTax={quarter.total_federal_tax}
