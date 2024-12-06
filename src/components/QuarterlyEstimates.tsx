@@ -15,7 +15,9 @@ export const QuarterlyEstimates = () => {
         .from("quarterly_estimates")
         .select("*")
         .eq("user_id", user?.id)
-        .order("quarter", { ascending: false });
+        .order("quarter", { ascending: false })
+        // Filter out future quarters
+        .filter('quarter', 'lte', new Date().toISOString());
 
       if (error) throw error;
       return data;
@@ -75,7 +77,6 @@ export const QuarterlyEstimates = () => {
 
   return (
     <Card className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Quarterly Estimates</h2>
       <div className="space-y-8">
         {estimates.map((quarter) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
