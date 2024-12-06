@@ -11,7 +11,6 @@ import { Archive, CheckCircle } from "lucide-react";
 import { useArchiveMutation } from "./quarterly-estimates/mutations/useArchiveMutation";
 import { useTogglePaidMutation } from "./quarterly-estimates/mutations/useTogglePaidMutation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 
 export const QuarterlyEstimates = () => {
@@ -122,11 +121,20 @@ export const QuarterlyEstimates = () => {
   }
 
   const handleArchive = async (quarter: string) => {
-    await archiveMutation.mutateAsync({ quarter });
-    toast({
-      title: "Quarter Archived",
-      description: "The quarter has been moved to archived quarters.",
-    });
+    try {
+      await archiveMutation.mutateAsync({ quarter });
+      toast({
+        title: "Quarter Archived",
+        description: "The quarter and all related data have been archived successfully.",
+      });
+    } catch (error) {
+      console.error('Error archiving quarter:', error);
+      toast({
+        title: "Error",
+        description: "Failed to archive quarter. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

@@ -12,45 +12,58 @@ export const useArchiveMutation = (userId: string | undefined) => {
 
   return useMutation({
     mutationFn: async ({ quarter }: ArchiveQuarterParams) => {
-      if (!userId) {
-        console.error('No user ID provided');
-        throw new Error('User ID is required');
-      }
+      if (!userId) throw new Error("User ID is required");
 
-      console.log('Attempting to archive quarter:', quarter, 'for user:', userId);
-      
-      const { data, error } = await supabase
-        .from('quarterly_estimates')
+      const quarterDate = new Date(quarter);
+      const nextQuarter = new Date(quarterDate);
+      nextQuarter.setMonth(quarterDate.getMonth() + 3);
+
+      // Archive the quarterly estimate
+      const { error: quarterError } = await supabase
+        .from("quarterly_estimates")
         .update({
           archived: true,
-          archived_at: new Date().toISOString()
+          archived_at: new Date().toISOString(),
         })
-        .eq('user_id', userId)
-        .eq('quarter', quarter)
-        .select();
+        .eq("user_id", userId)
+        .eq("quarter", quarter);
 
-      if (error) {
-        console.error('Archive error:', error);
-        throw new Error(error.message);
-      }
+      if (quarterError) throw quarterError;
 
-      console.log('Archive successful:', data);
-      return data;
+      // Archive all tax calculations within the quarter
+      const { error: calcError } = await supabase
+        .from("tax_calculations")
+        .update({
+          archived: true,
+          archived_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId)
+        .gte("created_at", quarter)
+        .lt("created_at", nextQuarter.toISOString());
+
+      if (calcError) throw calcError;
+
+      // Archive all expenses within the quarter
+      const { error: expenseError } = await supabase
+        .from("expenses")
+        .update({
+          archived: true,
+          archived_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId)
+        .gte("created_at", quarter)
+        .lt("created_at", nextQuarter.toISOString());
+
+      if (expenseError) throw expenseError;
+
+      return { quarter };
     },
     onSuccess: () => {
+      // Invalidate all relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
-      toast({
-        title: "Success",
-        description: "Quarter archived successfully",
-      });
-    },
-    onError: (error) => {
-      console.error('Archive mutation error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to archive quarter. Please try again.",
-        variant: "destructive",
-      });
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["archived-quarters"] });
     },
   });
 };
