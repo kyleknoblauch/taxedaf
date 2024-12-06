@@ -23,7 +23,7 @@ interface EstimateCardProps {
   onStartEditing: (calc: any) => void;
   onSaveNote: (id: string) => void;
   onCancelEdit: () => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<boolean>;
   onEditNoteChange: (note: string) => void;
 }
 
@@ -37,8 +37,16 @@ export const EstimateCard = ({
   onDelete,
   onEditNoteChange,
 }: EstimateCardProps) => {
+  console.log('EstimateCard - Rendering with calc:', calc);
+  
   const totalTax = (calc.federal_tax || 0) + (calc.state_tax || 0) + (calc.self_employment_tax || 0);
   const takeHome = (calc.income || 0) - totalTax;
+
+  const handleDelete = async () => {
+    console.log('EstimateCard - Attempting to delete estimate:', calc.id);
+    const success = await onDelete(calc.id);
+    console.log('EstimateCard - Delete result:', success);
+  };
 
   return (
     <div className="space-y-1">
@@ -100,7 +108,7 @@ export const EstimateCard = ({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onDelete(calc.id)}>
+                    <AlertDialogAction onClick={handleDelete}>
                       Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>

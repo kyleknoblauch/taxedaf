@@ -29,7 +29,7 @@ interface ExpensesListProps {
   onStartEditing: (expense: Expense) => void;
   onSaveNote: (id: string) => void;
   onCancelEdit: () => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
   onEditNoteChange: (note: string) => void;
 }
 
@@ -43,6 +43,18 @@ export const ExpensesList = ({
   onDelete,
   onEditNoteChange,
 }: ExpensesListProps) => {
+  console.log('ExpensesList - Rendering with expenses:', expenses);
+
+  const handleDelete = async (id: string) => {
+    console.log('ExpensesList - Attempting to delete expense:', id);
+    try {
+      await onDelete(id);
+      console.log('ExpensesList - Successfully deleted expense:', id);
+    } catch (error) {
+      console.error('ExpensesList - Error deleting expense:', error);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {expenses?.map((expense) => (
@@ -93,7 +105,7 @@ export const ExpensesList = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete(expense.id)}>
+                  <AlertDialogAction onClick={() => handleDelete(expense.id)}>
                     Delete
                   </AlertDialogAction>
                 </AlertDialogFooter>

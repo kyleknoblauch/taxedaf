@@ -9,6 +9,7 @@ export const useTaxEstimates = (userId: string | undefined) => {
   const { data: estimates, isLoading, isError } = useQuery({
     queryKey: ['tax-estimates', userId],
     queryFn: async () => {
+      console.log('useTaxEstimates - Fetching estimates for user:', userId);
       if (!userId) throw new Error("User ID is required");
       
       const { data, error } = await supabase
@@ -17,7 +18,12 @@ export const useTaxEstimates = (userId: string | undefined) => {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('useTaxEstimates - Error fetching estimates:', error);
+        throw error;
+      }
+      
+      console.log('useTaxEstimates - Fetched estimates:', data);
       return data;
     },
     enabled: !!userId,
@@ -26,6 +32,7 @@ export const useTaxEstimates = (userId: string | undefined) => {
   });
 
   const updateNote = async (id: string, note: string) => {
+    console.log('useTaxEstimates - Updating note for estimate:', id);
     if (!userId) return false;
     
     try {
@@ -56,7 +63,11 @@ export const useTaxEstimates = (userId: string | undefined) => {
   };
 
   const deleteEstimate = async (id: string) => {
-    if (!userId) return false;
+    console.log('useTaxEstimates - Attempting to delete estimate:', id);
+    if (!userId) {
+      console.error('useTaxEstimates - No user ID provided for delete operation');
+      return false;
+    }
 
     try {
       const previousEstimates = queryClient.getQueryData(['tax-estimates', userId]);
@@ -73,11 +84,13 @@ export const useTaxEstimates = (userId: string | undefined) => {
         .eq('user_id', userId);
 
       if (error) {
+        console.error('useTaxEstimates - Error deleting estimate:', error);
         // Rollback optimistic update if error occurs
         queryClient.setQueryData(['tax-estimates', userId], previousEstimates);
         throw error;
       }
 
+      console.log('useTaxEstimates - Successfully deleted estimate:', id);
       await queryClient.invalidateQueries({ queryKey: ['tax-estimates', userId] });
 
       toast({
@@ -86,7 +99,7 @@ export const useTaxEstimates = (userId: string | undefined) => {
       });
       return true;
     } catch (error: any) {
-      console.error('Error deleting estimate:', error);
+      console.error('useTaxEstimates - Error in delete operation:', error);
       toast({
         variant: "destructive",
         title: "Error",
