@@ -1,5 +1,5 @@
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
