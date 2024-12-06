@@ -12,10 +12,12 @@ import { useArchiveMutation } from "./quarterly-estimates/mutations/useArchiveMu
 import { useTogglePaidMutation } from "./quarterly-estimates/mutations/useTogglePaidMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: estimates } = useQuery({
     queryKey: ["quarterly-estimates", user?.id],
@@ -27,6 +29,7 @@ export const QuarterlyEstimates = () => {
         .from("quarterly_estimates")
         .select("*")
         .eq("user_id", user?.id)
+        .eq("archived", false)  // Only fetch non-archived quarters
         .order("quarter", { ascending: false });
 
       if (error) {
@@ -118,19 +121,23 @@ export const QuarterlyEstimates = () => {
     );
   }
 
+  const handleArchive = async (quarter: string) => {
+    await archiveMutation.mutateAsync({ quarter });
+    toast({
+      title: "Quarter Archived",
+      description: "The quarter has been moved to archived quarters.",
+    });
+  };
+
   return (
     <Card className="p-6">
       <div className="space-y-8">
         {estimates.map((quarter) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
           const isPaid = !!quarter.paid_at;
-          const isArchived = quarter.archived;
 
           return (
-            <div 
-              key={quarter.quarter} 
-              className={`border-b pb-6 last:border-b-0 ${isArchived ? 'opacity-70' : ''}`}
-            >
+            <div key={quarter.quarter} className="border-b pb-6 last:border-b-0">
               <div className="flex items-start justify-between mb-4">
                 <QuarterInfo
                   quarterNum={quarterNum}
@@ -138,11 +145,6 @@ export const QuarterlyEstimates = () => {
                   dueDate={dueDate}
                   taxYear={taxYear}
                 />
-                {isArchived && (
-                  <Badge variant="secondary" className="ml-2">
-                    Archived {new Date(quarter.archived_at).toLocaleDateString()}
-                  </Badge>
-                )}
               </div>
               
               <QuarterlyAmounts
@@ -155,40 +157,36 @@ export const QuarterlyEstimates = () => {
               />
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                {!isArchived && (
-                  <>
-                    <Button
-                      variant={isPaid ? "outline" : "default"}
-                      size="sm"
-                      onClick={() => togglePaidMutation.mutate({ 
-                        quarter: quarter.quarter,
-                        currentPaidStatus: quarter.paid_at
-                      })}
-                      className="flex items-center gap-2"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      {isPaid ? "Paid" : "Mark as Paid"}
-                    </Button>
+                <Button
+                  variant={isPaid ? "outline" : "default"}
+                  size="sm"
+                  onClick={() => togglePaidMutation.mutate({ 
+                    quarter: quarter.quarter,
+                    currentPaidStatus: quarter.paid_at
+                  })}
+                  className="flex items-center gap-2"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  {isPaid ? "Paid" : "Mark as Paid"}
+                </Button>
 
-                    {isPaid && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => archiveMutation.mutate({ quarter: quarter.quarter })}
-                        className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
-                      >
-                        <Archive className="h-4 w-4" />
-                        Archive Quarter
-                      </Button>
-                    )}
-
-                    <PaymentDialog
-                      federalTax={quarter.total_federal_tax}
-                      stateTax={quarter.total_state_tax}
-                      selfEmploymentTax={quarter.total_self_employment_tax}
-                    />
-                  </>
+                {isPaid && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleArchive(quarter.quarter)}
+                    className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
+                  >
+                    <Archive className="h-4 w-4" />
+                    Archive Quarter
+                  </Button>
                 )}
+
+                <PaymentDialog
+                  federalTax={quarter.total_federal_tax}
+                  stateTax={quarter.total_state_tax}
+                  selfEmploymentTax={quarter.total_self_employment_tax}
+                />
               </div>
             </div>
           );
