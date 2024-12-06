@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Download, Archive, Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
 
 interface TaxActionsProps {
   income: number;
@@ -27,8 +28,28 @@ export const TaxActions = ({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
+  const { user } = useAuth();
 
   const handleSave = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save estimates",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log('Starting save estimate process...', {
+      income,
+      federalTax,
+      stateTax,
+      selfEmploymentTax,
+      invoiceName,
+      notes,
+      userId: user.id
+    });
+
     setIsSaving(true);
     try {
       const { data, error } = await supabase
@@ -41,14 +62,20 @@ export const TaxActions = ({
           invoice_name: invoiceName,
           notes,
           created_at: new Date().toISOString(),
+          user_id: user.id
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving estimate:', error);
+        throw error;
+      }
 
-      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
-      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+      console.log('Estimate saved successfully:', data);
+
+      await queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+      await queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
 
       toast({
         title: "Success",
@@ -57,9 +84,10 @@ export const TaxActions = ({
 
       navigate("/dashboard", { state: { fromSaveEstimate: true } });
     } catch (error: any) {
+      console.error('Failed to save estimate:', error);
       toast({
         title: "Error",
-        description: "Failed to save tax calculation",
+        description: error.message || "Failed to save tax calculation",
         variant: "destructive",
       });
     } finally {
