@@ -8,6 +8,7 @@ import { QuarterInfo } from "./quarterly-estimates/QuarterInfo";
 import { QuarterlyAmounts } from "./quarterly-estimates/QuarterlyAmounts";
 import { PaymentDialog } from "./quarterly-estimates/PaymentDialog";
 import { MarkAsPaidDialog } from "./quarterly-estimates/MarkAsPaidDialog";
+import { ArchiveDialog } from "./quarterly-estimates/ArchiveDialog";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ export const QuarterlyEstimates = () => {
         .from("quarterly_estimates")
         .select("*")
         .eq("user_id", user?.id)
+        .eq("archived", false)  // Only fetch non-archived estimates
         .order("quarter", { ascending: false });
 
       if (error) {
@@ -85,6 +87,44 @@ export const QuarterlyEstimates = () => {
       toast({
         title: "Error",
         description: "Failed to update payment status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const toggleArchiveMutation = useMutation({
+    mutationFn: async ({ quarter, isArchived }: { quarter: string; isArchived: boolean }) => {
+      const updateData = isArchived 
+        ? {
+            archived: false,
+            archived_at: null,
+            manual_unarchive_count: supabase.sql`manual_unarchive_count + 1`,
+          }
+        : {
+            archived: true,
+            archived_at: new Date().toISOString(),
+            archive_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+          };
+
+      const { error } = await supabase
+        .from("quarterly_estimates")
+        .update(updateData)
+        .eq("user_id", user?.id)
+        .eq("quarter", quarter);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+      toast({
+        title: "Success",
+        description: "Estimate archived status updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update archive status",
         variant: "destructive",
       });
     },
@@ -179,6 +219,18 @@ export const QuarterlyEstimates = () => {
                   federalTax={quarter.total_federal_tax}
                   stateTax={quarter.total_state_tax}
                   selfEmploymentTax={quarter.total_self_employment_tax}
+                />
+
+                <ArchiveDialog
+                  isArchived={quarter.archived}
+                  canUnarchive={quarter.can_unarchive}
+                  loading={toggleArchiveMutation.isPending}
+                  onConfirm={() => 
+                    toggleArchiveMutation.mutate({
+                      quarter: quarter.quarter,
+                      isArchived: quarter.archived
+                    })
+                  }
                 />
               </div>
             </div>
