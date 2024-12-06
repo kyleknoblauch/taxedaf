@@ -2,6 +2,8 @@ import { useAuth } from "../AuthProvider";
 import { EstimateCard } from "./EstimateCard";
 import { useState } from "react";
 import { useTaxEstimates } from "@/hooks/useTaxEstimates";
+import { Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const EstimatesList = () => {
   const { user } = useAuth();
@@ -24,16 +26,18 @@ export const EstimatesList = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="text-center p-4 text-red-500">
-        Error loading estimates. Please try again later.
-      </div>
+      <Alert variant="destructive" className="my-4">
+        <AlertDescription>
+          Error loading estimates. Please try refreshing the page.
+        </AlertDescription>
+      </Alert>
     );
   }
 

@@ -3,14 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { useState } from "react";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
     try {
+      setIsSigningOut(true);
       await signOut();
       toast({
         title: "Signed out successfully",
@@ -23,6 +26,8 @@ export const Header = () => {
         title: "Error signing out",
         description: error.message,
       });
+    } finally {
+      setIsSigningOut(false);
     }
   };
 
@@ -35,8 +40,11 @@ export const Header = () => {
             <Link to="/dashboard">
               <Button variant="outline">Dashboard</Button>
             </Link>
-            <Button onClick={handleSignOut}>
-              Sign Out
+            <Button 
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+            >
+              {isSigningOut ? "Signing out..." : "Sign Out"}
             </Button>
           </>
         ) : (

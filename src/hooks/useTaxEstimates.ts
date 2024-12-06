@@ -9,6 +9,8 @@ export const useTaxEstimates = (userId: string | undefined) => {
   const { data: estimates, isLoading, isError } = useQuery({
     queryKey: ['tax-estimates', userId],
     queryFn: async () => {
+      if (!userId) throw new Error("User ID is required");
+      
       const { data, error } = await supabase
         .from('tax_calculations')
         .select('*')
@@ -19,10 +21,12 @@ export const useTaxEstimates = (userId: string | undefined) => {
       return data;
     },
     enabled: !!userId,
+    retry: 2,
+    staleTime: 30000, // Consider data fresh for 30 seconds
   });
 
   const updateNote = async (id: string, note: string) => {
-    if (!userId) return;
+    if (!userId) return false;
     
     try {
       const { error } = await supabase
@@ -52,12 +56,12 @@ export const useTaxEstimates = (userId: string | undefined) => {
   };
 
   const deleteEstimate = async (id: string) => {
-    if (!userId) return;
+    if (!userId) return false;
 
     try {
-      // First optimistically update the UI
       const previousEstimates = queryClient.getQueryData(['tax-estimates', userId]);
       
+      // Optimistically update UI
       queryClient.setQueryData(['tax-estimates', userId], (old: any) => 
         old?.filter((calc: any) => calc.id !== id)
       );
@@ -69,12 +73,11 @@ export const useTaxEstimates = (userId: string | undefined) => {
         .eq('user_id', userId);
 
       if (error) {
-        // If there was an error, rollback the optimistic update
+        // Rollback optimistic update if error occurs
         queryClient.setQueryData(['tax-estimates', userId], previousEstimates);
         throw error;
       }
 
-      // If successful, invalidate to ensure we're in sync with the server
       await queryClient.invalidateQueries({ queryKey: ['tax-estimates', userId] });
 
       toast({
