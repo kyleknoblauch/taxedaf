@@ -12,22 +12,27 @@ export const Header = () => {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
+    if (isSigningOut) return; // Prevent multiple clicks
+
     try {
       setIsSigningOut(true);
       await signOut();
+      
+      // Clear any stored state or cached data here if needed
       toast({
         title: "Signed out successfully",
       });
-      navigate('/');
+      
+      // Force navigation to home page
+      window.location.href = '/';
     } catch (error: any) {
       console.error('Sign out error:', error);
       toast({
         variant: "destructive",
         title: "Error signing out",
-        description: error.message,
+        description: error.message || "Please try again",
       });
-    } finally {
-      setIsSigningOut(false);
+      setIsSigningOut(false); // Reset the signing out state on error
     }
   };
 
@@ -43,8 +48,15 @@ export const Header = () => {
             <Button 
               onClick={handleSignOut}
               disabled={isSigningOut}
+              variant="destructive"
             >
-              {isSigningOut ? "Signing out..." : "Sign Out"}
+              {isSigningOut ? (
+                <>
+                  <span className="animate-pulse">Signing out...</span>
+                </>
+              ) : (
+                "Sign Out"
+              )}
             </Button>
           </>
         ) : (
