@@ -19,6 +19,8 @@ export const QuarterlyEstimates = () => {
     queryKey: ["quarterly-estimates", user?.id],
     queryFn: async () => {
       console.log('Fetching quarterly estimates for user:', user?.id);
+      const startTime = performance.now();
+      
       const { data, error } = await supabase
         .from("quarterly_estimates")
         .select("*")
@@ -29,7 +31,11 @@ export const QuarterlyEstimates = () => {
         console.error('Error fetching quarterly estimates:', error);
         throw error;
       }
+
+      const endTime = performance.now();
+      console.log(`Quarterly estimates fetch took ${endTime - startTime}ms`);
       console.log('Quarterly estimates data:', data);
+      
       return data;
     },
     enabled: !!user,

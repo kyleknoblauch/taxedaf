@@ -31,7 +31,18 @@ export const TaxActions = ({
   const { user } = useAuth();
 
   const handleSave = async () => {
+    console.log('Starting save process...', {
+      income,
+      federalTax,
+      stateTax,
+      selfEmploymentTax,
+      invoiceName,
+      notes,
+      userId: user?.id
+    });
+
     if (!user) {
+      console.log('No user found, showing error toast');
       toast({
         title: "Error",
         description: "You must be logged in to save estimates",
@@ -40,18 +51,9 @@ export const TaxActions = ({
       return;
     }
 
-    console.log('Starting save estimate process...', {
-      income,
-      federalTax,
-      stateTax,
-      selfEmploymentTax,
-      invoiceName,
-      notes,
-      userId: user.id
-    });
-
     setIsSaving(true);
     try {
+      console.log('Inserting tax calculation into database...');
       const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
@@ -72,8 +74,9 @@ export const TaxActions = ({
         throw error;
       }
 
-      console.log('Estimate saved successfully:', data);
+      console.log('Tax calculation saved successfully:', data);
 
+      // Invalidate relevant queries
       await queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
       await queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
 
@@ -91,6 +94,7 @@ export const TaxActions = ({
         variant: "destructive",
       });
     } finally {
+      console.log('Saving process completed');
       setIsSaving(false);
     }
   };

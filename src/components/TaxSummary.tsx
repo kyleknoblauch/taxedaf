@@ -22,13 +22,24 @@ export const TaxSummary = () => {
   const { data: expenses } = useQuery({
     queryKey: ["expenses", user?.id],
     queryFn: async () => {
+      console.log('Fetching expenses for user:', user?.id);
+      const startTime = performance.now();
+
       const { data, error } = await supabase
         .from("expenses")
         .select("*")
         .eq("user_id", user?.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching expenses:', error);
+        throw error;
+      }
+
+      const endTime = performance.now();
+      console.log(`Expenses fetch took ${endTime - startTime}ms`);
+      console.log('Expenses data:', data);
+
       return data || [];
     },
     enabled: !!user,
@@ -43,13 +54,24 @@ export const TaxSummary = () => {
   const { data: taxCalculations } = useQuery({
     queryKey: ["tax-calculations", user?.id],
     queryFn: async () => {
+      console.log('Fetching tax calculations for user:', user?.id);
+      const startTime = performance.now();
+
       const { data, error } = await supabase
         .from("tax_calculations")
         .select("*")
         .eq("user_id", user?.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tax calculations:', error);
+        throw error;
+      }
+
+      const endTime = performance.now();
+      console.log(`Tax calculations fetch took ${endTime - startTime}ms`);
+      console.log('Tax calculations data:', data);
+
       return data || [];
     },
     enabled: !!user,
