@@ -25,7 +25,7 @@ export const signInWithTwitter = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'twitter',
     options: {
-      redirectTo: window.location.origin + '/auth/callback',
+      redirectTo: `${window.location.origin}/auth/callback`,
     },
   });
   if (error) throw error;
@@ -38,7 +38,8 @@ export const signInWithLinkedIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'linkedin',
       options: {
-        redirectTo: window.location.origin + '/auth/callback',
+        redirectTo: 'https://taxedaf.com/auth/callback',
+        scopes: 'openid profile email',
       },
     });
     console.log('LinkedIn sign in response:', { data, error });
