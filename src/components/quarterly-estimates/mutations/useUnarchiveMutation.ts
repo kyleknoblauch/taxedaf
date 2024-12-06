@@ -1,9 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Database } from "@/integrations/supabase/types";
-
-type QuarterlyEstimate = Database["public"]["Tables"]["quarterly_estimates"]["Row"];
 
 interface UnarchiveQuarterParams {
   quarter: string;

@@ -24,42 +24,17 @@ export const ArchivedQuarters = () => {
       
       const { data: quarters, error } = await supabase
         .from("quarterly_estimates")
-        .select("*, can_unarchive, archive_expires_at, manual_unarchive_count")
+        .select(`
+          *,
+          taxCalculations:tax_calculations(*),
+          expenses:expenses(*)
+        `)
         .eq("user_id", user?.id)
         .eq("archived", true)
         .order("quarter", { ascending: false });
 
       if (error) throw error;
-
-      // For each quarter, fetch related tax calculations and expenses
-      const quartersWithDetails = await Promise.all(quarters.map(async (quarter) => {
-        const quarterStart = new Date(quarter.quarter);
-        const quarterEnd = new Date(quarter.quarter);
-        quarterEnd.setMonth(quarterEnd.getMonth() + 3);
-
-        const [taxCalcsResponse, expensesResponse] = await Promise.all([
-          supabase
-            .from("tax_calculations")
-            .select("*")
-            .eq("user_id", user?.id)
-            .gte("created_at", quarterStart.toISOString())
-            .lt("created_at", quarterEnd.toISOString()),
-          supabase
-            .from("expenses")
-            .select("*")
-            .eq("user_id", user?.id)
-            .gte("created_at", quarterStart.toISOString())
-            .lt("created_at", quarterEnd.toISOString())
-        ]);
-
-        return {
-          ...quarter,
-          taxCalculations: taxCalcsResponse.data || [],
-          expenses: expensesResponse.data || []
-        } as QuarterlyEstimate;
-      }));
-
-      return quartersWithDetails;
+      return quarters as QuarterlyEstimate[];
     },
     enabled: !!user?.id
   });
@@ -127,7 +102,7 @@ export const ArchivedQuarters = () => {
   return (
     <Card className="p-6">
       <div className="space-y-8">
-        {archivedQuarters?.map((quarter: QuarterlyEstimate) => {
+        {archivedQuarters.map((quarter: QuarterlyEstimate) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
           const canUnarchive = quarter.can_unarchive;
           const archiveExpiresAt = quarter.archive_expires_at ? new Date(quarter.archive_expires_at) : null;
@@ -154,12 +129,12 @@ export const ArchivedQuarters = () => {
               </div>
 
               <QuarterlyAmounts
-                totalIncome={quarter.total_income}
-                totalExpenses={quarter.total_expenses}
-                totalFederalTax={quarter.total_federal_tax}
-                totalStateTax={quarter.total_state_tax}
-                totalSelfEmploymentTax={quarter.total_self_employment_tax}
-                totalTax={quarter.total_tax}
+                totalIncome={quarter.total_income || 0}
+                totalExpenses={quarter.total_expenses || 0}
+                totalFederalTax={quarter.total_federal_tax || 0}
+                totalStateTax={quarter.total_state_tax || 0}
+                totalSelfEmploymentTax={quarter.total_self_employment_tax || 0}
+                totalTax={quarter.total_tax || 0}
               />
 
               {canUnarchive && (
@@ -182,8 +157,7 @@ export const ArchivedQuarters = () => {
                 </div>
               )}
 
-              {/* Tax Calculations Section */}
-              {quarter.taxCalculations.length > 0 && (
+              {quarter.taxCalculations?.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium mb-2">Saved Estimates</h4>
                   <div className="space-y-2">
@@ -194,8 +168,7 @@ export const ArchivedQuarters = () => {
                 </div>
               )}
 
-              {/* Expenses Section */}
-              {quarter.expenses.length > 0 && (
+              {quarter.expenses?.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium mb-2">Deductions</h4>
                   <div className="space-y-2">
