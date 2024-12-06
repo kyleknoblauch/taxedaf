@@ -55,14 +55,14 @@ export const TaxActions = ({
       const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
+          user_id: user.id,
           income,
           federal_tax: federalTax,
           state_tax: stateTax,
           self_employment_tax: selfEmploymentTax,
-          invoice_name: invoiceName,
+          invoice_name: invoiceName || 'Untitled Invoice',
           notes,
-          created_at: new Date().toISOString(),
-          user_id: user.id
+          created_at: new Date().toISOString()
         })
         .select()
         .single();
