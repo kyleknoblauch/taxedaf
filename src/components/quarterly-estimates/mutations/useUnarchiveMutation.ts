@@ -27,7 +27,7 @@ export const useUnarchiveMutation = (userId: string | undefined) => {
 
       if (checkError) throw checkError;
 
-      if (!quarterData.can_unarchive) {
+      if (!quarterData?.can_unarchive) {
         throw new Error("This quarter can no longer be unarchived");
       }
 
@@ -37,7 +37,7 @@ export const useUnarchiveMutation = (userId: string | undefined) => {
         .update({
           archived: false,
           archived_at: null,
-          manual_unarchive_count: (quarterData.manual_unarchive_count || 0) + 1
+          manual_unarchive_count: (quarterData?.manual_unarchive_count || 0) + 1
         })
         .eq("user_id", userId)
         .eq("quarter", quarter);

@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useUnarchiveMutation } from "../quarterly-estimates/mutations/useUnarchiveMutation";
 import { QuarterlyEstimate } from "@/types/quarterlyEstimates";
+import { ArchivedQuarterDetails } from "../quarterly-estimates/archived/ArchivedQuarterDetails";
+import { ArchivedExpenseDetails } from "../quarterly-estimates/archived/ArchivedExpenseDetails";
 
 export const ArchivedQuarters = () => {
   const { user } = useAuth();
@@ -22,7 +24,7 @@ export const ArchivedQuarters = () => {
       
       const { data: quarters, error } = await supabase
         .from("quarterly_estimates")
-        .select("*")
+        .select("*, can_unarchive, archive_expires_at, manual_unarchive_count")
         .eq("user_id", user?.id)
         .eq("archived", true)
         .order("quarter", { ascending: false });
@@ -141,7 +143,7 @@ export const ArchivedQuarters = () => {
                 />
                 <div className="flex flex-col items-end gap-2">
                   <Badge variant="secondary" className="ml-2">
-                    Archived {format(new Date(quarter.archived_at), "MMM d, yyyy")}
+                    Archived {format(new Date(quarter.archived_at || ''), "MMM d, yyyy")}
                   </Badge>
                   {archiveExpiresAt && canUnarchive && (
                     <span className="text-xs text-gray-500">
@@ -186,17 +188,7 @@ export const ArchivedQuarters = () => {
                   <h4 className="text-sm font-medium mb-2">Saved Estimates</h4>
                   <div className="space-y-2">
                     {quarter.taxCalculations.map((calc) => (
-                      <div key={calc.id} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">{calc.invoice_name || "Untitled Invoice"}</span>
-                          <span className="text-sm text-gray-500">
-                            {format(new Date(calc.created_at), "MMM d, yyyy")}
-                          </span>
-                        </div>
-                        {calc.notes && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{calc.notes}</p>
-                        )}
-                      </div>
+                      <ArchivedQuarterDetails key={calc.id} calculation={calc} />
                     ))}
                   </div>
                 </div>
@@ -208,20 +200,7 @@ export const ArchivedQuarters = () => {
                   <h4 className="text-sm font-medium mb-2">Deductions</h4>
                   <div className="space-y-2">
                     {quarter.expenses.map((expense) => (
-                      <div key={expense.id} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="text-sm">{expense.description}</span>
-                            <span className="text-sm text-gray-500 ml-2">({expense.category})</span>
-                          </div>
-                          <span className="text-sm font-medium text-green-600">
-                            ${expense.amount.toLocaleString()}
-                          </span>
-                        </div>
-                        {expense.notes && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{expense.notes}</p>
-                        )}
-                      </div>
+                      <ArchivedExpenseDetails key={expense.id} expense={expense} />
                     ))}
                   </div>
                 </div>
