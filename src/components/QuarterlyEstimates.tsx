@@ -11,6 +11,7 @@ import { Archive, CheckCircle } from "lucide-react";
 import { useArchiveMutation } from "./quarterly-estimates/mutations/useArchiveMutation";
 import { useTogglePaidMutation } from "./quarterly-estimates/mutations/useTogglePaidMutation";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
@@ -123,15 +124,26 @@ export const QuarterlyEstimates = () => {
         {estimates.map((quarter) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
           const isPaid = !!quarter.paid_at;
+          const isArchived = quarter.archived;
 
           return (
-            <div key={quarter.quarter} className="border-b pb-6 last:border-b-0">
-              <QuarterInfo
-                quarterNum={quarterNum}
-                dateRange={dateRange}
-                dueDate={dueDate}
-                taxYear={taxYear}
-              />
+            <div 
+              key={quarter.quarter} 
+              className={`border-b pb-6 last:border-b-0 ${isArchived ? 'opacity-70' : ''}`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <QuarterInfo
+                  quarterNum={quarterNum}
+                  dateRange={dateRange}
+                  dueDate={dueDate}
+                  taxYear={taxYear}
+                />
+                {isArchived && (
+                  <Badge variant="secondary" className="ml-2">
+                    Archived {new Date(quarter.archived_at).toLocaleDateString()}
+                  </Badge>
+                )}
+              </div>
               
               <QuarterlyAmounts
                 totalIncome={quarter.total_income}
@@ -143,36 +155,40 @@ export const QuarterlyEstimates = () => {
               />
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <Button
-                  variant={isPaid ? "outline" : "default"}
-                  size="sm"
-                  onClick={() => togglePaidMutation.mutate({ 
-                    quarter: quarter.quarter,
-                    currentPaidStatus: quarter.paid_at
-                  })}
-                  className="flex items-center gap-2"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  {isPaid ? "Paid" : "Mark as Paid"}
-                </Button>
+                {!isArchived && (
+                  <>
+                    <Button
+                      variant={isPaid ? "outline" : "default"}
+                      size="sm"
+                      onClick={() => togglePaidMutation.mutate({ 
+                        quarter: quarter.quarter,
+                        currentPaidStatus: quarter.paid_at
+                      })}
+                      className="flex items-center gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      {isPaid ? "Paid" : "Mark as Paid"}
+                    </Button>
 
-                {isPaid && !quarter.archived && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => archiveMutation.mutate({ quarter: quarter.quarter })}
-                    className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
-                  >
-                    <Archive className="h-4 w-4" />
-                    Archive Quarter
-                  </Button>
+                    {isPaid && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => archiveMutation.mutate({ quarter: quarter.quarter })}
+                        className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
+                      >
+                        <Archive className="h-4 w-4" />
+                        Archive Quarter
+                      </Button>
+                    )}
+
+                    <PaymentDialog
+                      federalTax={quarter.total_federal_tax}
+                      stateTax={quarter.total_state_tax}
+                      selfEmploymentTax={quarter.total_self_employment_tax}
+                    />
+                  </>
                 )}
-
-                <PaymentDialog
-                  federalTax={quarter.total_federal_tax}
-                  stateTax={quarter.total_state_tax}
-                  selfEmploymentTax={quarter.total_self_employment_tax}
-                />
               </div>
             </div>
           );
