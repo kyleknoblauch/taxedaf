@@ -6,7 +6,7 @@ export const useArchiveMutation = (userId: string | undefined) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
+  return useMutation({
     mutationFn: async (quarter: string) => {
       console.log('Archiving quarter:', quarter);
       const { error } = await supabase
