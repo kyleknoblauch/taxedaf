@@ -4,6 +4,7 @@ import { TaxBreakdown } from "./TaxBreakdown";
 import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } from "../utils/taxCalculations";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { IncomeInputForm } from "./tax-calculator/IncomeInputForm";
+import { federalTaxBrackets2024 } from "../data/taxBrackets";
 
 export const TaxCalculator = () => {
   const [income, setIncome] = useState<number>(0);
