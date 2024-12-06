@@ -2,11 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthProvider";
-import { formatCurrency } from "@/utils/taxCalculations";
-import { CalendarClock, CheckCircle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
+import { QuarterInfo } from "./quarterly-estimates/QuarterInfo";
+import { QuarterlyAmounts } from "./quarterly-estimates/QuarterlyAmounts";
+import { PaymentDialog } from "./quarterly-estimates/PaymentDialog";
+import { CheckCircle } from "lucide-react";
 
 export const QuarterlyEstimates = () => {
   const { user } = useAuth();
@@ -33,7 +35,6 @@ export const QuarterlyEstimates = () => {
     enabled: !!user,
   });
 
-  // Set up real-time subscription
   useEffect(() => {
     if (!user?.id) return;
 
@@ -58,11 +59,11 @@ export const QuarterlyEstimates = () => {
     };
   }, [user?.id, queryClient]);
 
-  const markAsPaidMutation = useMutation({
-    mutationFn: async ({ quarter }: { quarter: string }) => {
+  const togglePaidMutation = useMutation({
+    mutationFn: async ({ quarter, currentPaidStatus }: { quarter: string; currentPaidStatus: string | null }) => {
       const { error } = await supabase
         .from("quarterly_estimates")
-        .update({ paid_at: new Date().toISOString() })
+        .update({ paid_at: currentPaidStatus ? null : new Date().toISOString() })
         .eq("user_id", user?.id)
         .eq("quarter", quarter);
 
@@ -124,10 +125,6 @@ export const QuarterlyEstimates = () => {
     };
   };
 
-  const getPaymentLink = (quarterNum: number, year: number) => {
-    return `https://www.irs.gov/payments/direct-pay`;
-  };
-
   if (!estimates?.length) {
     return (
       <Card className="p-6">
@@ -142,82 +139,44 @@ export const QuarterlyEstimates = () => {
         {estimates.map((quarter) => {
           const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
           const isPaid = !!quarter.paid_at;
-          const paymentLink = getPaymentLink(quarterNum, taxYear);
 
           return (
             <div key={quarter.quarter} className="border-b pb-6 last:border-b-0">
-              <div className="flex items-center gap-2 mb-4">
-                <CalendarClock className="h-5 w-5 text-blue-500" />
-                <div>
-                  <h3 className="text-lg font-medium">Q{quarterNum} ({dateRange})</h3>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <p className="text-sm text-red-600 font-medium">Payment Due: {dueDate}</p>
-                    {quarterNum === 4 && (
-                      <p className="text-sm text-gray-500">
-                        (for {taxYear} taxes)
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <QuarterInfo
+                quarterNum={quarterNum}
+                dateRange={dateRange}
+                dueDate={dueDate}
+                taxYear={taxYear}
+              />
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Total Income</p>
-                  <p className="text-lg font-medium">{formatCurrency(quarter.total_income)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Total Expenses</p>
-                  <p className="text-lg font-medium">{formatCurrency(quarter.total_expenses)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Federal Tax</p>
-                  <p className="text-lg font-medium text-red-600">{formatCurrency(quarter.total_federal_tax)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">State Tax</p>
-                  <p className="text-lg font-medium text-red-600">{formatCurrency(quarter.total_state_tax)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Self-Employment Tax</p>
-                  <p className="text-lg font-medium text-red-600">{formatCurrency(quarter.total_self_employment_tax)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Total Tax Due</p>
-                  <p className="text-lg font-medium text-red-600">{formatCurrency(quarter.total_tax)}</p>
-                </div>
-              </div>
+              <QuarterlyAmounts
+                totalIncome={quarter.total_income}
+                totalExpenses={quarter.total_expenses}
+                totalFederalTax={quarter.total_federal_tax}
+                totalStateTax={quarter.total_state_tax}
+                totalSelfEmploymentTax={quarter.total_self_employment_tax}
+                totalTax={quarter.total_tax}
+              />
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                {isPaid ? (
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-5 w-5" />
-                    <span className="text-sm font-medium">
-                      Paid on {new Date(quarter.paid_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => markAsPaidMutation.mutate({ quarter: quarter.quarter })}
-                      className="flex items-center gap-2"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      Mark as Paid
-                    </Button>
-                    <a
-                      href={paymentLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      Make Payment
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </>
-                )}
+                <Button
+                  variant={isPaid ? "outline" : "default"}
+                  size="sm"
+                  onClick={() => togglePaidMutation.mutate({ 
+                    quarter: quarter.quarter,
+                    currentPaidStatus: quarter.paid_at
+                  })}
+                  className="flex items-center gap-2"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  {isPaid ? "Paid" : "Mark as Paid"}
+                </Button>
+
+                <PaymentDialog
+                  federalTax={quarter.total_federal_tax}
+                  stateTax={quarter.total_state_tax}
+                  selfEmploymentTax={quarter.total_self_employment_tax}
+                />
               </div>
             </div>
           );
