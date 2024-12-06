@@ -12,6 +12,8 @@ export type Database = {
       expenses: {
         Row: {
           amount: number
+          archived: boolean
+          archived_at: string | null
           category: string
           created_at: string | null
           description: string
@@ -21,6 +23,8 @@ export type Database = {
         }
         Insert: {
           amount: number
+          archived?: boolean
+          archived_at?: string | null
           category: string
           created_at?: string | null
           description: string
@@ -30,6 +34,8 @@ export type Database = {
         }
         Update: {
           amount?: number
+          archived?: boolean
+          archived_at?: string | null
           category?: string
           created_at?: string | null
           description?: string
@@ -62,6 +68,8 @@ export type Database = {
       }
       quarterly_estimates: {
         Row: {
+          archived: boolean
+          archived_at: string | null
           paid_at: string | null
           quarter: string
           total_expenses: number | null
@@ -73,6 +81,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived?: boolean
+          archived_at?: string | null
           paid_at?: string | null
           quarter: string
           total_expenses?: number | null
@@ -84,6 +94,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          archived?: boolean
+          archived_at?: string | null
           paid_at?: string | null
           quarter?: string
           total_expenses?: number | null
@@ -98,6 +110,8 @@ export type Database = {
       }
       tax_calculations: {
         Row: {
+          archived: boolean
+          archived_at: string | null
           created_at: string | null
           federal_tax: number | null
           id: string
@@ -109,6 +123,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived?: boolean
+          archived_at?: string | null
           created_at?: string | null
           federal_tax?: number | null
           id?: string
@@ -120,6 +136,8 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          archived?: boolean
+          archived_at?: string | null
           created_at?: string | null
           federal_tax?: number | null
           id?: string

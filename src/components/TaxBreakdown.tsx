@@ -21,15 +21,6 @@ export const TaxBreakdown = ({
   invoiceName,
   notes,
 }: TaxBreakdownProps) => {
-  console.log('TaxBreakdown - Props received:', { 
-    income,
-    federalTax,
-    stateTax,
-    selfEmploymentTax,
-    invoiceName,
-    notes 
-  });
-  
   const totalTax = federalTax + stateTax + selfEmploymentTax;
   const takeHome = income - totalTax;
 

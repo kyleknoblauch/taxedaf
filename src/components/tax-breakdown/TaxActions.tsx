@@ -1,8 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/components/AuthProvider";
+import { Button } from "@/components/ui/button";
+import { Download, Archive, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface TaxActionsProps {
   income: number;
@@ -21,52 +23,23 @@ export const TaxActions = ({
   invoiceName,
   notes,
 }: TaxActionsProps) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveEstimate = async () => {
-    console.log('TaxActions - handleSaveEstimate called with user:', user?.id);
-    console.log('TaxActions - Data to save:', {
-      income,
-      federalTax,
-      stateTax,
-      selfEmploymentTax,
-      invoiceName,
-      notes
-    });
-
-    if (!user) {
-      console.log('TaxActions - No user found, redirecting to login');
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to save your tax estimates",
-      });
-      navigate("/login", { state: { 
-        returnTo: "/dashboard",
-        estimateData: {
-          income,
-          federalTax,
-          stateTax,
-          selfEmploymentTax,
-          invoiceName,
-          notes
-        }
-      }});
-      return;
-    }
-
+  const handleSave = async () => {
+    setIsSaving(true);
     try {
       const { data, error } = await supabase
         .from("tax_calculations")
         .insert({
-          user_id: user.id,
           income,
           federal_tax: federalTax,
           state_tax: stateTax,
           self_employment_tax: selfEmploymentTax,
+          invoice_name: invoiceName,
           notes,
-          invoice_name: invoiceName || "Untitled Invoice",
           created_at: new Date().toISOString(),
         })
         .select()
@@ -74,54 +47,45 @@ export const TaxActions = ({
 
       if (error) throw error;
 
-      console.log('TaxActions - Estimate saved successfully:', data);
-      
+      queryClient.invalidateQueries({ queryKey: ["tax-calculations"] });
+      queryClient.invalidateQueries({ queryKey: ["quarterly-estimates"] });
+
       toast({
         title: "Success",
-        description: "Your tax estimate has been saved",
+        description: "Tax calculation saved successfully",
       });
 
-      navigate("/dashboard", { state: { scrollToTop: true } });
+      navigate("/dashboard", { state: { fromSaveEstimate: true } });
     } catch (error: any) {
-      console.error('Error saving estimate:', error);
       toast({
-        variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to save tax estimate",
+        description: "Failed to save tax calculation",
+        variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
-  };
-
-  const handleCutTaxesClick = () => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to access the deduction guide",
-      });
-      navigate("/login", { 
-        state: { 
-          returnTo: "/deduction-guide",
-          scrollToTop: true
-        }
-      });
-      return;
-    }
-    navigate("/deduction-guide", { state: { scrollToTop: true } });
   };
 
   return (
-    <div className="space-y-2">
-      <button
-        onClick={handleCutTaxesClick}
-        className="w-full text-sm text-primary hover:text-primary/90 underline text-left mt-2"
+    <div className="flex flex-col sm:flex-row gap-2">
+      <Button
+        onClick={handleSave}
+        className="flex-1"
+        disabled={isSaving}
       >
-        Cut Your Taxes & Deduct Your Business Costs
-      </button>
-      <div className="flex justify-end">
-        <Button onClick={handleSaveEstimate} className="mt-2">
-          Save Estimate
-        </Button>
-      </div>
+        {isSaving ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Saving...
+          </>
+        ) : (
+          <>
+            <Download className="mr-2 h-4 w-4" />
+            Save Estimate
+          </>
+        )}
+      </Button>
     </div>
   );
 };
