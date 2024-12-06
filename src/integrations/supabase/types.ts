@@ -19,6 +19,7 @@ export type Database = {
           description: string
           id: string
           notes: string | null
+          quarter_id: string | null
           user_id: string
         }
         Insert: {
@@ -30,6 +31,7 @@ export type Database = {
           description: string
           id?: string
           notes?: string | null
+          quarter_id?: string | null
           user_id: string
         }
         Update: {
@@ -41,9 +43,18 @@ export type Database = {
           description?: string
           id?: string
           notes?: string | null
+          quarter_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_quarter_fk"
+            columns: ["user_id", "quarter_id"]
+            isOneToOne: false
+            referencedRelation: "quarterly_estimates"
+            referencedColumns: ["user_id", "quarter"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -70,6 +81,7 @@ export type Database = {
         Row: {
           archived: boolean
           archived_at: string | null
+          manual_unarchive_count: number | null
           paid_at: string | null
           quarter: string
           total_expenses: number | null
@@ -83,6 +95,7 @@ export type Database = {
         Insert: {
           archived?: boolean
           archived_at?: string | null
+          manual_unarchive_count?: number | null
           paid_at?: string | null
           quarter: string
           total_expenses?: number | null
@@ -96,6 +109,7 @@ export type Database = {
         Update: {
           archived?: boolean
           archived_at?: string | null
+          manual_unarchive_count?: number | null
           paid_at?: string | null
           quarter?: string
           total_expenses?: number | null
@@ -118,6 +132,7 @@ export type Database = {
           income: number | null
           invoice_name: string | null
           notes: string | null
+          quarter_id: string | null
           self_employment_tax: number | null
           state_tax: number | null
           user_id: string
@@ -131,6 +146,7 @@ export type Database = {
           income?: number | null
           invoice_name?: string | null
           notes?: string | null
+          quarter_id?: string | null
           self_employment_tax?: number | null
           state_tax?: number | null
           user_id?: string
@@ -144,11 +160,20 @@ export type Database = {
           income?: number | null
           invoice_name?: string | null
           notes?: string | null
+          quarter_id?: string | null
           self_employment_tax?: number | null
           state_tax?: number | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tax_calculations_quarter_fk"
+            columns: ["user_id", "quarter_id"]
+            isOneToOne: false
+            referencedRelation: "quarterly_estimates"
+            referencedColumns: ["user_id", "quarter"]
+          },
+        ]
       }
     }
     Views: {
