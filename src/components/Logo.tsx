@@ -6,8 +6,12 @@ export const Logo = ({ className = "", width = "80" }: { className?: string; wid
   // Calculate height based on original aspect ratio (229.78/245.85)
   const height = (Number(width) * 229.78 / 245.85).toString();
   
-  // Set fill color based on theme, with a default for initial load
-  const fillColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+  // Check if we're in dark mode by also checking system preference for initial load
+  const isDarkMode = theme === 'dark' || 
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  
+  // Set fill color based on isDarkMode
+  const fillColor = isDarkMode ? '#FFFFFF' : '#000000';
 
   return (
     <svg
@@ -16,7 +20,7 @@ export const Logo = ({ className = "", width = "80" }: { className?: string; wid
       viewBox="0 0 245.85 229.78"
       className={className}
       aria-label="taxedAF Logo"
-      fill={fillColor} // Add explicit fill color here
+      fill={fillColor}
     >
       <g>
         <path
