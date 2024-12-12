@@ -45,6 +45,28 @@ const DealsDirectory = () => {
                   </div>
                 </div>
               </div>
+
+              <div className="p-6 rounded-lg border bg-card">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900">
+                    <Bitcoin className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2">Coinbase Trading Platform</h3>
+                    <p className="text-muted-foreground mb-4">Get $20 to trade Bitcoin and everything else when you sign up using our link.</p>
+                    <a 
+                      href="https://coinbase.com/join/Y9J9XR2?src=ios-link" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block"
+                    >
+                      <Button>
+                        Claim Deal
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
