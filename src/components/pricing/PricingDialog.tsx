@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { addDays, addMonths } from "date-fns";
 
 interface PricingDialogProps {
   isOpen: boolean;
@@ -17,36 +16,41 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
   const handleSubscription = async (type: 'lifetime' | 'quarterly' | 'trial') => {
     setIsLoading(true);
     try {
-      const expiryDate = type === 'lifetime' 
-        ? null 
-        : type === 'quarterly'
-          ? addMonths(new Date(), 3).toISOString()
-          : addDays(new Date(), 30).toISOString();
+      if (type === 'trial') {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ 
+            subscription_type: type,
+            subscription_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            last_trial_used: new Date().toISOString()
+          })
+          .eq('id', (await supabase.auth.getUser()).data.user?.id);
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          subscription_type: type,
-          subscription_expiry: expiryDate,
-          ...(type === 'trial' && { last_trial_used: new Date().toISOString() })
-        })
-        .eq('id', (await supabase.auth.getUser()).data.user?.id);
+        if (error) throw error;
+
+        toast({
+          title: "Trial activated",
+          description: "You have 30 more days of free access",
+        });
+        onClose();
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { type }
+      });
 
       if (error) throw error;
+      if (!data.url) throw new Error('No checkout URL received');
 
-      toast({
-        title: "Subscription updated",
-        description: type === 'trial' 
-          ? "You have 30 more days of free access" 
-          : "Thank you for your subscription!",
-      });
-      onClose();
-    } catch (error) {
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (error: any) {
       console.error('Subscription error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update subscription. Please try again.",
+        description: error.message || "Failed to process subscription. Please try again.",
       });
     } finally {
       setIsLoading(false);
