@@ -10,7 +10,8 @@ import { PricingDialog } from "@/components/pricing/PricingDialog";
 const Index = () => {
   const { user } = useAuth();
   const [greeting, setGreeting] = useState<string>("");
-  const [showPricing, setShowPricing] = useState(false);
+  // For testing, initialize showPricing as true
+  const [showPricing, setShowPricing] = useState(true);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -30,21 +31,6 @@ const Index = () => {
     },
     enabled: !!user,
   });
-
-  useEffect(() => {
-    if (profile) {
-      // Show pricing dialog if:
-      // 1. User has logged in more than 2 times
-      // 2. Doesn't have an active subscription
-      // 3. Trial has expired (if they used one)
-      const shouldShowPricing = 
-        profile.login_count > 2 && 
-        !profile.subscription_type && 
-        (!profile.last_trial_used || new Date(profile.last_trial_used) < new Date());
-      
-      setShowPricing(shouldShowPricing);
-    }
-  }, [profile]);
 
   useEffect(() => {
     const fetchGreeting = async () => {
