@@ -16,6 +16,13 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
   const handleSubscription = async (type: 'lifetime' | 'quarterly' | 'trial') => {
     setIsLoading(true);
     try {
+      // Get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session');
+      }
+
       if (type === 'trial') {
         const { error } = await supabase
           .from('profiles')
@@ -24,7 +31,7 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
             subscription_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             last_trial_used: new Date().toISOString()
           })
-          .eq('id', (await supabase.auth.getUser()).data.user?.id);
+          .eq('id', session.user.id);
 
         if (error) throw error;
 
