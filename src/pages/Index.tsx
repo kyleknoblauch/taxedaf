@@ -10,8 +10,7 @@ import { PricingDialog } from "@/components/pricing/PricingDialog";
 const Index = () => {
   const { user } = useAuth();
   const [greeting, setGreeting] = useState<string>("");
-  // For testing, initialize showPricing as true
-  const [showPricing, setShowPricing] = useState(true);
+  const [showPricing, setShowPricing] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
