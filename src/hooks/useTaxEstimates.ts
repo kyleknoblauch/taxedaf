@@ -16,6 +16,7 @@ export const useTaxEstimates = (userId: string | undefined) => {
         .from('tax_calculations')
         .select('*')
         .eq('user_id', userId)
+        .eq('archived', false)  // Only fetch non-archived estimates
         .order('created_at', { ascending: false });
 
       if (error) {

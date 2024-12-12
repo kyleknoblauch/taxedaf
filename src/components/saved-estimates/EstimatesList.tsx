@@ -1,9 +1,9 @@
-import { useAuth } from "../AuthProvider";
+import { Card } from "@/components/ui/card";
 import { EstimateCard } from "./EstimateCard";
 import { useState } from "react";
+import { useAuth } from "../AuthProvider";
 import { useTaxEstimates } from "@/hooks/useTaxEstimates";
 import { Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const EstimatesList = () => {
   const { user } = useAuth();
@@ -11,43 +11,41 @@ export const EstimatesList = () => {
   const [editedNote, setEditedNote] = useState("");
   const { estimates, isLoading, isError, updateNote, deleteEstimate } = useTaxEstimates(user?.id);
 
+  console.log('EstimatesList - Rendering with estimates:', estimates);
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 flex justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </Card>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card className="p-6">
+        <p className="text-center text-red-500">Error loading estimates. Please try again.</p>
+      </Card>
+    );
+  }
+
+  if (!estimates?.length) {
+    return (
+      <Card className="p-6">
+        <p className="text-center text-gray-500">No saved estimates found.</p>
+      </Card>
+    );
+  }
+
   const handleStartEditing = (calc: any) => {
     setEditingId(calc.id);
     setEditedNote(calc.notes || "");
   };
 
   const handleSaveNote = async (id: string) => {
-    const success = await updateNote(id, editedNote);
-    if (success) {
-      setEditingId(null);
-    }
+    await updateNote(id, editedNote);
+    setEditingId(null);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Alert variant="destructive" className="my-4">
-        <AlertDescription>
-          Error loading estimates. Please try refreshing the page.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (!estimates?.length) {
-    return (
-      <div className="text-center p-4 text-muted-foreground">
-        No saved estimates found.
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
