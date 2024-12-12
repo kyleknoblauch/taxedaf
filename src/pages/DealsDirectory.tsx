@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bitcoin, Percent } from "lucide-react";
+import { ArrowLeft, Bitcoin, Percent, Calculator } from "lucide-react";
 import { useEffect } from "react";
 
 const DealsDirectory = () => {
@@ -21,6 +21,33 @@ const DealsDirectory = () => {
         </div>
         
         <div className="space-y-8 text-foreground">
+          <section>
+            <h2 className="text-2xl font-semibold mb-6">Tax Software Deals</h2>
+            <div className="grid gap-6">
+              <div className="p-6 rounded-lg border bg-card">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900">
+                    <Calculator className="h-6 w-6 text-purple-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2">TurboTax</h3>
+                    <p className="text-muted-foreground mb-4">Save 20% on TurboTax when you use our referral link.</p>
+                    <a 
+                      href="https://refer.intuit.com/5loas" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block"
+                    >
+                      <Button>
+                        Claim Deal
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section>
             <h2 className="text-2xl font-semibold mb-6">Cryptocurrency Deals</h2>
             <div className="grid gap-6">
