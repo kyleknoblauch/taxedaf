@@ -20,15 +20,15 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
       const expiryDate = type === 'lifetime' 
         ? null 
         : type === 'quarterly'
-          ? addMonths(new Date(), 3)
-          : addDays(new Date(), 30);
+          ? addMonths(new Date(), 3).toISOString()
+          : addDays(new Date(), 30).toISOString();
 
       const { error } = await supabase
         .from('profiles')
         .update({ 
           subscription_type: type,
           subscription_expiry: expiryDate,
-          ...(type === 'trial' && { last_trial_used: new Date() })
+          ...(type === 'trial' && { last_trial_used: new Date().toISOString() })
         })
         .eq('id', (await supabase.auth.getUser()).data.user?.id);
 
