@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
 
 interface PricingDialogProps {
   isOpen: boolean;
@@ -12,17 +14,23 @@ interface PricingDialogProps {
 export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleSubscription = async (type: 'lifetime' | 'quarterly' | 'trial') => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Please log in",
+        description: "You need to be logged in to subscribe",
+      });
+      onClose();
+      navigate('/login');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Get the current session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('No active session');
-      }
-
       if (type === 'trial') {
         const { error } = await supabase
           .from('profiles')
@@ -31,7 +39,7 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
             subscription_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             last_trial_used: new Date().toISOString()
           })
-          .eq('id', session.user.id);
+          .eq('id', user.id);
 
         if (error) throw error;
 
@@ -64,8 +72,15 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
     }
   };
 
+  const handleClose = () => {
+    if (!isLoading) {
+      setIsLoading(false);
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center mb-4">
@@ -87,7 +102,7 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
                 onClick={() => handleSubscription('lifetime')}
                 disabled={isLoading}
               >
-                Get Lifetime Access
+                {isLoading ? 'Processing...' : 'Get Lifetime Access'}
               </Button>
             </div>
 
@@ -102,17 +117,17 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
                 onClick={() => handleSubscription('quarterly')}
                 disabled={isLoading}
               >
-                Get 3 Months Access
+                {isLoading ? 'Processing...' : 'Get 3 Months Access'}
               </Button>
             </div>
 
             <div className="text-center mt-6">
               <button
                 onClick={() => handleSubscription('trial')}
-                className="text-sm text-muted-foreground hover:text-primary"
+                className="text-sm text-muted-foreground hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
-                I'm broke, let me use it for another 30 days for free
+                {isLoading ? 'Processing...' : "I'm broke, let me use it for another 30 days for free"}
               </button>
             </div>
           </div>
