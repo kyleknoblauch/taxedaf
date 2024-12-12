@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bitcoin } from "lucide-react";
+import { ArrowLeft, Bitcoin, Percent } from "lucide-react";
 import { useEffect } from "react";
 
 const DealsDirectory = () => {
@@ -56,6 +56,33 @@ const DealsDirectory = () => {
                     <p className="text-muted-foreground mb-4">Get $20 to trade Bitcoin and everything else when you sign up using our link.</p>
                     <a 
                       href="https://coinbase.com/join/Y9J9XR2?src=ios-link" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block"
+                    >
+                      <Button>
+                        Claim Deal
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-6">Health & Wellness Deals</h2>
+            <div className="grid gap-6">
+              <div className="p-6 rounded-lg border bg-card">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-full bg-green-100 dark:bg-green-900">
+                    <Percent className="h-6 w-6 text-green-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2">Plants Basically Supplements</h3>
+                    <p className="text-muted-foreground mb-4">Get 15% off your order of organic herbal supplements providing high-density nourishment.</p>
+                    <a 
+                      href="https://www.plantsbasically.com/taxedaf" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-block"
