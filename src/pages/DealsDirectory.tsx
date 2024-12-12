@@ -58,7 +58,7 @@ const DealsDirectory = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold mb-2">Robinhood</h3>
-                    <p className="text-muted-foreground mb-4">Sign up and get a free stock! Both you and your referrer get to pick your own gift stock.</p>
+                    <p className="text-muted-foreground mb-4">Sign up and get a free stock!</p>
                     <a 
                       href="https://join.robinhood.com/kylek445" 
                       target="_blank" 
