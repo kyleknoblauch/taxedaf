@@ -1,10 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
+import { SubscriptionButton } from "./SubscriptionButton";
 
 interface PricingDialogProps {
   isOpen: boolean;
@@ -58,7 +58,6 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
       if (error) throw error;
       if (!data.url) throw new Error('No checkout URL received');
 
-      // Redirect to Stripe Checkout
       window.location.href = data.url;
     } catch (error: any) {
       console.error('Subscription error:', error);
@@ -89,46 +88,27 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-4">
-            <div className="border rounded-lg p-4 hover:border-primary transition-colors">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-semibold">Lifetime Access</h3>
-                <div className="text-right">
-                  <span className="text-sm line-through text-muted-foreground">$99.99</span>
-                  <span className="text-lg font-bold ml-2">$45.99</span>
-                </div>
-              </div>
-              <Button 
-                className="w-full" 
-                onClick={() => handleSubscription('lifetime')}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Processing...' : 'Get Lifetime Access'}
-              </Button>
-            </div>
+            <SubscriptionButton
+              type="lifetime"
+              price="$45.99"
+              originalPrice="$99.99"
+              isLoading={isLoading}
+              onSubscribe={handleSubscription}
+            />
 
-            <div className="border rounded-lg p-4 hover:border-primary transition-colors">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-semibold">Quarterly Access</h3>
-                <span className="text-lg font-bold">$14.99</span>
-              </div>
-              <Button 
-                className="w-full" 
-                variant="outline"
-                onClick={() => handleSubscription('quarterly')}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Processing...' : 'Get 3 Months Access'}
-              </Button>
-            </div>
+            <SubscriptionButton
+              type="quarterly"
+              price="$14.99"
+              isLoading={isLoading}
+              onSubscribe={handleSubscription}
+            />
 
             <div className="text-center mt-6">
-              <button
-                onClick={() => handleSubscription('trial')}
-                className="text-sm text-muted-foreground hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Processing...' : "I'm broke, let me use it for another 30 days for free"}
-              </button>
+              <SubscriptionButton
+                type="trial"
+                isLoading={isLoading}
+                onSubscribe={handleSubscription}
+              />
             </div>
           </div>
         </div>
