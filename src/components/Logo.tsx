@@ -6,7 +6,7 @@ export const Logo = ({ className = "", width = "80" }: { className?: string; wid
   // Calculate height based on original aspect ratio (229.78/245.85)
   const height = (Number(width) * 229.78 / 245.85).toString();
   
-  // Use theme-aware colors
+  // Use theme-aware colors with a default for initial load
   const fillColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
@@ -17,7 +17,7 @@ export const Logo = ({ className = "", width = "80" }: { className?: string; wid
       className={className}
       aria-label="taxedAF Logo"
     >
-      <g className="transition-colors duration-200">
+      <g>
         <path
           d="m43.01,223.26c-1.9,0-3.83-.29-5.74-.91-9.82-3.17-15.22-13.7-12.05-23.52C53.43,111.3,128.92,59.05,227.16,59.05c10.32,0,18.69,8.37,18.69,18.69s-8.37,18.69-18.69,18.69c-42.64,0-79.17,10.85-108.58,32.24-26.9,19.57-46.89,47.8-57.79,81.63-2.55,7.92-9.89,12.96-17.78,12.96Z"
           fill={fillColor}
