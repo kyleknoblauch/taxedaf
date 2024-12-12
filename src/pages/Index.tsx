@@ -5,10 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header/Header";
 import { WelcomeSection } from "@/components/welcome/WelcomeSection";
+import { PricingDialog } from "@/components/pricing/PricingDialog";
 
 const Index = () => {
   const { user } = useAuth();
   const [greeting, setGreeting] = useState<string>("");
+  const [showPricing, setShowPricing] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -28,6 +30,21 @@ const Index = () => {
     },
     enabled: !!user,
   });
+
+  useEffect(() => {
+    if (profile) {
+      // Show pricing dialog if:
+      // 1. User has logged in more than 2 times
+      // 2. Doesn't have an active subscription
+      // 3. Trial has expired (if they used one)
+      const shouldShowPricing = 
+        profile.login_count > 2 && 
+        !profile.subscription_type && 
+        (!profile.last_trial_used || new Date(profile.last_trial_used) < new Date());
+      
+      setShowPricing(shouldShowPricing);
+    }
+  }, [profile]);
 
   useEffect(() => {
     const fetchGreeting = async () => {
@@ -63,6 +80,10 @@ const Index = () => {
           <TaxCalculator />
         </div>
       </div>
+      <PricingDialog 
+        isOpen={showPricing} 
+        onClose={() => setShowPricing(false)} 
+      />
     </div>
   );
 };

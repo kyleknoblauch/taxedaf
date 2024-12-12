@@ -62,18 +62,30 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          last_trial_used: string | null
+          login_count: number | null
+          subscription_expiry: string | null
+          subscription_type: string | null
         }
         Insert: {
           created_at?: string
           first_name?: string | null
           id: string
           last_name?: string | null
+          last_trial_used?: string | null
+          login_count?: number | null
+          subscription_expiry?: string | null
+          subscription_type?: string | null
         }
         Update: {
           created_at?: string
           first_name?: string | null
           id?: string
           last_name?: string | null
+          last_trial_used?: string | null
+          login_count?: number | null
+          subscription_expiry?: string | null
+          subscription_type?: string | null
         }
         Relationships: []
       }
