@@ -34,6 +34,14 @@ export const Footer = () => {
           >
             Support
           </Link>
+          <span className="text-gray-300 dark:text-gray-600">-</span>
+          <Link 
+            to="/deals" 
+            className="hover:text-gray-900 dark:hover:text-gray-200"
+            onClick={handleClick}
+          >
+            Deals Directory
+          </Link>
         </div>
         <div className="text-center space-y-2">
           <p className="text-gray-600 dark:text-gray-400">Be smart, add your invoices and get less f*cked this tax season</p>

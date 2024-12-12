@@ -12,6 +12,7 @@ import DeductionGuide from "@/pages/DeductionGuide";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Support from "@/pages/Support";
+import DealsDirectory from "@/pages/DealsDirectory";
 import { Footer } from "@/components/Footer";
 
 const AuthCallback = () => {
@@ -84,6 +85,7 @@ export const AppRouter = () => {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/deals" element={<DealsDirectory />} />
             <Route
               path="/dashboard"
               element={
