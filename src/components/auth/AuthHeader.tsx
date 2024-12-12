@@ -1,11 +1,15 @@
+import { Logo } from "../Logo";
+
 interface AuthHeaderProps {
   isResetPassword: boolean;
   isSignUp: boolean;
 }
 
 export const AuthHeader = ({ isResetPassword, isSignUp }: AuthHeaderProps) => (
-  <div>
-    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+  <div className="flex flex-col items-center space-y-4">
+    <Logo width="120" className="dark:invert" />
+    <h1 className="text-2xl font-bold tracking-tight">taxedAF</h1>
+    <h2 className="text-xl text-gray-600 dark:text-gray-400">
       {isResetPassword 
         ? "Reset your password"
         : isSignUp 
