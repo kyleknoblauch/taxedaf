@@ -7,7 +7,7 @@ export const Logo = ({ className = "", width = "80" }: { className?: string; wid
   const height = (Number(width) * 229.78 / 245.85).toString();
   
   // Use theme-aware colors
-  const fillColor = theme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))';
+  const fillColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
     <svg
