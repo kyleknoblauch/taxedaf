@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, updateProfileFromProvider } from '@/utils/authUtils';
 import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
 import { subscribeToOmnisend, trackOmnisendEvent } from '@/utils/omnisendUtils';
+import { AuthChangeEvent } from '@supabase/supabase-js';
 
 type AuthContextType = {
   user: any;
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log('Auth state changed:', event, session);
       setUser(session?.user ?? null);
       
