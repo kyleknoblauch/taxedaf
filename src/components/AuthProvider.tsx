@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase, updateProfileFromProvider } from '@/utils/authUtils';
+import { supabase } from '@/utils/authUtils';
 import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
-import { subscribeToOmnisend, trackOmnisendEvent } from '@/utils/omnisendUtils';
-import { AuthChangeEvent } from '@supabase/supabase-js';
+import { handleAuthStateChange } from '@/utils/authEventHandlers';
 
 type AuthContextType = {
   user: any;
@@ -24,40 +23,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log('Initial session:', session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        updateProfileFromProvider(session.user);
+        handleAuthStateChange('INITIAL', session);
       }
     });
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session);
       setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await updateProfileFromProvider(session.user);
-        
-        // Track signup event in Omnisend
-        if (event === AuthChangeEvent.SIGNED_UP) {
-          try {
-            await subscribeToOmnisend(
-              session.user.email!,
-              session.user.user_metadata?.first_name,
-              session.user.user_metadata?.last_name
-            );
-            
-            await trackOmnisendEvent(
-              'User Signed Up',
-              {
-                email: session.user.email!,
-                first_name: session.user.user_metadata?.first_name,
-                last_name: session.user.user_metadata?.last_name,
-              }
-            );
-          } catch (error) {
-            console.error('Error tracking signup in Omnisend:', error);
-          }
-        }
-      }
+      await handleAuthStateChange(event, session);
     });
 
     return () => subscription.unsubscribe();
@@ -66,15 +40,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const handleSignOut = async () => {
     try {
       console.log('Starting sign out process...');
-      // First clear the user state
       setUser(null);
-      // Then perform the actual sign out
       const result = await signOut();
       console.log('Sign out completed:', result);
       return result;
     } catch (error) {
       console.error('Sign out error in AuthProvider:', error);
-      // Reset user state if sign out fails
       setUser(null);
       throw error;
     }
