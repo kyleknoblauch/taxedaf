@@ -19,6 +19,7 @@ const LoginPage = () => {
   const [lastName, setLastName] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -51,7 +52,8 @@ const LoginPage = () => {
         const { error } = await signUpWithEmail(email, password, { 
           data: { 
             first_name: firstName,
-            last_name: lastName
+            last_name: lastName,
+            marketing_consent: marketingConsent
           }
         });
         if (error?.message.includes("User already registered")) {
@@ -63,6 +65,17 @@ const LoginPage = () => {
           setIsSignUp(false);
           return;
         }
+        
+        // Track signup in Omnisend with consent status
+        if (marketingConsent) {
+          window.omnisend.push(["subscribe", {
+            email,
+            firstName,
+            lastName,
+            subscriptionState: "subscribed"
+          }]);
+        }
+
         toast({
           title: "Verification email sent",
           description: "Please check your email and click the confirmation link to complete your registration.",
@@ -110,6 +123,8 @@ const LoginPage = () => {
           setLastName={setLastName}
           isSignUp={isSignUp}
           isResetPassword={isResetPassword}
+          marketingConsent={marketingConsent}
+          setMarketingConsent={setMarketingConsent}
           onSubmit={handleEmailAuth}
         />
 

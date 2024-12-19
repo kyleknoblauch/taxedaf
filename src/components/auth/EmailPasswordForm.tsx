@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface EmailPasswordFormProps {
   email: string;
@@ -12,6 +13,8 @@ interface EmailPasswordFormProps {
   setLastName: (lastName: string) => void;
   isSignUp: boolean;
   isResetPassword: boolean;
+  marketingConsent: boolean;
+  setMarketingConsent: (consent: boolean) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
 }
 
@@ -26,6 +29,8 @@ export const EmailPasswordForm = ({
   setLastName,
   isSignUp,
   isResetPassword,
+  marketingConsent,
+  setMarketingConsent,
   onSubmit,
 }: EmailPasswordFormProps) => (
   <form onSubmit={onSubmit} className="mt-8 space-y-6">
@@ -79,6 +84,21 @@ export const EmailPasswordForm = ({
             placeholder="Password"
             minLength={6}
           />
+        </div>
+      )}
+      {isSignUp && (
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="marketing-consent" 
+            checked={marketingConsent}
+            onCheckedChange={(checked) => setMarketingConsent(checked as boolean)}
+          />
+          <label
+            htmlFor="marketing-consent"
+            className="text-sm text-muted-foreground"
+          >
+            I agree to receive marketing emails about product updates and promotions
+          </label>
         </div>
       )}
     </div>
