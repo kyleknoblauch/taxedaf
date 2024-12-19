@@ -1,164 +1,88 @@
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bitcoin, Percent, Calculator, Gift } from "lucide-react";
 import { useEffect } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { trackDealsDirectoryOpened } from "@/utils/omnisendEvents";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 const DealsDirectory = () => {
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    const trackPageView = async () => {
+      if (user?.email) {
+        await trackDealsDirectoryOpened(user.email);
+      }
+    };
+    trackPageView();
+  }, [user?.email]);
+
+  const deals = [
+    {
+      name: "QuickBooks Self-Employed",
+      description: "Track mileage, sort expenses, and calculate quarterly taxes automatically.",
+      discount: "50% off for 3 months",
+      link: "https://quickbooks.intuit.com/self-employed/",
+    },
+    {
+      name: "FreshBooks",
+      description: "Cloud accounting software designed for small business owners.",
+      discount: "60% off for first 6 months",
+      link: "https://www.freshbooks.com/",
+    },
+    {
+      name: "TaxAct",
+      description: "File your taxes online with confidence.",
+      discount: "25% off federal and state returns",
+      link: "https://www.taxact.com/",
+    },
+    {
+      name: "H&R Block",
+      description: "Get your taxes done right with expert help.",
+      discount: "20% off online filing",
+      link: "https://www.hrblock.com/",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-4xl font-bold">Deals Directory</h1>
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Exclusive Deals for Freelancers
+          </h1>
+          <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
+            Save money on the tools you need to manage your business
+          </p>
         </div>
-        
-        <div className="space-y-8 text-foreground">
-          <section>
-            <h2 className="text-2xl font-semibold mb-6">Tax Software Deals</h2>
-            <div className="grid gap-6">
-              <div className="p-6 rounded-lg border bg-card">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900">
-                    <Calculator className="h-6 w-6 text-purple-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">TurboTax</h3>
-                    <p className="text-muted-foreground mb-4">Save 20% on TurboTax when you use our referral link.</p>
-                    <a 
-                      href="https://refer.intuit.com/5loas" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block"
-                    >
-                      <Button>
-                        Claim Deal
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
 
-          <section>
-            <h2 className="text-2xl font-semibold mb-6">Investment Deals</h2>
-            <div className="grid gap-6">
-              <div className="p-6 rounded-lg border bg-card">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-full bg-pink-100 dark:bg-pink-900">
-                    <Gift className="h-6 w-6 text-pink-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">Robinhood</h3>
-                    <p className="text-muted-foreground mb-4">Sign up and get a free stock!</p>
-                    <a 
-                      href="https://join.robinhood.com/kylek445" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block"
-                    >
-                      <Button>
-                        Claim Deal
-                      </Button>
-                    </a>
-                  </div>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {deals.map((deal, index) => (
+            <Card key={index} className="p-6">
+              <h3 className="text-xl font-semibold mb-2">{deal.name}</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {deal.description}
+              </p>
+              <div className="bg-primary/10 text-primary rounded-md px-3 py-1 inline-block mb-4">
+                {deal.discount}
               </div>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-6">Cryptocurrency Deals</h2>
-            <div className="grid gap-6">
-              <div className="p-6 rounded-lg border bg-card">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-full bg-orange-100 dark:bg-orange-900">
-                    <Bitcoin className="h-6 w-6 text-orange-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">Strike Bitcoin Trading</h3>
-                    <p className="text-muted-foreground mb-4">Get $100 of fee-free bitcoin trading when you sign up using our link.</p>
-                    <a 
-                      href="https://invite.strike.me/ROBMFZ" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block"
-                    >
-                      <Button>
-                        Claim Deal
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-lg border bg-card">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900">
-                    <Bitcoin className="h-6 w-6 text-blue-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">Coinbase Trading Platform</h3>
-                    <p className="text-muted-foreground mb-4">Get $20 to trade Bitcoin and everything else when you sign up using our link.</p>
-                    <a 
-                      href="https://coinbase.com/join/Y9J9XR2?src=ios-link" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block"
-                    >
-                      <Button>
-                        Claim Deal
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-6">Health & Wellness Deals</h2>
-            <div className="grid gap-6">
-              <div className="p-6 rounded-lg border bg-card">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-full bg-green-100 dark:bg-green-900">
-                    <Percent className="h-6 w-6 text-green-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">Plants Basically Supplements</h3>
-                    <p className="text-muted-foreground mb-4">Get 15% off your order of organic herbal supplements providing high-density nourishment.</p>
-                    <a 
-                      href="https://www.plantsbasically.com/taxedaf" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block"
-                    >
-                      <Button>
-                        Claim Deal
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">About Our Deals</h2>
-            <p className="text-muted-foreground">
-              We carefully select partnerships that provide value to our users. Some links may be affiliate links, 
-              meaning we may earn a commission if you make a purchase through these links, at no extra cost to you.
-            </p>
-          </section>
+              <Button
+                className="w-full flex items-center justify-center gap-2"
+                variant="outline"
+                asChild
+              >
+                <a href={deal.link} target="_blank" rel="noopener noreferrer">
+                  Get Deal
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            </Card>
+          ))}
         </div>
+
+        <p className="text-center text-sm text-gray-500 mt-8">
+          * Deals and discounts are subject to change. Please verify all offers on the provider's website.
+        </p>
       </div>
     </div>
   );

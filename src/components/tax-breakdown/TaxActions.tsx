@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
+import { trackEstimateSaved } from "@/utils/omnisendEvents";
 
 interface TaxActionsProps {
   income: number;
@@ -24,11 +25,11 @@ export const TaxActions = ({
   invoiceName,
   notes,
 }: TaxActionsProps) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-  const { user } = useAuth();
 
   const handleSave = async () => {
     if (!user) {
@@ -40,7 +41,7 @@ export const TaxActions = ({
       return;
     }
 
-    if (isSaving) return; // Prevent double submission
+    if (isSaving) return;
 
     setIsSaving(true);
     try {
@@ -62,6 +63,17 @@ export const TaxActions = ({
       if (error) {
         console.error('Error saving estimate:', error);
         throw error;
+      }
+
+      // Track the successful save
+      if (user.email) {
+        await trackEstimateSaved(
+          user.email,
+          income,
+          federalTax,
+          stateTax,
+          selfEmploymentTax
+        );
       }
 
       // Invalidate relevant queries

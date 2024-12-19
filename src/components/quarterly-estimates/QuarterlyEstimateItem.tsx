@@ -4,6 +4,8 @@ import { QuarterInfo } from "./QuarterInfo";
 import { QuarterlyAmounts } from "./QuarterlyAmounts";
 import { PaymentDialog } from "./PaymentDialog";
 import { getQuarterInfo } from "@/utils/quarterCalculations";
+import { useAuth } from "@/components/AuthProvider";
+import { trackQuarterlyInvoicePaid, trackQuarterlyEstimateArchived } from "@/utils/omnisendEvents";
 
 interface QuarterlyEstimateItemProps {
   quarter: any;
@@ -18,6 +20,32 @@ export const QuarterlyEstimateItem = ({
 }: QuarterlyEstimateItemProps) => {
   const { quarterNum, dateRange, dueDate, taxYear } = getQuarterInfo(quarter.quarter);
   const isPaid = !!quarter.paid_at;
+  const { user } = useAuth();
+
+  const handleArchive = async () => {
+    await onArchive(quarter.quarter);
+    if (user?.email) {
+      await trackQuarterlyEstimateArchived(
+        user.email,
+        quarter.quarter
+      );
+    }
+  };
+
+  const handleTogglePaid = async () => {
+    onTogglePaid({ 
+      quarter: quarter.quarter,
+      currentPaidStatus: quarter.paid_at
+    });
+    
+    if (!quarter.paid_at && user?.email) {
+      await trackQuarterlyInvoicePaid(
+        user.email,
+        quarter.quarter,
+        quarter.total_tax
+      );
+    }
+  };
 
   return (
     <div className="border-b pb-6 last:border-b-0">
@@ -43,10 +71,7 @@ export const QuarterlyEstimateItem = ({
         <Button
           variant={isPaid ? "outline" : "default"}
           size="sm"
-          onClick={() => onTogglePaid({ 
-            quarter: quarter.quarter,
-            currentPaidStatus: quarter.paid_at
-          })}
+          onClick={handleTogglePaid}
           className="flex items-center gap-2"
         >
           <CheckCircle className="h-4 w-4" />
@@ -57,7 +82,7 @@ export const QuarterlyEstimateItem = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onArchive(quarter.quarter)}
+            onClick={handleArchive}
             className="flex items-center gap-2 text-yellow-600 hover:text-yellow-700"
           >
             <Archive className="h-4 w-4" />

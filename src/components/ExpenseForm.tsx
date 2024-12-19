@@ -7,6 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ExpenseFormFields } from "./expense-form/ExpenseFormFields";
 import { ExpenseFormActions } from "./expense-form/ExpenseFormActions";
 import { useNavigate } from "react-router-dom";
+import { trackDeductionAdded } from "@/utils/omnisendEvents";
 
 export const ExpenseForm = () => {
   const [description, setDescription] = useState("");
@@ -38,6 +39,14 @@ export const ExpenseForm = () => {
       });
 
       if (error) throw error;
+
+      if (user?.email) {
+        await trackDeductionAdded(
+          user.email,
+          Number(amount),
+          category
+        );
+      }
 
       toast({
         title: "Success",

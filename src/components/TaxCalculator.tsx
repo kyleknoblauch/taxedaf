@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { TaxBreakdown } from "./TaxBreakdown";
 import { calculateFederalTax, calculateStateTax, calculateSelfEmploymentTax } from "../utils/taxCalculations";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { IncomeInputForm } from "./tax-calculator/IncomeInputForm";
 import { federalTaxBrackets2024 } from "../data/taxBrackets";
+import { useAuth } from "./AuthProvider";
+import { trackEstimateAbandonment } from "@/utils/omnisendEvents";
 
 export const TaxCalculator = () => {
   const [income, setIncome] = useState<number>(0);
@@ -13,6 +15,18 @@ export const TaxCalculator = () => {
   const [annualIncome, setAnnualIncome] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [invoiceName, setInvoiceName] = useState<string>("");
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      if (income > 0 && user?.email) {
+        await trackEstimateAbandonment(user.email, income);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [income, user?.email]);
 
   const getEffectiveRate = (selectedAnnualIncome: string) => {
     const annualMax = Number(selectedAnnualIncome);

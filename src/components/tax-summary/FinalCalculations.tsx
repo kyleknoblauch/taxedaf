@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "../AuthProvider";
+import { trackTaxSummaryDownload } from "@/utils/omnisendEvents";
 
 interface FinalCalculationsProps {
   adjustedTaxableIncome: number;
@@ -52,7 +53,7 @@ export const FinalCalculations = ({
 
   const totalIncome = calculations?.reduce((sum, calc) => sum + (calc.income || 0), 0) || 0;
 
-  const downloadCSV = () => {
+  const downloadCSV = async () => {
     try {
       // Create CSV header and summary section
       const csvContent = [
@@ -111,6 +112,14 @@ export const FinalCalculations = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      if (user?.email) {
+        await trackTaxSummaryDownload(
+          user.email,
+          totalIncome,
+          totalExpenses
+        );
+      }
 
       toast({
         title: "Success",
