@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { SubscriptionButton } from "./SubscriptionButton";
+import { trackKlaviyoEvent } from '@/utils/klaviyoUtils';
 
 interface PricingDialogProps {
   isOpen: boolean;
@@ -42,6 +43,16 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
           .eq('id', user.id);
 
         if (error) throw error;
+
+        // Track trial activation in Klaviyo
+        await trackKlaviyoEvent(
+          'Trial Activated',
+          {
+            email: user.email!,
+            first_name: user.user_metadata?.first_name,
+            last_name: user.user_metadata?.last_name,
+          }
+        );
 
         toast({
           title: "Trial activated",

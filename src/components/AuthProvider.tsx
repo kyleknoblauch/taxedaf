@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, updateProfileFromProvider } from '@/utils/authUtils';
 import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
+import { subscribeToKlaviyoList, trackKlaviyoEvent } from '@/utils/klaviyoUtils';
 
 type AuthContextType = {
   user: any;
@@ -30,8 +31,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth state changed:', _event, session);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
         await updateProfileFromProvider(session.user);
+        
+        // Track signup event in Klaviyo
+        if (_event === 'SIGNED_UP') {
+          try {
+            await subscribeToKlaviyoList(
+              session.user.email!,
+              session.user.user_metadata?.first_name,
+              session.user.user_metadata?.last_name
+            );
+            
+            await trackKlaviyoEvent(
+              'User Signed Up',
+              {
+                email: session.user.email!,
+                first_name: session.user.user_metadata?.first_name,
+                last_name: session.user.user_metadata?.last_name,
+              }
+            );
+          } catch (error) {
+            console.error('Error tracking signup in Klaviyo:', error);
+          }
+        }
       }
     });
 
