@@ -31,19 +31,45 @@ const Index = () => {
     enabled: !!user,
   });
 
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (!user) return;
+  const { data: taxCalculations } = useQuery({
+    queryKey: ["tax-calculations", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("tax_calculations")
+        .select("*")
+        .eq("user_id", user.id);
       
-      // Check if user has an active subscription or trial
-      if (!profile?.subscription_type || 
-          (profile.subscription_expiry && new Date(profile.subscription_expiry) < new Date())) {
+      if (error) {
+        console.error("Error fetching tax calculations:", error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    const checkSubscriptionStatus = async () => {
+      if (!user || !profile || !taxCalculations) return;
+      
+      // Show pricing dialog after first invoice if no subscription
+      if (taxCalculations.length === 1 && !profile.subscription_type) {
+        setShowPricing(true);
+      }
+      // For users on trial, remind them after each invoice after the first
+      else if (
+        taxCalculations.length > 1 && 
+        profile.subscription_type === 'trial' &&
+        profile.subscription_expiry && 
+        new Date(profile.subscription_expiry) > new Date()
+      ) {
         setShowPricing(true);
       }
     };
 
-    checkSubscription();
-  }, [profile, user]);
+    checkSubscriptionStatus();
+  }, [profile, user, taxCalculations]);
 
   useEffect(() => {
     const fetchGreeting = async () => {

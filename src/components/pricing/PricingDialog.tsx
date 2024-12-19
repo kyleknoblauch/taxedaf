@@ -45,7 +45,7 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
 
         toast({
           title: "Trial activated",
-          description: "You have 30 more days of free access",
+          description: "You have 30 more days of free access. We'll remind you about pricing after each invoice you add.",
         });
         onClose();
         return;
