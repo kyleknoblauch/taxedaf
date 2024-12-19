@@ -32,6 +32,20 @@ const Index = () => {
   });
 
   useEffect(() => {
+    const checkSubscription = async () => {
+      if (!user) return;
+      
+      // Check if user has an active subscription or trial
+      if (!profile?.subscription_type || 
+          (profile.subscription_expiry && new Date(profile.subscription_expiry) < new Date())) {
+        setShowPricing(true);
+      }
+    };
+
+    checkSubscription();
+  }, [profile, user]);
+
+  useEffect(() => {
     const fetchGreeting = async () => {
       if (!user || !profile?.first_name) return;
       
