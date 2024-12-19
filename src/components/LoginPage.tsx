@@ -36,6 +36,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       if (isResetPassword) {
+        console.log('Attempting password reset for:', email);
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth/callback`,
         });
@@ -49,14 +50,19 @@ const LoginPage = () => {
       }
 
       if (isSignUp) {
-        const { error } = await signUpWithEmail(email, password, { 
+        console.log('Starting sign up process for:', email);
+        const { data, error } = await signUpWithEmail(email, password, { 
           data: { 
             first_name: firstName,
             last_name: lastName,
             marketing_consent: marketingConsent
           }
         });
+        
+        console.log('Sign up response:', { data, error });
+        
         if (error?.message.includes("User already registered")) {
+          console.log('User already exists error');
           toast({
             variant: "destructive",
             title: "Account already exists",
@@ -68,6 +74,7 @@ const LoginPage = () => {
         
         // Track signup in Omnisend with consent status
         if (marketingConsent) {
+          console.log('Pushing to Omnisend:', { email, firstName, lastName });
           window.omnisend.push(["subscribe", {
             email,
             firstName,
@@ -81,15 +88,20 @@ const LoginPage = () => {
           description: "Please check your email and click the confirmation link to complete your registration.",
         });
       } else {
-        const { error } = await signInWithEmail(email, password);
+        console.log('Attempting sign in for:', email);
+        const { data, error } = await signInWithEmail(email, password);
+        console.log('Sign in response:', { data, error });
+        
         if (error) {
           if (error.message.includes("Email not confirmed")) {
+            console.log('Email not confirmed error');
             toast({
               variant: "destructive",
               title: "Email not confirmed",
               description: "Please check your email and click the confirmation link before signing in.",
             });
           } else {
+            console.log('Sign in error:', error);
             toast({
               variant: "destructive",
               title: "Sign in failed",
@@ -99,6 +111,7 @@ const LoginPage = () => {
         }
       }
     } catch (error: any) {
+      console.error('Authentication error:', error);
       toast({
         variant: "destructive",
         title: "Error",
