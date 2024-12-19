@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface WelcomeSectionProps {
-  greeting?: string; // Made optional with ?
+  greeting: string;
 }
 
 export const WelcomeSection = ({ greeting }: WelcomeSectionProps) => {
@@ -55,7 +55,7 @@ export const WelcomeSection = ({ greeting }: WelcomeSectionProps) => {
           title: profile.first_name ? `Hey ${profile.first_name}!` : "Hey!",
           description: "You're gearing up to take on the IRS like a boss. We've got your back to help you save more of your hard-earned cash—legally—and guide you through every move.",
         });
-      } else if (!greeting) { // Only show welcome back toast if no greeting provided
+      } else {
         // Get greeting from edge function
         const getGreeting = async () => {
           try {
@@ -82,7 +82,7 @@ export const WelcomeSection = ({ greeting }: WelcomeSectionProps) => {
         getGreeting();
       }
     }
-  }, [user, profile, taxCalculations, toast, greeting]);
+  }, [user, profile, taxCalculations, toast]);
 
   return (
     <div className="text-center mt-8 mb-12">
