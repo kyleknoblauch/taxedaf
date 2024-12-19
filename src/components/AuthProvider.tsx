@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await updateProfileFromProvider(session.user);
         
         // Track signup event in Omnisend
-        if (event === 'SIGNED_UP') {
+        if (event === AuthChangeEvent.SIGNED_UP) {
           try {
             await subscribeToOmnisend(
               session.user.email!,
