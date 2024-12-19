@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/authUtils';
-import { signInWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
+import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
 import { handleAuthStateChange } from '@/utils/authEventHandlers';
 
 type SignUpOptions = {
