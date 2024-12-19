@@ -1,12 +1,20 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/authUtils';
-import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
+import { signInWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
 import { handleAuthStateChange } from '@/utils/authEventHandlers';
+
+type SignUpOptions = {
+  data?: {
+    first_name?: string;
+    last_name?: string;
+    marketing_consent?: boolean;
+  }
+};
 
 type AuthContextType = {
   user: any;
   signInWithEmail: (email: string, password: string) => Promise<any>;
-  signUpWithEmail: (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => Promise<any>;
+  signUpWithEmail: (email: string, password: string, options?: SignUpOptions) => Promise<any>;
   signInWithTwitter: () => Promise<any>;
   signInWithLinkedIn: () => Promise<any>;
   signOut: () => Promise<any>;
