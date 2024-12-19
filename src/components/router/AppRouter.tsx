@@ -14,6 +14,7 @@ import Terms from "@/pages/Terms";
 import Support from "@/pages/Support";
 import DealsDirectory from "@/pages/DealsDirectory";
 import { Footer } from "@/components/Footer";
+import { OmnisendTracker } from "@/components/OmnisendTracker";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 export const AppRouter = () => {
   return (
     <BrowserRouter>
+      <OmnisendTracker />
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow">
           <Routes>
