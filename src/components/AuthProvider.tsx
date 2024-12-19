@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, updateProfileFromProvider } from '@/utils/authUtils';
 import { signInWithEmail, signUpWithEmail, signInWithTwitter, signInWithLinkedIn, signOut } from '@/utils/authOperations';
-import { subscribeToKlaviyoList, trackKlaviyoEvent } from '@/utils/klaviyoUtils';
+import { subscribeToOmnisend, trackOmnisendEvent } from '@/utils/omnisendUtils';
 
 type AuthContextType = {
   user: any;
@@ -28,23 +28,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('Auth state changed:', _event, session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
         await updateProfileFromProvider(session.user);
         
-        // Track signup event in Klaviyo
-        if (_event === 'SIGNED_UP') {
+        // Track signup event in Omnisend
+        if (event === 'SIGNED_UP') {
           try {
-            await subscribeToKlaviyoList(
+            await subscribeToOmnisend(
               session.user.email!,
               session.user.user_metadata?.first_name,
               session.user.user_metadata?.last_name
             );
             
-            await trackKlaviyoEvent(
+            await trackOmnisendEvent(
               'User Signed Up',
               {
                 email: session.user.email!,
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               }
             );
           } catch (error) {
-            console.error('Error tracking signup in Klaviyo:', error);
+            console.error('Error tracking signup in Omnisend:', error);
           }
         }
       }
