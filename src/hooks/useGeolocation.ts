@@ -27,6 +27,7 @@ export const useGeolocation = () => {
         }
       } catch (error) {
         console.error('Error detecting location:', error);
+        // Don't show error toast to user, just fallback silently to CA
       }
     };
 
