@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Header } from "@/components/header/Header";
 import { WelcomeSection } from "@/components/welcome/WelcomeSection";
 import { PricingDialog } from "@/components/pricing/PricingDialog";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { user } = useAuth();
@@ -102,6 +103,18 @@ const Index = () => {
         <div className="px-4 py-12">
           <Header />
           <WelcomeSection greeting={greeting} />
+          {/* Add test button */}
+          {user && (
+            <div className="text-center mb-8">
+              <Button 
+                variant="outline"
+                onClick={() => setShowPricing(true)}
+                className="text-sm"
+              >
+                Test Pricing Dialog
+              </Button>
+            </div>
+          )}
           <TaxCalculator />
         </div>
       </div>
