@@ -18,12 +18,25 @@ export const OmnisendTracker = () => {
       script.type = 'text/javascript';
       script.async = true;
       script.src = 'https://omnisnippet1.com/inshop/launcher-v2.js';
+      
+      // Add crossorigin attribute to handle CORS
+      script.crossOrigin = 'anonymous';
+      
+      // Add error handling
+      script.onerror = (error) => {
+        console.error('Error loading Omnisend script:', error);
+      };
+
       document.body.appendChild(script);
     }
 
-    // Push brand ID and track page view
-    window.omnisend.push(["brandID", "6763b6f1a2ed8277fe8244f8"]);
-    window.omnisend.push(["track", "$pageViewed"]);
+    try {
+      // Push brand ID and track page view with error handling
+      window.omnisend.push(["brandID", "6763b6f1a2ed8277fe8244f8"]);
+      window.omnisend.push(["track", "$pageViewed"]);
+    } catch (error) {
+      console.error('Error tracking Omnisend event:', error);
+    }
   }, [location.pathname]); // Re-run when route changes
 
   return null;
