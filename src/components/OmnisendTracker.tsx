@@ -17,12 +17,8 @@ export const OmnisendTracker = () => {
       const script = document.createElement('script');
       script.type = 'text/javascript';
       script.async = true;
-      script.src = 'https://omnisnippet1.com/inshop/launcher-v2.js';
+      script.src = 'https://cdn.omnisend.com/inshop/launcher-v2.js';
       
-      // Add crossorigin attribute to handle CORS
-      script.crossOrigin = 'anonymous';
-      
-      // Add error handling
       script.onerror = (error) => {
         console.error('Error loading Omnisend script:', error);
       };
