@@ -33,7 +33,30 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
     setIsLoading(true);
     try {
       if (type === 'trial') {
-        const { error } = await supabase
+        console.log('Starting trial extension for user:', user.id);
+        
+        // Check if user has already used trial
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('last_trial_used')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error checking trial status:', profileError);
+          throw new Error('Could not check trial status');
+        }
+
+        if (profile?.last_trial_used) {
+          const lastTrialDate = new Date(profile.last_trial_used);
+          const daysSinceLastTrial = Math.floor((Date.now() - lastTrialDate.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (daysSinceLastTrial < 30) {
+            throw new Error('You can only extend your trial once every 30 days');
+          }
+        }
+
+        const { error: updateError } = await supabase
           .from('profiles')
           .update({ 
             subscription_type: type,
@@ -42,7 +65,10 @@ export const PricingDialog = ({ isOpen, onClose }: PricingDialogProps) => {
           })
           .eq('id', user.id);
 
-        if (error) throw error;
+        if (updateError) {
+          console.error('Error updating trial:', updateError);
+          throw updateError;
+        }
 
         if (user.email) {
           await trackTrialExtension(user.email);
